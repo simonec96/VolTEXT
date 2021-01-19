@@ -1,0 +1,24 @@
+{
+page:{
+img:{
+URL:".\immagine.jpg";
+}
+}
+}
+}
+
+{
+page:{
+}
+}
+}
+
+{
+page:{
+div:{
+list:{
+item:"Ciao, come stai? Io bene e tu? }";
+}
+}
+}
+}
