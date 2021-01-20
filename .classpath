@@ -6,16 +6,18 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="target/generated-sources/antlr4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Simone/Downloads/antlr-4.9-complete.jar"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Simone/.eclipse_2019_09/VolTEXT_2/antlr-4.9-complete.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Simone/.eclipse_2019_09/VolTEXT_2/itextpdf-5.5.9.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
