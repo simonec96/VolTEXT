@@ -1,11 +1,15 @@
 {
 page:{
 img:{
-URL:".\immagine.jpg";
+URL:"./SAM0043.JPG";
+pos-x:100;
+pos-y:200;
+w-img:100;
+h-img:200;
 }
 }
 }
-}
+
 
 {
 page:{

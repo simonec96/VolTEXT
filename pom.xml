@@ -3,6 +3,13 @@
   <groupId>VolTEXT_2</groupId>
   <artifactId>VolTEXT_2</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+    	<dependency>
+  			<groupId>org.apache.pdfbox</groupId>
+  			<artifactId>pdfbox</artifactId>
+  			<version>2.0.22</version>
+		</dependency>
+    </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -19,6 +26,7 @@
         </excludes>
       </resource>
     </resources>
+    
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

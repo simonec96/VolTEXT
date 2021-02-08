@@ -28,7 +28,7 @@ elemd: 		text
 	| 		list 
 	| 		elemp;
 	
-img: 		'img' O imgattr* imgElem? imgattr* C;
+img: 		'img' O imgattr* imgElem imgattr* C;
 
 imgElem: 	'URL:"' URL ENDLINE;
 
@@ -47,13 +47,13 @@ listElem: 	'item:' STRING ENDNLINE;
 pageattr:	'id:"' VAL ENDLINE;
 
 divattr: 	'id:"' VAL ENDLINE 
-	| 		DIVANUMBER ':' NVAL ENDNLINE;
+	| 		IMGANUMBER ':' NVAL ENDNLINE;
 	
 listattr: 	'ordered:' TFVAL ENDNLINE;
 
 txtattr: 	'id:"' VAL ENDLINE 
 	| 		'font-family:"' SVAL ENDLINE 
-	| 		TXTANUMBER ':' NVAL ENDNLINE 
+	| 		(IMGANUMBER | 'font-size') ':' NVAL ENDNLINE 
 	| 		'color:' COLORVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE 
 	| 		'position:' POSVAL ENDNLINE;
@@ -64,14 +64,10 @@ imgattr: 	'id:"' VAL ENDLINE
 
 
 //TERMINALI
-DIVANUMBER: IMGANUMBER;
 
 TXTATF: 	'bold'
 	| 		'italics'
 	|		'underline';
-
-TXTANUMBER: IMGANUMBER
-		|	'font-size';
 
 COLORVAL: 	'#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]);
 
@@ -83,8 +79,8 @@ TFVAL: 		't'
 IMGANUMBER: 'pos-x'
 		|	'pos-y'
 		|	'angle-rotation'
-		|	'height'
-		|	'width'
+		|	'h-img'
+		|	'w-img'
 		| 	'layer';
 
 POSVAL: 	'lu' 
@@ -119,9 +115,9 @@ SPECIALC: 	'pga'		//{
 		
 STRING: 	'"' (~[\t\r\n])+ '"';
 
-URL: 		(VAL ':' [\\] [\\] | '.\\' | '..\\' ) URL2 ;
+URL: 		(VAL ':' '/' [/]? | './' | '../' ) URL2 ;
 
-URL2: 		VAL '\\' URL2 | VAL '.' VAL;		
+URL2: 		VAL '/' URL2 | VAL '.' VAL;		
 
 VAL : 		([A-Z] | [a-z] | [0-9])+;
 

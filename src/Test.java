@@ -17,6 +17,9 @@ public class Test {
 
 		VolTextParser parser = new VolTextParser(tokens);
 		ParseTree tree = parser.pdf(); // begin parsing at rule 'r'
+		VolTEXT_Listener vtbl = new VolTEXT_Listener();
+		ParseTreeWalker ptw = new ParseTreeWalker();
+		ptw.walk(vtbl, tree);
 		System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 		
 	}
