@@ -10,6 +10,22 @@ h-img:200;
 }
 }
 
+{
+page:{
+img:{
+URL:"./SAM0043.JPG";
+pos-x:200;
+pos-y:300;
+w-img:200;
+h-img:200;
+}
+}
+}
+
+
+
+
+
 
 {
 page:{

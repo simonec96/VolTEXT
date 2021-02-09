@@ -27,6 +27,18 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPdfattr(VolTextParser.PdfattrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPdfattr(VolTextParser.PdfattrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStylesheet(VolTextParser.StylesheetContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -87,13 +99,13 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElemp(VolTextParser.ElempContext ctx) { }
+	@Override public void enterDiv(VolTextParser.DivContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElemp(VolTextParser.ElempContext ctx) { }
+	@Override public void exitDiv(VolTextParser.DivContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

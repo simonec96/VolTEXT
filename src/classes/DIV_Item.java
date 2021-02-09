@@ -2,14 +2,27 @@ package classes;
 
 public class DIV_Item extends Item {
 	
+	/**
+	 * 
+	 */
+	public DIV_Item() {
+		super();
+		setAngle_Rotation(0f);
+		setPosX(0f);
+		setPosY(0f);
+		setWidth(0f);
+		setHeight(0f);
+		setLayer(0);
+		setID("");
+	}
 	private Float PosX;
 	private Float PosY;
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
 	private Integer Layer;
-	
 	private String ID;
+	
 	/**
 	 * @return the iD
 	 */

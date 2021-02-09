@@ -1,9 +1,33 @@
 package classes;
 
 public class TXT_Item extends Item {
+	/**
+	 * 
+	 */
+	public TXT_Item() {
+		super();
+		setText("");
+		setAngle_Rotation(0f);
+		setID("");
+		setFontFamily("");
+		setFontFamilyTTF("");
+		setFontSize(12);
+		setColor("#FFFFFF");
+		setBold(false);
+		setItalics(false);
+		setUnderline(false);
+		setPosition("ul");
+		setPosX(0f);
+		setPosY(0f);
+		setWidth(0f);
+		setHeight(0f);
+		setLayer(0);
+		
+	}
 	private String Text;
 	private String ID;
 	private String FontFamily;
+	private String FontFamilyTTF;
 	private Integer FontSize;
 	private String Color;
 	private boolean Bold;
@@ -51,6 +75,18 @@ public class TXT_Item extends Item {
 	 */
 	public void setFontFamily(String fontFamily) {
 		FontFamily = fontFamily;
+	}
+	/**
+	 * @return the fontFamilyTTF
+	 */
+	public String getFontFamilyTTF() {
+		return FontFamilyTTF;
+	}
+	/**
+	 * @param fontFamilyTTF the fontFamilyTTF to set
+	 */
+	public void setFontFamilyTTF(String fontFamilyTTF) {
+		FontFamilyTTF = fontFamilyTTF;
 	}
 	/**
 	 * @return the fontSize

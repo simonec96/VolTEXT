@@ -16,6 +16,12 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPdf(VolTextParser.PdfContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link VolTextParser#pdfattr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPdfattr(VolTextParser.PdfattrContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link VolTextParser#stylesheet}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -46,11 +52,11 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPae(VolTextParser.PaeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link VolTextParser#elemp}.
+	 * Visit a parse tree produced by {@link VolTextParser#div}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitElemp(VolTextParser.ElempContext ctx);
+	T visitDiv(VolTextParser.DivContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link VolTextParser#divae}.
 	 * @param ctx the parse tree

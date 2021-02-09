@@ -17,6 +17,16 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitPdf(VolTextParser.PdfContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VolTextParser#pdfattr}.
+	 * @param ctx the parse tree
+	 */
+	void enterPdfattr(VolTextParser.PdfattrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#pdfattr}.
+	 * @param ctx the parse tree
+	 */
+	void exitPdfattr(VolTextParser.PdfattrContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VolTextParser#stylesheet}.
 	 * @param ctx the parse tree
 	 */
@@ -67,15 +77,15 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitPae(VolTextParser.PaeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VolTextParser#elemp}.
+	 * Enter a parse tree produced by {@link VolTextParser#div}.
 	 * @param ctx the parse tree
 	 */
-	void enterElemp(VolTextParser.ElempContext ctx);
+	void enterDiv(VolTextParser.DivContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VolTextParser#elemp}.
+	 * Exit a parse tree produced by {@link VolTextParser#div}.
 	 * @param ctx the parse tree
 	 */
-	void exitElemp(VolTextParser.ElempContext ctx);
+	void exitDiv(VolTextParser.DivContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VolTextParser#divae}.
 	 * @param ctx the parse tree

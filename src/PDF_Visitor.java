@@ -58,13 +58,6 @@ public class PDF_Visitor extends VolTextBaseVisitor<Object> {
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Object visitElemp(VolTextParser.ElempContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public Object visitDivae(VolTextParser.DivaeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

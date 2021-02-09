@@ -4,7 +4,9 @@
 grammar VolText;
 
 // match keyword hello followed by an identifier
-pdf : 		A (stylesheet)? (page)+ C;
+pdf : 		A pdfattr* (stylesheet)? (page)+ C;
+pdfattr: 	'title:' VAL ENDNLINE
+	|		'author:"' VAL ENDLINE; 
 
 stylesheet: 'stylesheet' O element* C;
 		
@@ -17,16 +19,15 @@ attrStyle: 	imgattr
 	
 page: 		'page' O pae* C;
 
-pae: 		pageattr | elemp;
+pae: 		pageattr | elemd | div;
 
-elemp: 		img 
-	| 		'div' O divae* C;
+div:		'div' O divae* C;
 	
 divae:		divattr | elemd;
 	
 elemd: 		text 
 	| 		list 
-	| 		elemp;
+	| 		img;
 	
 img: 		'img' O imgattr* imgElem imgattr* C;
 
@@ -44,15 +45,17 @@ listElem: 	'item:' STRING ENDNLINE;
 
 
 //ATTRIBUTES
-pageattr:	'id:"' VAL ENDLINE;
+pageattr:	'id:"' VAL ENDLINE
+	|		'angle-rotation:' NVAL ENDNLINE;
 
 divattr: 	'id:"' VAL ENDLINE 
 	| 		IMGANUMBER ':' NVAL ENDNLINE;
 	
-listattr: 	'ordered:' TFVAL ENDNLINE;
+listattr: 	'ordered:' TFVAL ENDNLINE
+	|		txtattr;
 
 txtattr: 	'id:"' VAL ENDLINE 
-	| 		'font-family:"' SVAL ENDLINE 
+	| 		'font-family:"' (SVAL | URL) ENDLINE 
 	| 		(IMGANUMBER | 'font-size') ':' NVAL ENDNLINE 
 	| 		'color:' COLORVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE 
@@ -119,7 +122,7 @@ URL: 		(VAL ':' '/' [/]? | './' | '../' ) URL2 ;
 
 URL2: 		VAL '/' URL2 | VAL '.' VAL;		
 
-VAL : 		([A-Z] | [a-z] | [0-9])+;
+VAL : 		([A-Z] | [a-z] | [0-9] | [_])+;
 
 WS : 		[ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
