@@ -87,16 +87,6 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitDiv(VolTextParser.DivContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VolTextParser#divae}.
-	 * @param ctx the parse tree
-	 */
-	void enterDivae(VolTextParser.DivaeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link VolTextParser#divae}.
-	 * @param ctx the parse tree
-	 */
-	void exitDivae(VolTextParser.DivaeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link VolTextParser#elemd}.
 	 * @param ctx the parse tree
 	 */
@@ -116,6 +106,16 @@ public interface VolTextListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitImg(VolTextParser.ImgContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VolTextParser#imgattr}.
+	 * @param ctx the parse tree
+	 */
+	void enterImgattr(VolTextParser.ImgattrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#imgattr}.
+	 * @param ctx the parse tree
+	 */
+	void exitImgattr(VolTextParser.ImgattrContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VolTextParser#imgElem}.
 	 * @param ctx the parse tree
@@ -137,6 +137,16 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitText(VolTextParser.TextContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VolTextParser#txtattr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTxtattr(VolTextParser.TxtattrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#txtattr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTxtattr(VolTextParser.TxtattrContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VolTextParser#txtElem}.
 	 * @param ctx the parse tree
 	 */
@@ -157,16 +167,6 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitList(VolTextParser.ListContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VolTextParser#lae}.
-	 * @param ctx the parse tree
-	 */
-	void enterLae(VolTextParser.LaeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link VolTextParser#lae}.
-	 * @param ctx the parse tree
-	 */
-	void exitLae(VolTextParser.LaeContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link VolTextParser#listElem}.
 	 * @param ctx the parse tree
 	 */
@@ -176,6 +176,46 @@ public interface VolTextListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitListElem(VolTextParser.ListElemContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VolTextParser#imganumber}.
+	 * @param ctx the parse tree
+	 */
+	void enterImganumber(VolTextParser.ImganumberContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#imganumber}.
+	 * @param ctx the parse tree
+	 */
+	void exitImganumber(VolTextParser.ImganumberContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VolTextParser#idval}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdval(VolTextParser.IdvalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#idval}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdval(VolTextParser.IdvalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VolTextParser#txtval}.
+	 * @param ctx the parse tree
+	 */
+	void enterTxtval(VolTextParser.TxtvalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#txtval}.
+	 * @param ctx the parse tree
+	 */
+	void exitTxtval(VolTextParser.TxtvalContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VolTextParser#positionv}.
+	 * @param ctx the parse tree
+	 */
+	void enterPositionv(VolTextParser.PositionvContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#positionv}.
+	 * @param ctx the parse tree
+	 */
+	void exitPositionv(VolTextParser.PositionvContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VolTextParser#pageattr}.
 	 * @param ctx the parse tree
@@ -187,16 +227,6 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitPageattr(VolTextParser.PageattrContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VolTextParser#divattr}.
-	 * @param ctx the parse tree
-	 */
-	void enterDivattr(VolTextParser.DivattrContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link VolTextParser#divattr}.
-	 * @param ctx the parse tree
-	 */
-	void exitDivattr(VolTextParser.DivattrContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link VolTextParser#listattr}.
 	 * @param ctx the parse tree
 	 */
@@ -206,24 +236,4 @@ public interface VolTextListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitListattr(VolTextParser.ListattrContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link VolTextParser#txtattr}.
-	 * @param ctx the parse tree
-	 */
-	void enterTxtattr(VolTextParser.TxtattrContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link VolTextParser#txtattr}.
-	 * @param ctx the parse tree
-	 */
-	void exitTxtattr(VolTextParser.TxtattrContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link VolTextParser#imgattr}.
-	 * @param ctx the parse tree
-	 */
-	void enterImgattr(VolTextParser.ImgattrContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link VolTextParser#imgattr}.
-	 * @param ctx the parse tree
-	 */
-	void exitImgattr(VolTextParser.ImgattrContext ctx);
 }

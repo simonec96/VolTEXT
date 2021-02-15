@@ -5,25 +5,23 @@ grammar VolText;
 
 // match keyword hello followed by an identifier
 pdf : 		A pdfattr* (stylesheet)? (page)+ C;
-pdfattr: 	'title:' VAL ENDNLINE
-	|		'author:"' VAL ENDLINE; 
+pdfattr: 	'title:' STRING ENDNLINE
+	|		'author:' STRING ENDNLINE
+	|		'path:' STRING ENDNLINE;
 
 stylesheet: 'stylesheet' O element* C;
 		
-element: 	VAL O attrStyle* C;
+element: 	'@' STRING O attrStyle* C;
 	
-attrStyle: 	imgattr 
-	| 		txtattr 
-	|  		listattr 
-	| 		divattr;
+attrStyle: 	imganumber
+	|		positionv
+	|		txtval;
 	
 page: 		'page' O pae* C;
 
 pae: 		pageattr | elemd | div;
 
-div:		'div' O divae* C;
-	
-divae:		divattr | elemd;
+div:		'div' O (imganumber | elemd | positionv)* C;
 	
 elemd: 		text 
 	| 		list 
@@ -31,40 +29,44 @@ elemd: 		text
 	
 img: 		'img' O imgattr* imgElem imgattr* C;
 
-imgElem: 	'URL:"' URL ENDLINE;
+imgattr:	(idval | imganumber | positionv);
+
+imgElem: 	'URL:' STRING ENDNLINE;
 
 text: 		'text' O txtattr* txtElem? txtattr* C;
 
-txtElem: 	'Text:' STRING ENDNLINE;
+txtattr: 	(idval | imganumber | positionv | txtval);
 
-list: 		'list' O lae* C;
+txtElem: 	'String:' STRING ENDNLINE;
 
-lae: 		listattr | listElem;
+list: 		'list' O (listattr | listElem)* C;
 
 listElem: 	'item:' STRING ENDNLINE;
 
-
 //ATTRIBUTES
-pageattr:	'id:"' VAL ENDLINE
-	|		'angle-rotation:' NVAL ENDNLINE;
 
-divattr: 	'id:"' VAL ENDLINE 
-	| 		IMGANUMBER ':' NVAL ENDNLINE;
+imganumber: ('pos-x'
+		|	'pos-y'
+		|	'angle-rotation'
+		|	'h-img'
+		|	'w-img'
+		| 	'layer') ':' NVAL ENDNLINE;
+		 
+idval:		'id:' STRING ENDNLINE;
+
+txtval:		'font-family:' STRING ENDNLINE 
+	| 		'font-size' ':' NVAL ENDNLINE 
+	| 		'color:' COLORVAL ENDNLINE 
+	| 		TXTATF ':' TFVAL ENDNLINE;
+
+positionv:	'position:' POSVAL ENDNLINE;
+
+pageattr:	'orientation:' ('hor' | 'ver');
 	
 listattr: 	'ordered:' TFVAL ENDNLINE
-	|		txtattr;
-
-txtattr: 	'id:"' VAL ENDLINE 
-	| 		'font-family:"' (SVAL | URL) ENDLINE 
-	| 		(IMGANUMBER | 'font-size') ':' NVAL ENDNLINE 
-	| 		'color:' COLORVAL ENDNLINE 
-	| 		TXTATF ':' TFVAL ENDNLINE 
-	| 		'position:' POSVAL ENDNLINE;
-	
-imgattr: 	'id:"' VAL ENDLINE 
-	| 		IMGANUMBER ':' NVAL ENDNLINE 
-	| 		'position:' POSVAL ENDNLINE;
-
+	|		imganumber
+	|		txtval
+	|		positionv;
 
 //TERMINALI
 
@@ -72,19 +74,12 @@ TXTATF: 	'bold'
 	| 		'italics'
 	|		'underline';
 
-COLORVAL: 	'#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]);
+COLORVAL: 	'"#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]) '"';
 
 SVAL: 		[a-zA-Z]+;
 
-TFVAL: 		't' 
-	| 		'f';
-
-IMGANUMBER: 'pos-x'
-		|	'pos-y'
-		|	'angle-rotation'
-		|	'h-img'
-		|	'w-img'
-		| 	'layer';
+TFVAL: 		'true' 
+	| 		'false';
 
 POSVAL: 	'lu' 
 	| 		'cu' 
@@ -104,25 +99,8 @@ ENDNLINE: 	';';
 O : 		':{';
 A : 		'{';
 C : 		'}';
-
-SPECIALC: 	'pga'		//{
-		|	'pgc'		//}
-		|	'sq'		//'
-		|	'dq'		//"
-		|	'bs'		//\
-		|	'dp'		//:
-		|	'pv'		//;
-		|	'pp'		//.
-		|	'ss'		///
-		;
 		
 STRING: 	'"' (~[\t\r\n])+ '"';
-
-URL: 		(VAL ':' '/' [/]? | './' | '../' ) URL2 ;
-
-URL2: 		VAL '/' URL2 | VAL '.' VAL;		
-
-VAL : 		([A-Z] | [a-z] | [0-9] | [_])+;
 
 WS : 		[ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 

@@ -1,14 +1,54 @@
 {
 page:{
 img:{
+pos-x:100;
 URL:"./SAM0043.JPG";
 pos-x:100;
 pos-y:200;
-w-img:100;
+w-img:200;
+h-img:100;
+angle-rotation:45;
+}
+}
+page:{
+img:{
+URL:"./SAM0043.JPG";
+pos-x:200;
+pos-y:300;
+w-img:200;
 h-img:200;
 }
+div:{
+list:{
+pos-x:100;
+item:"Ciao, come stai? Io bene e tu? }";
+}
+pos-x:100;
+list:{
+pos-y:100;
+item:"Ciao, come stai? Io bene e tu? }";
+pos-x:200;
+}
+pos-y:300;
 }
 }
+}
+
+
+POSX:		'pos-x';
+POSY:		'pos-y';
+ANGLER:		'angle-rotation';
+HEIGHT:		'h-img';
+WIDTH:		'w-img';
+LAYER:		'layer';
+TRUE:		'true';
+FALSE:		'false';
+BOLD:		'bold';
+ITALICS:	'italics';
+UNDERLINE:	'underline';
+
+
+
 
 {
 page:{

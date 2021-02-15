@@ -7,7 +7,7 @@ public class PDF_Item extends Item {
 	public PDF_Item() {
 		super();
 		setTitle("Document");
-		setAuthor("AAA");
+		setAuthor("");
 		setPath("./");
 	}
 	private String Title;

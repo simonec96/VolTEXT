@@ -111,18 +111,6 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDivae(VolTextParser.DivaeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDivae(VolTextParser.DivaeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterElemd(VolTextParser.ElemdContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -142,6 +130,18 @@ public class VolTextBaseListener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitImg(VolTextParser.ImgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImgattr(VolTextParser.ImgattrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImgattr(VolTextParser.ImgattrContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -171,6 +171,18 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTxtattr(VolTextParser.TxtattrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTxtattr(VolTextParser.TxtattrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTxtElem(VolTextParser.TxtElemContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -195,18 +207,6 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLae(VolTextParser.LaeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLae(VolTextParser.LaeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterListElem(VolTextParser.ListElemContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -214,6 +214,54 @@ public class VolTextBaseListener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitListElem(VolTextParser.ListElemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImganumber(VolTextParser.ImganumberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImganumber(VolTextParser.ImganumberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdval(VolTextParser.IdvalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdval(VolTextParser.IdvalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTxtval(VolTextParser.TxtvalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTxtval(VolTextParser.TxtvalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPositionv(VolTextParser.PositionvContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPositionv(VolTextParser.PositionvContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -231,18 +279,6 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDivattr(VolTextParser.DivattrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDivattr(VolTextParser.DivattrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterListattr(VolTextParser.ListattrContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -250,30 +286,6 @@ public class VolTextBaseListener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitListattr(VolTextParser.ListattrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTxtattr(VolTextParser.TxtattrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTxtattr(VolTextParser.TxtattrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterImgattr(VolTextParser.ImgattrContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitImgattr(VolTextParser.ImgattrContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

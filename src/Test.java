@@ -9,6 +9,7 @@ public class Test {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		
+		
 		ANTLRInputStream input = new ANTLRInputStream( System.in);
 	    
 		VolTextLexer lexer = new VolTextLexer(input);
@@ -20,7 +21,6 @@ public class Test {
 		VolTEXT_Listener vtbl = new VolTEXT_Listener();
 		ParseTreeWalker ptw = new ParseTreeWalker();
 		ptw.walk(vtbl, tree);
-		System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 		
 	}
 

@@ -58,12 +58,6 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDiv(VolTextParser.DivContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link VolTextParser#divae}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDivae(VolTextParser.DivaeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link VolTextParser#elemd}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -75,6 +69,12 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitImg(VolTextParser.ImgContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link VolTextParser#imgattr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImgattr(VolTextParser.ImgattrContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link VolTextParser#imgElem}.
 	 * @param ctx the parse tree
@@ -88,6 +88,12 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitText(VolTextParser.TextContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link VolTextParser#txtattr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTxtattr(VolTextParser.TxtattrContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link VolTextParser#txtElem}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -100,17 +106,35 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitList(VolTextParser.ListContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link VolTextParser#lae}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLae(VolTextParser.LaeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link VolTextParser#listElem}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitListElem(VolTextParser.ListElemContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link VolTextParser#imganumber}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImganumber(VolTextParser.ImganumberContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link VolTextParser#idval}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdval(VolTextParser.IdvalContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link VolTextParser#txtval}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTxtval(VolTextParser.TxtvalContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link VolTextParser#positionv}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPositionv(VolTextParser.PositionvContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link VolTextParser#pageattr}.
 	 * @param ctx the parse tree
@@ -118,27 +142,9 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPageattr(VolTextParser.PageattrContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link VolTextParser#divattr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDivattr(VolTextParser.DivattrContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link VolTextParser#listattr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitListattr(VolTextParser.ListattrContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link VolTextParser#txtattr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitTxtattr(VolTextParser.TxtattrContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link VolTextParser#imgattr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitImgattr(VolTextParser.ImgattrContext ctx);
 }
