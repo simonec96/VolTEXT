@@ -9,6 +9,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 
+import com.itextpdf.text.Paragraph;
+
 import classes.DIV_Item;
 import classes.IMG_Item;
 import classes.Item_Container;
@@ -17,10 +19,7 @@ import classes.PDF_Item;
 import classes.TXT_Item;
 
 public class VolTEXT_Listener implements VolTextListener {
-	public PDDocument doc;
-	public PDPage page;
 	public Item_Container container;
-	public String type;
 	
 	public VolTEXT_Listener()
 	{
@@ -33,7 +32,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterPdf(VolTextParser.PdfContext ctx) { 
 		try {
-			doc = new PDDocument();
+			container.setPDF_doc(new PDDocument());
 			container.setDoc(new PDF_Item());
 		}
 		catch(Exception ex)
@@ -51,7 +50,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitPdf(VolTextParser.PdfContext ctx) { 
 		try {
-			doc.save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
+			container.getPDF_doc().save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,9 +99,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterPage(VolTextParser.PageContext ctx) { 
 		System.out.println("Enter Page");
-		page = new PDPage();
-		type = "page";
-		doc.addPage(page);
+		container.setPDF_page(new PDPage());
+		container.getPDF_doc().addPage(container.getPDF_page());
 	}
 	/**
 	 * {@inheritDoc}
@@ -128,7 +126,6 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterDiv(VolTextParser.DivContext ctx) {
-		type = "div";
 	}
 	/**
 	 * {@inheritDoc}
@@ -154,10 +151,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterImg(VolTextParser.ImgContext ctx) { 
-		System.out.println("Enter IMG");
-		IMG_Item img = new IMG_Item(ctx.imgElem().STRING().toString());
-		container.setImg(img);
-		
+		container.setImg(new IMG_Item(ctx.imgElem().STRING().toString()));
 	}
 	/**
 	 * {@inheritDoc}
@@ -214,8 +208,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitText(VolTextParser.TextContext ctx) {
 		try {
-			PDPageContentStream cstream = new PDPageContentStream(doc, page);
-			
+			PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page());
+			Paragraph p = new Paragraph(container.getTxt().getText());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -244,19 +238,29 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterList(VolTextParser.ListContext ctx) { }
+	@Override public void enterList(VolTextParser.ListContext ctx) {
+		container.setList(new LIST_Item());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitList(VolTextParser.ListContext ctx) { }
+	@Override public void exitList(VolTextParser.ListContext ctx) {
+		for(String s : container.getList().getItems())
+		{
+			
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterListElem(VolTextParser.ListElemContext ctx) { }
+	@Override public void enterListElem(VolTextParser.ListElemContext ctx) {
+		String elem = ctx.STRING().toString();
+		container.getList().getItems().add(elem);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -292,11 +296,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTxtattr(VolTextParser.TxtattrContext ctx) {
-		
-	}
-	
-	
+	@Override public void enterTxtattr(VolTextParser.TxtattrContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -493,7 +493,34 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override
 	public void enterIdval(VolTextParser.IdvalContext ctx) {
 		// TODO Auto-generated method stub
-		
+		if(ctx.getParent() instanceof VolTextParser.DivContext)
+		{
+			DIV_Item div = container.getDiv();
+			div.setID(ctx.STRING().toString());
+			container.setDiv(div);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
+		{
+			IMG_Item img = container.getImg();
+			img.setID(ctx.STRING().toString());
+			container.setImg(img);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+		{
+			TXT_Item txt = container.getTxt();
+			txt.setID(ctx.STRING().toString());
+			container.setTxt(txt);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+		{
+			LIST_Item list = container.getList();
+			list.setID(ctx.STRING().toString());
+			container.setList(list);
+		}
+		else
+		{
+			System.out.println("ALTRO");
+		}
 	}
 	@Override
 	public void exitIdval(VolTextParser.IdvalContext ctx) {
@@ -503,49 +530,84 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override
 	public void enterTxtval(VolTextParser.TxtvalContext ctx) {
 		// TODO Auto-generated method stub
-		TXT_Item txt = container.getTxt();
-		switch(ctx.children.get(0).toString().toLowerCase()) {
-			case "id:":
-				txt.setID(ctx.STRING().toString());
-				break;
-			case "font-family:":
-				if(ctx.STRING() != null)
-				{
+		if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+		{
+			TXT_Item txt = container.getTxt();
+			switch(ctx.children.get(0).toString().toLowerCase()) {
+				case "id:":
+					txt.setID(ctx.STRING().toString());
+					break;
+				case "font-family:":
 					txt.setFontFamily(ctx.STRING().toString());
-				}
-				else
-				{
-					txt.setFontFamilyTTF(ctx.STRING().toString());
-				}
-				break;
-			case "font-size:":
-				txt.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
-				break;
-			case "color:":
-				txt.setColor(ctx.COLORVAL().toString());
-				break;
-			case "bold:":
-				if(ctx.TFVAL().toString() == "T")
-					txt.setBold(true);
-				else
-					txt.setBold(false);
-				break;
-			case "italics:":
-				if(ctx.TFVAL().toString() == "T")
-					txt.setItalics(true);
-				else
-					txt.setItalics(false);
-				break;
-			case "underline:":
-				if(ctx.TFVAL().toString() == "T")
-					txt.setUnderline(true);
-				else
-					txt.setUnderline(false);
-				break;
-			default:
-				System.out.println("Valore non riconosciuto");
+					break;
+				case "font-size:":
+					txt.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
+					break;
+				case "color:":
+					txt.setColor(ctx.COLORVAL().toString());
+					break;
+				case "bold:":
+					if(ctx.TFVAL().toString() == "T")
+						txt.setBold(true);
+					else
+						txt.setBold(false);
+					break;
+				case "italics:":
+					if(ctx.TFVAL().toString() == "T")
+						txt.setItalics(true);
+					else
+						txt.setItalics(false);
+					break;
+				case "underline:":
+					if(ctx.TFVAL().toString() == "T")
+						txt.setUnderline(true);
+					else
+						txt.setUnderline(false);
+					break;
+				default:
+					System.out.println("Valore non riconosciuto");
+			}
+			container.setTxt(txt);
 		}
-		container.setTxt(txt);
+		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+		{
+			LIST_Item list = container.getList();
+			switch(ctx.children.get(0).toString().toLowerCase()) {
+				case "id:":
+					list.setID(ctx.STRING().toString());
+					break;
+				case "font-family:":
+					list.setFontFamily(ctx.STRING().toString());
+					break;
+				case "font-size:":
+					list.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
+					break;
+				case "color:":
+					list.setColor(ctx.COLORVAL().toString());
+					break;
+				case "bold:":
+					if(ctx.TFVAL().toString() == "true")
+						list.setBold(true);
+					else
+						list.setBold(false);
+					break;
+				case "italics:":
+					if(ctx.TFVAL().toString() == "true")
+						list.setItalics(true);
+					else
+						list.setItalics(false);
+					break;
+				case "underline:":
+					if(ctx.TFVAL().toString() == "true")
+						list.setUnderline(true);
+					else
+						list.setUnderline(false);
+					break;
+				default:
+					System.out.println("Valore non riconosciuto");
+			}
+			container.setList(list);
+		}
 	}
 	@Override
 	public void exitTxtval(VolTextParser.TxtvalContext ctx) {
@@ -555,7 +617,140 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override
 	public void enterPositionv(VolTextParser.PositionvContext ctx) {
 		// TODO Auto-generated method stub
+		String position = ctx.POSVAL().toString();
+		Float width = container.getPDF_page().getBBox().getWidth();
+		Float height = container.getPDF_page().getBBox().getHeight();
+		Float x = 0.0f;
+		Float y = 0.0f;
 		
+		if(ctx.getParent() instanceof VolTextParser.DivContext)
+		{
+			DIV_Item div = container.getDiv();
+			switch(position.toLowerCase().toCharArray()[0])
+			{
+				case 'l':
+					x = 0.0f;
+					break;
+				case 'c':
+					x = (width - div.getWidth())/2;
+					break;
+				case 'r':
+					x = width - div.getWidth();
+					break;
+			}
+			div.setPosX(x);
+			switch(position.toLowerCase().toCharArray()[1])
+			{
+				case 'b':
+					y = 0.0f;
+					break;
+				case 'c':
+					y = (height - div.getHeight())/2;
+					break;
+				case 'u':
+					y = height - div.getHeight();
+					break;
+			}
+			div.setPosY(y);
+			container.setDiv(div);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
+		{
+			IMG_Item img = container.getImg();
+			switch(position.toLowerCase().toCharArray()[0])
+			{
+				case 'l':
+					x = 0.0f;
+					break;
+				case 'c':
+					x = (width - img.getWidth())/2;
+					break;
+				case 'r':
+					x = width - img.getWidth();
+					break;
+			}
+			img.setPosX(x);
+			switch(position.toLowerCase().toCharArray()[1])
+			{
+				case 'b':
+					y = 0.0f;
+					break;
+				case 'c':
+					y = (height - img.getHeight())/2;
+					break;
+				case 'u':
+					y = height - img.getHeight();
+					break;
+			}
+			img.setPosY(y);
+			container.setImg(img);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+		{
+			TXT_Item txt = container.getTxt();
+			switch(position.toLowerCase().toCharArray()[0])
+			{
+				case 'l':
+					x = 0.0f;
+					break;
+				case 'c':
+					x = (width - txt.getWidth())/2;
+					break;
+				case 'r':
+					x = width - txt.getWidth();
+					break;
+			}
+			txt.setPosX(x);
+			switch(position.toLowerCase().toCharArray()[1])
+			{
+				case 'b':
+					y = 0.0f;
+					break;
+				case 'c':
+					y = (height - txt.getHeight())/2;
+					break;
+				case 'u':
+					y = height - txt.getHeight();
+					break;
+			}
+			txt.setPosY(y);
+			container.setTxt(txt);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+		{
+			LIST_Item list = container.getList();
+			switch(position.toLowerCase().toCharArray()[0])
+			{
+				case 'l':
+					x = 0.0f;
+					break;
+				case 'c':
+					x = (width - list.getWidth())/2;
+					break;
+				case 'r':
+					x = width - list.getWidth();
+					break;
+			}
+			list.setPosX(x);
+			switch(position.toLowerCase().toCharArray()[1])
+			{
+				case 'b':
+					y = 0.0f;
+					break;
+				case 'c':
+					y = (height - list.getHeight())/2;
+					break;
+				case 'u':
+					y = height - list.getHeight();
+					break;
+			}
+			list.setPosY(y);
+			container.setList(list);
+		}
+		else
+		{
+			System.out.println("ALTRO");
+		}
 	}
 	@Override
 	public void exitPositionv(VolTextParser.PositionvContext ctx) {

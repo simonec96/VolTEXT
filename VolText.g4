@@ -21,7 +21,7 @@ page: 		'page' O pae* C;
 
 pae: 		pageattr | elemd | div;
 
-div:		'div' O (imganumber | elemd | positionv)* C;
+div:		'div' O (idval | imganumber | elemd | positionv)* C;
 	
 elemd: 		text 
 	| 		list 
