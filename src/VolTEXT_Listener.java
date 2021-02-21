@@ -147,7 +147,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		float h_p = container.getPDF_page().getMediaBox().getHeight();
 		try (PDPageContentStream cont = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(), AppendMode.APPEND, true))
 		{
-			DIV_Item div = new DIV_Item();
+			DIV_Item div = container.getDiv();
 			cont.setNonStrokingColor(div.getRGBAcolor());
 			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
 			graph.setNonStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
@@ -164,6 +164,10 @@ public class VolTEXT_Listener implements VolTextListener {
 			cont.saveGraphicsState();
 			cont.fill();
 			cont.restoreGraphicsState();
+			//la riga seguente serve per la gestione dell'uscita da un div, che implica anche che gli
+			//elementi interni a esso devono avere dimensione e posizione interne a esso, quindi vanno controllate
+			//che le dimensioni e le posizioni non siano maggiori del div. inoltre se il div è ruotato, anche l'immagine o l'elemento interno deve essere ruotato
+			container.setDiv(null);
 		}
 		catch(IOException ioex)
 		{
@@ -229,6 +233,16 @@ public class VolTEXT_Listener implements VolTextListener {
 			PDPageContentStream cont = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(),AppendMode.APPEND, true); 
 			cont.saveGraphicsState();
 			IMG_Item img = container.getImg(); 
+			if(!(container.getDiv()==null)) {
+				if(img.getWidth()>container.getDiv().getWidth()||
+				   img.getHeight()>container.getDiv().getHeight()) {
+					System.out.println("Immagine " + img.getID() +" nel div "+
+										container.getDiv().getID()+" riscalata");
+					if(img.getWidth()>container.getDiv().getWidth()) img.setWidth(container.getDiv().getWidth());
+					if(img.getHeight()>container.getDiv().getHeight()) img.setHeight(container.getDiv().getHeight());;
+				}
+			}
+			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 			float dimx=UnitConverter.convmmPoint(img.getWidth());
             float dimy=UnitConverter.convmmPoint(img.getHeight());
             /* transform */
@@ -287,7 +301,33 @@ public class VolTEXT_Listener implements VolTextListener {
 			PDType0Font font = PDType0Font.load(container.getPDF_doc(), new File(txt.getFontFamilyTTF()));
 			p.addText(txt.getText(), txt.getFontSize(), font);
 			p.setMaxWidth(txt.getWidth());
+			if(!(container.getDiv()==null)) {
+				if(txt.getWidth()>container.getDiv().getWidth()||
+				   txt.getHeight()>container.getDiv().getHeight()) {
+					System.out.println("Testo " + txt.getID() +" nel div "+
+										container.getDiv().getID()+" troncato");
+					if(txt.getWidth()>container.getDiv().getWidth()) {
+						//?? txt.setWidth(container.getDiv().getWidth());
+						p.setMaxWidth(container.getDiv().getWidth());
+					}
+					if(txt.getHeight()>container.getDiv().getHeight()) {
+						//?? txt.setHeight(container.getDiv().getHeight());
+					}
+					if(p.getHeight()>container.getDiv().getHeight()) {
+						System.out.println("Testo " + txt.getID() +" nel div "+
+								container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
+					}
+				}
+			}
+			
+			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),container.getPDF_page().getMediaBox().getHeight()-p.getHeight()-UnitConverter.convmmPoint(txt.getPosY()));
+			
+			if(pt.getY()<0) {
+				System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+			}
+			
+			//ERRORE cstream come non appartenente al build path
 			//p.draw(container.getPDF_doc(), cstream, pt, null);
 			cstream.close();
 			cstream.restoreGraphicsState();
