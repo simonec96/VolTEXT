@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -9,11 +10,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
-
-import com.itextpdf.text.Paragraph;
 
 import classes.DIV_Item;
 import classes.IMG_Item;
@@ -22,7 +22,10 @@ import classes.LIST_Item;
 import classes.PDF_Item;
 import classes.TXT_Item;
 import classes.UnitConverter;
+import rst.pdfbox.layout.elements.Paragraph;
 import rst.pdfbox.layout.shape.Rect;
+import rst.pdfbox.layout.text.Alignment;
+import rst.pdfbox.layout.text.Position;
 
 public class VolTEXT_Listener implements VolTextListener {
 	public Item_Container container;
@@ -150,7 +153,12 @@ public class VolTEXT_Listener implements VolTextListener {
 			graph.setNonStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
 			float dimx = UnitConverter.convmmPoint(div.getWidth());
 			float dimy = UnitConverter.convmmPoint(div.getHeight());
-			cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
+			/* transform */
+            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)div.getPosX())+dimx/2, h_p-dimy/2-UnitConverter.convmmPoint((float)div.getPosY())));
+            cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
+            //TH not needed previousAngle = tAngles[i - 1];
+            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)div.getPosX())+dimx/2), -(h_p-dimy/2-UnitConverter.convmmPoint((float)div.getPosY()))));
+			//cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
 			cont.addRect(UnitConverter.convmmPoint(div.getPosX()), h_p - dimy - UnitConverter.convmmPoint(div.getPosY()), dimx, dimy);
 			cont.setGraphicsStateParameters(graph);
 			cont.saveGraphicsState();
@@ -190,9 +198,10 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitImg(VolTextParser.ImgContext ctx) {
-		String url = ctx.imgElem().STRING().toString();
-		System.out.println(url.substring(1, url.length() - 1));
-		/*
+	    /*
+	     * String url = ctx.imgElem().STRING().toString();
+	     * System.out.println(url.substring(1, url.length() - 1));
+	     * 
 		 * try {
 		 * 
 		 * String Path = ctx.imgElem().STRING().toString(); PDImageXObject pdImage =
@@ -211,6 +220,37 @@ public class VolTEXT_Listener implements VolTextListener {
 		 * } catch (IOException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); }
 		 */
+		float heigthPage=container.getPDF_page().getMediaBox().getHeight();
+		try {
+			
+			String Path = ctx.imgElem().STRING().toString(); 
+			PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, container.getPDF_doc());
+		  
+			PDPageContentStream cont = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(),AppendMode.APPEND, true); 
+			cont.saveGraphicsState();
+			IMG_Item img = container.getImg(); 
+			float dimx=UnitConverter.convmmPoint(img.getWidth());
+            float dimy=UnitConverter.convmmPoint(img.getHeight());
+            /* transform */
+            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2, heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY())));
+            cont.transform(Matrix.getRotateInstance(Math.toRadians(img.getAngle_Rotation()), 0, 0));
+            //TH not needed previousAngle = tAngles[i - 1];
+            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY()))));
+			/*Matrix at = new Matrix(img.getWidth() * (float)  Math.cos(Math.toRadians(img.getAngle_Rotation()) + img.getHeight() * (float)  Math.cos(Math.toRadians(90) - Math.toRadians(img.getAngle_Rotation()))),
+				  				   0,
+				  				   0,
+				  				   img.getHeight() * (float) Math.cos(Math.toRadians(img.getAngle_Rotation()) + img.getWidth() * (float) Math.cos(Math.toRadians(90) -  Math.toRadians(img.getAngle_Rotation()))),
+				  				   img.getPosX(),
+				  				   img.getPosY());
+			at.rotate(Math.toRadians(img.getAngle_Rotation())); */
+			
+			cont.drawImage(pdImage, UnitConverter.convmmPoint((float)img.getPosX()), heigthPage-dimy-UnitConverter.convmmPoint((float)img.getPosY())); 
+			cont.close();
+			cont.restoreGraphicsState();
+		  
+		 } catch (IOException e) { // TODO Auto-generated catch block
+			 e.printStackTrace(); 
+		 }
 	}
 	/**
 	 * {@inheritDoc}
@@ -239,9 +279,18 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitText(VolTextParser.TextContext ctx) {
 		try {
-			PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page());
-			Paragraph p = new Paragraph(container.getTxt().getText());
-			
+			PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(),AppendMode.APPEND, true); 
+			cstream.saveGraphicsState();
+			Paragraph p = new Paragraph();
+			TXT_Item txt=container.getTxt();
+			// Create a new font object by loading a TrueType font into the document
+			PDType0Font font = PDType0Font.load(container.getPDF_doc(), new File(txt.getFontFamilyTTF()));
+			p.addText(txt.getText(), txt.getFontSize(), font);
+			p.setMaxWidth(txt.getWidth());
+			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),container.getPDF_page().getMediaBox().getHeight()-p.getHeight()-UnitConverter.convmmPoint(txt.getPosY()));
+			//p.draw(container.getPDF_doc(), cstream, pt, null);
+			cstream.close();
+			cstream.restoreGraphicsState();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
