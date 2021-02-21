@@ -1,5 +1,7 @@
 package classes;
 
+import java.awt.Color;
+
 public class TXT_Item extends Item {
 	/**
 	 * 
@@ -12,7 +14,7 @@ public class TXT_Item extends Item {
 		setFontFamily("");
 		setFontFamilyTTF("");
 		setFontSize(12);
-		setColor("#FFFFFF");
+		setrGBAcolor(new Color(0, 0, 0, 0));
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
@@ -29,7 +31,7 @@ public class TXT_Item extends Item {
 	private String FontFamily;
 	private String FontFamilyTTF;
 	private Integer FontSize;
-	private String Color;
+	private Color rGBAcolor;
 	private boolean Bold;
 	private boolean Italics;
 	private boolean Underline;
@@ -99,18 +101,6 @@ public class TXT_Item extends Item {
 	 */
 	public void setFontSize(Integer fontSize) {
 		FontSize = fontSize;
-	}
-	/**
-	 * @return the color
-	 */
-	public String getColor() {
-		return Color;
-	}
-	/**
-	 * @param color the color to set
-	 */
-	public void setColor(String color) {
-		Color = color;
 	}
 	/**
 	 * @return the bold
@@ -231,6 +221,18 @@ public class TXT_Item extends Item {
 	 */
 	public void setUnderline(boolean underline) {
 		Underline = underline;
+	}
+	/**
+	 * @return the rGBAcolor
+	 */
+	public Color getrGBAcolor() {
+		return rGBAcolor;
+	}
+	/**
+	 * @param rGBAcolor the rGBAcolor to set
+	 */
+	public void setrGBAcolor(Color rGBAcolor) {
+		this.rGBAcolor = rGBAcolor;
 	}
 
 

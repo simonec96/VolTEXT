@@ -1,5 +1,6 @@
 package classes;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class LIST_Item extends Item {
 	private String ID;
 	private String FontFamily;
 	private Integer FontSize;
-	private String Color;
+	private Color rGBAcolor;
 	private boolean Bold;
 	private boolean Italics;
 	private boolean Underline;
@@ -28,7 +29,7 @@ public class LIST_Item extends Item {
 		setID("");
 		setFontFamily("");
 		setFontSize(12);
-		setColor("#FFFFFF");
+		setrGBAcolor(new Color(0, 0, 0, 0));
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
@@ -94,20 +95,6 @@ public class LIST_Item extends Item {
 	 */
 	public void setFontSize(Integer fontSize) {
 		FontSize = fontSize;
-	}
-
-	/**
-	 * @return the color
-	 */
-	public String getColor() {
-		return Color;
-	}
-
-	/**
-	 * @param color the color to set
-	 */
-	public void setColor(String color) {
-		Color = color;
 	}
 
 	/**
@@ -262,5 +249,19 @@ public class LIST_Item extends Item {
 	 */
 	public void setItems(List<String> items) {
 		this.items = items;
+	}
+
+	/**
+	 * @return the rGBAcolor
+	 */
+	public Color getrGBAcolor() {
+		return rGBAcolor;
+	}
+
+	/**
+	 * @param rGBAcolor the rGBAcolor to set
+	 */
+	public void setrGBAcolor(Color rGBAcolor) {
+		this.rGBAcolor = rGBAcolor;
 	}
 }

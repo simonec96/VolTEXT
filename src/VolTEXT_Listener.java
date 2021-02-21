@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.IOException;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -6,7 +7,10 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
 
 import com.itextpdf.text.Paragraph;
@@ -17,6 +21,8 @@ import classes.Item_Container;
 import classes.LIST_Item;
 import classes.PDF_Item;
 import classes.TXT_Item;
+import classes.UnitConverter;
+import rst.pdfbox.layout.shape.Rect;
 
 public class VolTEXT_Listener implements VolTextListener {
 	public Item_Container container;
@@ -40,7 +46,6 @@ public class VolTEXT_Listener implements VolTextListener {
 			System.out.println(ex);
 		}
 		finally {
-			System.out.println("Enter PDF");
 		}
 	}
 	/**
@@ -51,6 +56,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override public void exitPdf(VolTextParser.PdfContext ctx) { 
 		try {
 			container.getPDF_doc().save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
+			container.getPDF_doc().close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -126,13 +132,38 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterDiv(VolTextParser.DivContext ctx) {
+		container.setDiv(new DIV_Item());
 	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
+	 * @throws IOException 
 	 */
-	@Override public void exitDiv(VolTextParser.DivContext ctx) { }
+	@Override public void exitDiv(VolTextParser.DivContext ctx){
+		float h_p = container.getPDF_page().getMediaBox().getHeight();
+		try (PDPageContentStream cont = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(), AppendMode.APPEND, true))
+		{
+			DIV_Item div = new DIV_Item();
+			cont.setNonStrokingColor(div.getRGBAcolor());
+			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
+			graph.setNonStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
+			float dimx = UnitConverter.convmmPoint(div.getWidth());
+			float dimy = UnitConverter.convmmPoint(div.getHeight());
+			cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
+			cont.addRect(UnitConverter.convmmPoint(div.getPosX()), h_p - dimy - UnitConverter.convmmPoint(div.getPosY()), dimx, dimy);
+			cont.setGraphicsStateParameters(graph);
+			cont.saveGraphicsState();
+			cont.fill();
+			cont.restoreGraphicsState();
+		}
+		catch(IOException ioex)
+		{
+			System.out.println(ioex);
+		}
+		
+		
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -543,9 +574,6 @@ public class VolTEXT_Listener implements VolTextListener {
 				case "font-size:":
 					txt.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
 					break;
-				case "color:":
-					txt.setColor(ctx.COLORVAL().toString());
-					break;
 				case "bold:":
 					if(ctx.TFVAL().toString() == "T")
 						txt.setBold(true);
@@ -581,9 +609,6 @@ public class VolTEXT_Listener implements VolTextListener {
 					break;
 				case "font-size:":
 					list.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
-					break;
-				case "color:":
-					list.setColor(ctx.COLORVAL().toString());
 					break;
 				case "bold:":
 					if(ctx.TFVAL().toString() == "true")
@@ -754,6 +779,44 @@ public class VolTEXT_Listener implements VolTextListener {
 	}
 	@Override
 	public void exitPositionv(VolTextParser.PositionvContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void enterColor(VolTextParser.ColorContext ctx) {
+		// TODO Auto-generated method stub
+		
+		String colore = ctx.COLORVAL().toString();
+		Color c = new Color(Integer.parseInt(colore.substring(1, 3), 16), 
+				Integer.parseInt(colore.substring(3, 5), 16), 
+				Integer.parseInt(colore.substring(5, 7), 16), 
+				Integer.parseInt(colore.substring(7, 9), 16));
+		
+		if(ctx.getParent() instanceof VolTextParser.DivContext)
+		{
+			DIV_Item div = container.getDiv();
+			div.setRGBAcolor(c);
+			container.setDiv(div);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+		{
+			TXT_Item txt = container.getTxt();
+			txt.setrGBAcolor(c);
+			container.setTxt(txt);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+		{
+			LIST_Item list = container.getList();
+			list.setrGBAcolor(c);
+			container.setList(list);
+		}
+		else
+		{
+			System.out.println("ALTRO");
+		}
+	}
+	@Override
+	public void exitColor(VolTextParser.ColorContext ctx) {
 		// TODO Auto-generated method stub
 		
 	}

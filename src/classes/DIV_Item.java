@@ -1,5 +1,7 @@
 package classes;
 
+import java.awt.Color;
+
 public class DIV_Item extends Item {
 	
 	/**
@@ -22,6 +24,7 @@ public class DIV_Item extends Item {
 	private Float Height;
 	private Integer Layer;
 	private String ID;
+	private Color RGBAcolor;
 	
 	/**
 	 * @return the iD
@@ -106,6 +109,18 @@ public class DIV_Item extends Item {
 	 */
 	public void setLayer(Integer layer) {
 		Layer = layer;
+	}
+	/**
+	 * @return the rGBAcolor
+	 */
+	public Color getRGBAcolor() {
+		return RGBAcolor;
+	}
+	/**
+	 * @param rGBAcolor the rGBAcolor to set
+	 */
+	public void setRGBAcolor(Color rGBAcolor) {
+		RGBAcolor = rGBAcolor;
 	}
 
 	

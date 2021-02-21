@@ -21,7 +21,7 @@ page: 		'page' O pae* C;
 
 pae: 		pageattr | elemd | div;
 
-div:		'div' O (idval | imganumber | elemd | positionv)* C;
+div:		'div' O (color | idval | imganumber | elemd | positionv)* C;
 	
 elemd: 		text 
 	| 		list 
@@ -35,7 +35,7 @@ imgElem: 	'URL:' STRING ENDNLINE;
 
 text: 		'text' O txtattr* txtElem? txtattr* C;
 
-txtattr: 	(idval | imganumber | positionv | txtval);
+txtattr: 	(color | idval | imganumber | positionv | txtval);
 
 txtElem: 	'String:' STRING ENDNLINE;
 
@@ -56,8 +56,9 @@ idval:		'id:' STRING ENDNLINE;
 
 txtval:		'font-family:' STRING ENDNLINE 
 	| 		'font-size' ':' NVAL ENDNLINE 
-	| 		'color:' COLORVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE;
+	
+color:		'color:' COLORVAL ENDNLINE;
 
 positionv:	'position:' POSVAL ENDNLINE;
 
@@ -66,7 +67,8 @@ pageattr:	'orientation:' ('hor' | 'ver');
 listattr: 	'ordered:' TFVAL ENDNLINE
 	|		imganumber
 	|		txtval
-	|		positionv;
+	|		positionv
+	|		color;
 
 //TERMINALI
 
@@ -74,7 +76,7 @@ TXTATF: 	'bold'
 	| 		'italics'
 	|		'underline';
 
-COLORVAL: 	'"#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]) '"';
+COLORVAL: 	'"#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]) '"';
 
 SVAL: 		[a-zA-Z]+;
 

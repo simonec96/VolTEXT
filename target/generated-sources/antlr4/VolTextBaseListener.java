@@ -255,6 +255,18 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterColor(VolTextParser.ColorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitColor(VolTextParser.ColorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPositionv(VolTextParser.PositionvContext ctx) { }
 	/**
 	 * {@inheritDoc}

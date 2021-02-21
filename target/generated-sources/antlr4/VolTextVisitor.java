@@ -130,6 +130,12 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTxtval(VolTextParser.TxtvalContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link VolTextParser#color}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitColor(VolTextParser.ColorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link VolTextParser#positionv}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

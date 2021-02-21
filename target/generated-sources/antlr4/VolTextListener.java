@@ -207,6 +207,16 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitTxtval(VolTextParser.TxtvalContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VolTextParser#color}.
+	 * @param ctx the parse tree
+	 */
+	void enterColor(VolTextParser.ColorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#color}.
+	 * @param ctx the parse tree
+	 */
+	void exitColor(VolTextParser.ColorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VolTextParser#positionv}.
 	 * @param ctx the parse tree
 	 */
