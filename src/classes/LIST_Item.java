@@ -29,7 +29,7 @@ public class LIST_Item extends Item {
 		setID("");
 		setFontFamily("");
 		setFontSize(12);
-		setrGBAcolor(new Color(0, 0, 0, 0));
+		setRGBAcolor(new Color(0, 0, 0, 0));
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
@@ -254,14 +254,14 @@ public class LIST_Item extends Item {
 	/**
 	 * @return the rGBAcolor
 	 */
-	public Color getrGBAcolor() {
+	public Color getRGBAcolor() {
 		return rGBAcolor;
 	}
 
 	/**
 	 * @param rGBAcolor the rGBAcolor to set
 	 */
-	public void setrGBAcolor(Color rGBAcolor) {
+	public void setRGBAcolor(Color rGBAcolor) {
 		this.rGBAcolor = rGBAcolor;
 	}
 }

@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
@@ -25,7 +26,12 @@ import classes.UnitConverter;
 import rst.pdfbox.layout.elements.Paragraph;
 import rst.pdfbox.layout.shape.Rect;
 import rst.pdfbox.layout.text.Alignment;
+import rst.pdfbox.layout.text.BaseFont;
+import rst.pdfbox.layout.text.Indent;
 import rst.pdfbox.layout.text.Position;
+import rst.pdfbox.layout.text.SpaceUnit;
+import rst.pdfbox.layout.util.CompatibilityHelper;
+import rst.pdfbox.layout.util.Enumerators.RomanEnumerator;
 
 public class VolTEXT_Listener implements VolTextListener {
 	public Item_Container container;
@@ -293,6 +299,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitText(VolTextParser.TextContext ctx) {
 		try {
+			float h_p=container.getPDF_page().getMediaBox().getHeight();
 			PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(),AppendMode.APPEND, true); 
 			cstream.saveGraphicsState();
 			Paragraph p = new Paragraph();
@@ -317,11 +324,14 @@ public class VolTEXT_Listener implements VolTextListener {
 						System.out.println("Testo " + txt.getID() +" nel div "+
 								container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
 					}
+				}else {
+					//CURVATURA DEL PARAGRAFO
 				}
+				
 			}
 			
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
-			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),container.getPDF_page().getMediaBox().getHeight()-p.getHeight()-UnitConverter.convmmPoint(txt.getPosY()));
+			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),h_p-p.getHeight()-UnitConverter.convmmPoint(txt.getPosY()));
 			
 			if(pt.getY()<0) {
 				System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
@@ -367,10 +377,61 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitList(VolTextParser.ListContext ctx) {
-		for(String s : container.getList().getItems())
-		{
-			
+		try{
+    		PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(),container.getPDF_page(), AppendMode.APPEND, true);
+    		float h_p=container.getPDF_page().getMediaBox().getHeight();
+    		LIST_Item li=container.getList();
+    		Paragraph pList = new Paragraph();
+    		pList.setMaxWidth(li.getWidth());
+			if(!(container.getDiv()==null)) {
+				if(li.getWidth()>container.getDiv().getWidth()||
+				   li.getHeight()>container.getDiv().getHeight()) {
+					System.out.println("Lista " + li.getID() +" nel div "+
+										container.getDiv().getID()+" troncata");
+					if(li.getWidth()>container.getDiv().getWidth()) {
+						//?? txt.setWidth(container.getDiv().getWidth());
+						pList.setMaxWidth(container.getDiv().getWidth());
+					}
+					if(li.getHeight()>container.getDiv().getHeight()) {
+						//?? txt.setHeight(container.getDiv().getHeight());
+					}
+					if(li.getHeight()>container.getDiv().getHeight()) {
+						System.out.println("Lista " + li.getID() +" nel div "+
+								container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
+					}
+				}else {
+					//CURVATURA DEL PARAGRAFO
+				}
+				
+			}
+			PDType0Font font = PDType0Font.load(container.getPDF_doc(), new File(li.getFontFamily()));
+			Color fontColor=li.getRGBAcolor();
+			cstream.setNonStrokingColor(fontColor);
+			PDExtendedGraphicsState graph=new PDExtendedGraphicsState();
+			graph.setNonStrokingAlphaConstant((float) (li.getRGBAcolor().getAlpha() / 255f));
+			cstream.setGraphicsStateParameters(graph);
+			String bulletOdd = CompatibilityHelper.getBulletCharacter(1) + " ";
+    		String bulletEven = CompatibilityHelper.getBulletCharacter(2) + " ";
+    		RomanEnumerator e = new RomanEnumerator();
+    		for(String item: li.getItems()) {
+    			if(li.isOrdered()) {
+    				pList.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font, Alignment.Right));
+    			}else {
+    				pList.add(new Indent(bulletOdd, 4, SpaceUnit.em, li.getFontSize(),font, Alignment.Right));
+    			}
+    			pList.addMarkup(item+"\n", li.getFontSize(), BaseFont.valueOf(font.getBaseFont()));
+    		}
+        		//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+			Position pt=new Position(UnitConverter.convmmPoint(li.getPosX()),h_p-pList.getHeight()-UnitConverter.convmmPoint(li.getPosY()));
+			//ERRORE cstream come non appartenente al build path
+			//pList.draw(container.getPDF_doc(), cstream, pt,null);
+        		cstream.close();
+    			cstream.restoreGraphicsState();
+		}catch(IOException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
 		}
+	
 	}
 	/**
 	 * {@inheritDoc}
@@ -896,7 +957,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
 		{
 			LIST_Item list = container.getList();
-			list.setrGBAcolor(c);
+			list.setRGBAcolor(c);
 			container.setList(list);
 		}
 		else
