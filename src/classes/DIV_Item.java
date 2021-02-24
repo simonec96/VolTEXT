@@ -16,6 +16,7 @@ public class DIV_Item extends Item {
 		setHeight(0f);
 		setLayer(0);
 		setID("");
+		setRGBAcolor(null);
 	}
 	private Float PosX;
 	private Float PosY;

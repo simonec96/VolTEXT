@@ -20,6 +20,7 @@ import classes.DIV_Item;
 import classes.IMG_Item;
 import classes.Item_Container;
 import classes.LIST_Item;
+import classes.PAGE_Item;
 import classes.PDF_Item;
 import classes.TXT_Item;
 import classes.UnitConverter;
@@ -35,10 +36,14 @@ import rst.pdfbox.layout.util.Enumerators.RomanEnumerator;
 
 public class VolTEXT_Listener implements VolTextListener {
 	public Item_Container container;
+	public PDDocument PDF_doc;
+	public PDPage PDF_page;
+	public int n_page;
 	
 	public VolTEXT_Listener()
 	{
 		container = new Item_Container();
+		n_page = -1;
 	}
 	/**
 	 * {@inheritDoc}
@@ -47,7 +52,9 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterPdf(VolTextParser.PdfContext ctx) { 
 		try {
-			container.setPDF_doc(new PDDocument());
+			PDF_doc = new PDDocument();
+			PDF_doc.save("./temp.pdf");
+			PDF_doc.close();
 			container.setDoc(new PDF_Item());
 		}
 		catch(Exception ex)
@@ -64,8 +71,9 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitPdf(VolTextParser.PdfContext ctx) { 
 		try {
-			container.getPDF_doc().save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
-			container.getPDF_doc().close();
+			PDF_doc = PDDocument.load(new File("./temp.pdf"));
+			PDF_doc.save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
+			PDF_doc.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,10 +120,20 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPage(VolTextParser.PageContext ctx) { 
-		System.out.println("Enter Page");
-		container.setPDF_page(new PDPage());
-		container.getPDF_doc().addPage(container.getPDF_page());
+	@Override public void enterPage(VolTextParser.PageContext ctx) {
+		
+		try {
+			PDF_doc = PDDocument.load(new File("./temp.pdf"));
+			n_page = n_page + 1;
+			PDF_page = (new PDPage(PDRectangle.A4));
+			PDF_doc.addPage(PDF_page);
+			PDF_doc.save("./temp.pdf");
+			PDF_doc.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	/**
 	 * {@inheritDoc}
@@ -150,13 +168,13 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * @throws IOException 
 	 */
 	@Override public void exitDiv(VolTextParser.DivContext ctx){
-		float h_p = container.getPDF_page().getMediaBox().getHeight();
-		try (PDPageContentStream cont = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(), AppendMode.APPEND, true))
+		float h_p = PDF_page.getMediaBox().getHeight();
+		try (PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true))
 		{
 			DIV_Item div = container.getDiv();
-			cont.setNonStrokingColor(div.getRGBAcolor());
+			if(container.getDiv().getRGBAcolor() != null) cont.setNonStrokingColor(div.getRGBAcolor());
 			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
-			graph.setNonStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
+			if(container.getDiv().getRGBAcolor() != null) graph.setNonStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
 			float dimx = UnitConverter.convmmPoint(div.getWidth());
 			float dimy = UnitConverter.convmmPoint(div.getHeight());
 			/* transform */
@@ -167,9 +185,10 @@ public class VolTEXT_Listener implements VolTextListener {
 			//cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
 			cont.addRect(UnitConverter.convmmPoint(div.getPosX()), h_p - dimy - UnitConverter.convmmPoint(div.getPosY()), dimx, dimy);
 			cont.setGraphicsStateParameters(graph);
-			cont.saveGraphicsState();
+			//cont.saveGraphicsState();
 			cont.fill();
-			cont.restoreGraphicsState();
+			cont.close();
+			//cont.restoreGraphicsState();
 			//la riga seguente serve per la gestione dell'uscita da un div, che implica anche che gli
 			//elementi interni a esso devono avere dimensione e posizione interne a esso, quindi vanno controllate
 			//che le dimensioni e le posizioni non siano maggiori del div. inoltre se il div è ruotato, anche l'immagine o l'elemento interno deve essere ruotato
@@ -200,7 +219,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterImg(VolTextParser.ImgContext ctx) { 
-		container.setImg(new IMG_Item(ctx.imgElem().STRING().toString()));
+		container.setImg(new IMG_Item(ctx.imgElem().STRING().toString().substring(1, ctx.imgElem().STRING().toString().length() - 1)));
 	}
 	/**
 	 * {@inheritDoc}
@@ -230,14 +249,17 @@ public class VolTEXT_Listener implements VolTextListener {
 		 * } catch (IOException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); }
 		 */
-		float heigthPage=container.getPDF_page().getMediaBox().getHeight();
 		try {
+			PDF_doc = PDDocument.load(new File("./temp.pdf"));
+			PDF_page = PDF_doc.getPage(n_page);
+			float heigthPage = PDF_page.getMediaBox().getHeight();
+			System.out.println("Altezza Pagina: " + heigthPage);
 			
-			String Path = ctx.imgElem().STRING().toString(); 
-			PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, container.getPDF_doc());
+			String Path = ctx.imgElem().STRING().toString().substring(1, ctx.imgElem().STRING().toString().length() - 1);
+			PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, PDF_doc);
 		  
-			PDPageContentStream cont = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(),AppendMode.APPEND, true); 
-			cont.saveGraphicsState();
+			PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
+			//cont.saveGraphicsState();
 			IMG_Item img = container.getImg(); 
 			if(!(container.getDiv()==null)) {
 				if(img.getWidth()>container.getDiv().getWidth()||
@@ -250,12 +272,17 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 			float dimx=UnitConverter.convmmPoint(img.getWidth());
+			System.out.println("Larghezza immagine: " + dimx);
             float dimy=UnitConverter.convmmPoint(img.getHeight());
+            System.out.println("Altezza immagine: " + dimy);
+            
+            System.out.println("PosX immagine: " + UnitConverter.convmmPoint((float)img.getPosX()));
+            System.out.println("PosY immagine: " + UnitConverter.convmmPoint((float)img.getPosY()));
             /* transform */
-            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2, heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY())));
+            //cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2, heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY())));
             cont.transform(Matrix.getRotateInstance(Math.toRadians(img.getAngle_Rotation()), 0, 0));
             //TH not needed previousAngle = tAngles[i - 1];
-            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY()))));
+            //cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY()))));
 			/*Matrix at = new Matrix(img.getWidth() * (float)  Math.cos(Math.toRadians(img.getAngle_Rotation()) + img.getHeight() * (float)  Math.cos(Math.toRadians(90) - Math.toRadians(img.getAngle_Rotation()))),
 				  				   0,
 				  				   0,
@@ -264,13 +291,16 @@ public class VolTEXT_Listener implements VolTextListener {
 				  				   img.getPosY());
 			at.rotate(Math.toRadians(img.getAngle_Rotation())); */
 			
-			cont.drawImage(pdImage, UnitConverter.convmmPoint((float)img.getPosX()), heigthPage-dimy-UnitConverter.convmmPoint((float)img.getPosY())); 
+			cont.drawImage(pdImage, 0, 0); 
+			//cont.restoreGraphicsState();
 			cont.close();
-			cont.restoreGraphicsState();
-		  
-		 } catch (IOException e) { // TODO Auto-generated catch block
-			 e.printStackTrace(); 
-		 }
+			
+			PDF_doc.save("./temp.pdf");
+			PDF_doc.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 	/**
 	 * {@inheritDoc}
@@ -299,13 +329,13 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitText(VolTextParser.TextContext ctx) {
 		try {
-			float h_p=container.getPDF_page().getMediaBox().getHeight();
-			PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(), container.getPDF_page(),AppendMode.APPEND, true); 
+			float h_p = PDF_page.getMediaBox().getHeight();
+			PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
 			cstream.saveGraphicsState();
 			Paragraph p = new Paragraph();
 			TXT_Item txt=container.getTxt();
 			// Create a new font object by loading a TrueType font into the document
-			PDType0Font font = PDType0Font.load(container.getPDF_doc(), new File(txt.getFontFamilyTTF()));
+			PDType0Font font = PDType0Font.load(PDF_doc, new File(txt.getFontFamilyTTF()));
 			p.addText(txt.getText(), txt.getFontSize(), font);
 			p.setMaxWidth(txt.getWidth());
 			if(!(container.getDiv()==null)) {
@@ -340,7 +370,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			//ERRORE cstream come non appartenente al build path
 			//p.draw(container.getPDF_doc(), cstream, pt, null);
 			cstream.close();
-			cstream.restoreGraphicsState();
+			//cstream.restoreGraphicsState();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -378,8 +408,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitList(VolTextParser.ListContext ctx) {
 		try{
-    		PDPageContentStream cstream = new PDPageContentStream(container.getPDF_doc(),container.getPDF_page(), AppendMode.APPEND, true);
-    		float h_p=container.getPDF_page().getMediaBox().getHeight();
+    		PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true);
+    		float h_p = PDF_page.getMediaBox().getHeight();
     		LIST_Item li=container.getList();
     		Paragraph pList = new Paragraph();
     		pList.setMaxWidth(li.getWidth());
@@ -404,7 +434,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				}
 				
 			}
-			PDType0Font font = PDType0Font.load(container.getPDF_doc(), new File(li.getFontFamily()));
+			PDType0Font font = PDType0Font.load(PDF_doc, new File(li.getFontFamily()));
 			Color fontColor=li.getRGBAcolor();
 			cstream.setNonStrokingColor(fontColor);
 			PDExtendedGraphicsState graph=new PDExtendedGraphicsState();
@@ -453,7 +483,12 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPageattr(VolTextParser.PageattrContext ctx) { }
+	@Override public void enterPageattr(VolTextParser.PageattrContext ctx) {
+		PAGE_Item p = container.getPage();
+		Float orientation = ctx.ORIENTATION().toString() == "hor" ? 90f : 0f;
+		p.setAngleRotation(orientation);
+		container.setPage(p);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -532,13 +567,13 @@ public class VolTEXT_Listener implements VolTextListener {
 		switch(ctx.getChild(0).toString().toLowerCase())
 		{
 		case "title:":
-			pdf.setTitle(ctx.STRING().toString());
+			pdf.setTitle(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			break;
 		case "author:":
-			pdf.setAuthor(ctx.STRING().toString());
+			pdf.setAuthor(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			break;
 		case "path:":
-			pdf.setPath(ctx.STRING().toString());
+			pdf.setPath(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			break;
 		}
 		container.setDoc(pdf);
@@ -677,25 +712,25 @@ public class VolTEXT_Listener implements VolTextListener {
 		if(ctx.getParent() instanceof VolTextParser.DivContext)
 		{
 			DIV_Item div = container.getDiv();
-			div.setID(ctx.STRING().toString());
+			div.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			container.setDiv(div);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
 		{
 			IMG_Item img = container.getImg();
-			img.setID(ctx.STRING().toString());
+			img.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			container.setImg(img);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
 		{
 			TXT_Item txt = container.getTxt();
-			txt.setID(ctx.STRING().toString());
+			txt.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			container.setTxt(txt);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
 		{
 			LIST_Item list = container.getList();
-			list.setID(ctx.STRING().toString());
+			list.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			container.setList(list);
 		}
 		else
@@ -716,28 +751,28 @@ public class VolTEXT_Listener implements VolTextListener {
 			TXT_Item txt = container.getTxt();
 			switch(ctx.children.get(0).toString().toLowerCase()) {
 				case "id:":
-					txt.setID(ctx.STRING().toString());
+					txt.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 					break;
 				case "font-family:":
-					txt.setFontFamily(ctx.STRING().toString());
+					txt.setFontFamily(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 					break;
 				case "font-size:":
 					txt.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
 					break;
 				case "bold:":
-					if(ctx.TFVAL().toString() == "T")
+					if(ctx.TFVAL().toString() == "true")
 						txt.setBold(true);
 					else
 						txt.setBold(false);
 					break;
 				case "italics:":
-					if(ctx.TFVAL().toString() == "T")
+					if(ctx.TFVAL().toString() == "true")
 						txt.setItalics(true);
 					else
 						txt.setItalics(false);
 					break;
 				case "underline:":
-					if(ctx.TFVAL().toString() == "T")
+					if(ctx.TFVAL().toString() == "true")
 						txt.setUnderline(true);
 					else
 						txt.setUnderline(false);
@@ -752,10 +787,10 @@ public class VolTEXT_Listener implements VolTextListener {
 			LIST_Item list = container.getList();
 			switch(ctx.children.get(0).toString().toLowerCase()) {
 				case "id:":
-					list.setID(ctx.STRING().toString());
+					list.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 					break;
 				case "font-family:":
-					list.setFontFamily(ctx.STRING().toString());
+					list.setFontFamily(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 					break;
 				case "font-size:":
 					list.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
@@ -793,8 +828,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	public void enterPositionv(VolTextParser.PositionvContext ctx) {
 		// TODO Auto-generated method stub
 		String position = ctx.POSVAL().toString();
-		Float width = container.getPDF_page().getBBox().getWidth();
-		Float height = container.getPDF_page().getBBox().getHeight();
+		Float width = PDF_page.getMediaBox().getWidth();
+		Float height = PDF_page.getMediaBox().getHeight();
 		Float x = 0.0f;
 		Float y = 0.0f;
 		
@@ -936,7 +971,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	public void enterColor(VolTextParser.ColorContext ctx) {
 		// TODO Auto-generated method stub
 		
-		String colore = ctx.COLORVAL().toString();
+		String colore = ctx.COLORVAL().toString().substring(1, ctx.COLORVAL().toString().length()-1);
 		Color c = new Color(Integer.parseInt(colore.substring(1, 3), 16), 
 				Integer.parseInt(colore.substring(3, 5), 16), 
 				Integer.parseInt(colore.substring(5, 7), 16), 

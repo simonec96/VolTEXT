@@ -62,7 +62,9 @@ color:		'color:' COLORVAL ENDNLINE;
 
 positionv:	'position:' POSVAL ENDNLINE;
 
-pageattr:	'orientation:' ('hor' | 'ver');
+pageattr:	'orientation:' ORIENTATION;
+
+ORIENTATION:('hor' | 'ver');
 	
 listattr: 	'ordered:' TFVAL ENDNLINE
 	|		imganumber

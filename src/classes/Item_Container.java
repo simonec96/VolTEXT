@@ -10,8 +10,7 @@ public class Item_Container {
 	private PAGE_Item page;
 	private PDF_Item doc;
 	private TXT_Item txt;
-	private PDDocument PDF_doc;
-	private PDPage PDF_page;
+
 	
 	/**
 	 * @return the div
@@ -84,29 +83,5 @@ public class Item_Container {
 	 */
 	public void setTxt(TXT_Item txt) {
 		this.txt = txt;
-	}
-	/**
-	 * @return the pDF_doc
-	 */
-	public PDDocument getPDF_doc() {
-		return PDF_doc;
-	}
-	/**
-	 * @param pDF_doc the pDF_doc to set
-	 */
-	public void setPDF_doc(PDDocument pDF_doc) {
-		PDF_doc = pDF_doc;
-	}
-	/**
-	 * @return the pDF_page
-	 */
-	public PDPage getPDF_page() {
-		return PDF_page;
-	}
-	/**
-	 * @param pDF_page the pDF_page to set
-	 */
-	public void setPDF_page(PDPage pDF_page) {
-		PDF_page = pDF_page;
 	}
 }
