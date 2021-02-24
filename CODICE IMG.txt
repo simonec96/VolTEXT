@@ -1,0 +1,30 @@
+try (PDDocument document = PDDocument.load(new File(file)))
+        {
+			PDImageXObject pdImage = PDImageXObject.createFromFile(picture, document);
+            
+            //int iw = pdImage.getWidth();
+            //int ih = pdImage.getHeight();
+            PDPage myPage = document.getPage(0);
+            try (PDPageContentStream cont = new PDPageContentStream(document, myPage,PDPageContentStream.AppendMode.APPEND, false)) {
+            	//drawImage(immagine in PDImageXObject, puntoXInizio da bottom_left,puntoYInizio_da bottom_left,larghezzaImg,AltezzaImg)
+                PDRectangle mediaBox=myPage.getMediaBox();
+                if(dimx==0) {
+                	dimx=UnitConverter.convPointmm(pdImage.getWidth());
+                	dimy=UnitConverter.convPointmm(pdImage.getHeight());
+                }else {
+                	dimx=UnitConverter.convmmPoint(dimx);
+                	dimy=UnitConverter.convmmPoint(dimy);
+                }
+                AffineTransform at=new AffineTransform(dimx,0,0,dimy,UnitConverter.convmmPoint((float)posx),mediaBox.getHeight()-dimy-UnitConverter.convmmPoint((float)posy));
+                if(rotation!=0) {
+                    at.rotate(-Math.toRadians(rotation));
+                }
+                
+                //System.out.println(at.toString());
+                cont.drawImage(pdImage, new Matrix(at));
+                cont.saveGraphicsState();
+                cont.close();
+               
+            }
+            document.save(file);
+        }
