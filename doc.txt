@@ -5,8 +5,8 @@ img:{
 URL:"./SAM0043.jpg";
 pos-x:20;
 pos-y:20;
-w-img:20;
-h-img:10;
+w-img:100;
+h-img:50;
 }
 }
 }

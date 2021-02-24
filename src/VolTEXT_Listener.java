@@ -53,8 +53,6 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override public void enterPdf(VolTextParser.PdfContext ctx) { 
 		try {
 			PDF_doc = new PDDocument();
-			PDF_doc.save("./temp.pdf");
-			PDF_doc.close();
 			container.setDoc(new PDF_Item());
 		}
 		catch(Exception ex)
@@ -71,7 +69,6 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitPdf(VolTextParser.PdfContext ctx) { 
 		try {
-			PDF_doc = PDDocument.load(new File("./temp.pdf"));
 			PDF_doc.save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
 			PDF_doc.close();
 		} catch (IOException e) {
@@ -121,19 +118,9 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterPage(VolTextParser.PageContext ctx) {
-		
-		try {
-			PDF_doc = PDDocument.load(new File("./temp.pdf"));
 			n_page = n_page + 1;
 			PDF_page = (new PDPage(PDRectangle.A4));
 			PDF_doc.addPage(PDF_page);
-			PDF_doc.save("./temp.pdf");
-			PDF_doc.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 	/**
 	 * {@inheritDoc}
@@ -227,76 +214,28 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitImg(VolTextParser.ImgContext ctx) {
-	    /*
-	     * String url = ctx.imgElem().STRING().toString();
-	     * System.out.println(url.substring(1, url.length() - 1));
-	     * 
-		 * try {
-		 * 
-		 * String Path = ctx.imgElem().STRING().toString(); PDImageXObject pdImage =
-		 * PDImageXObject.createFromFile(Path, doc);
-		 * 
-		 * PDPageContentStream cont = new PDPageContentStream(doc, page); IMG_Item img =
-		 * container.getImg(); Matrix at = new Matrix(img.getWidth() * (float)
-		 * Math.cos(Math.toRadians(img.getAngle_Rotation()) + img.getHeight() * (float)
-		 * Math.cos(Math.toRadians(90) - Math.toRadians(img.getAngle_Rotation()))), 0,
-		 * 0, img.getHeight() * (float) Math.cos(Math.toRadians(img.getAngle_Rotation())
-		 * + img.getWidth() * (float) Math.cos(Math.toRadians(90) -
-		 * Math.toRadians(img.getAngle_Rotation()))), img.getPosX(), img.getPosY());
-		 * at.rotate(Math.toRadians(img.getAngle_Rotation())); cont.drawImage(pdImage,
-		 * at); cont.close();
-		 * 
-		 * } catch (IOException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); }
-		 */
 		try {
-			PDF_doc = PDDocument.load(new File("./temp.pdf"));
 			PDF_page = PDF_doc.getPage(n_page);
 			float heigthPage = PDF_page.getMediaBox().getHeight();
 			System.out.println("Altezza Pagina: " + heigthPage);
 			
 			String Path = ctx.imgElem().STRING().toString().substring(1, ctx.imgElem().STRING().toString().length() - 1);
 			PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, PDF_doc);
+			
 		  
 			PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
-			//cont.saveGraphicsState();
 			IMG_Item img = container.getImg(); 
-			if(!(container.getDiv()==null)) {
-				if(img.getWidth()>container.getDiv().getWidth()||
-				   img.getHeight()>container.getDiv().getHeight()) {
-					System.out.println("Immagine " + img.getID() +" nel div "+
-										container.getDiv().getID()+" riscalata");
-					if(img.getWidth()>container.getDiv().getWidth()) img.setWidth(container.getDiv().getWidth());
-					if(img.getHeight()>container.getDiv().getHeight()) img.setHeight(container.getDiv().getHeight());;
-				}
-			}
+
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 			float dimx=UnitConverter.convmmPoint(img.getWidth());
-			System.out.println("Larghezza immagine: " + dimx);
             float dimy=UnitConverter.convmmPoint(img.getHeight());
-            System.out.println("Altezza immagine: " + dimy);
-            
-            System.out.println("PosX immagine: " + UnitConverter.convmmPoint((float)img.getPosX()));
-            System.out.println("PosY immagine: " + UnitConverter.convmmPoint((float)img.getPosY()));
             /* transform */
-            //cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2, heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY())));
+            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2, heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY())));
             cont.transform(Matrix.getRotateInstance(Math.toRadians(img.getAngle_Rotation()), 0, 0));
-            //TH not needed previousAngle = tAngles[i - 1];
-            //cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY()))));
-			/*Matrix at = new Matrix(img.getWidth() * (float)  Math.cos(Math.toRadians(img.getAngle_Rotation()) + img.getHeight() * (float)  Math.cos(Math.toRadians(90) - Math.toRadians(img.getAngle_Rotation()))),
-				  				   0,
-				  				   0,
-				  				   img.getHeight() * (float) Math.cos(Math.toRadians(img.getAngle_Rotation()) + img.getWidth() * (float) Math.cos(Math.toRadians(90) -  Math.toRadians(img.getAngle_Rotation()))),
-				  				   img.getPosX(),
-				  				   img.getPosY());
-			at.rotate(Math.toRadians(img.getAngle_Rotation())); */
+            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY()))));
 			
-			cont.drawImage(pdImage, 0, 0); 
-			//cont.restoreGraphicsState();
+			cont.drawImage(pdImage, UnitConverter.convmmPoint((float)img.getPosX()), heigthPage-dimy-UnitConverter.convmmPoint((float)img.getPosY()), dimx, dimy);
 			cont.close();
-			
-			PDF_doc.save("./temp.pdf");
-			PDF_doc.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
