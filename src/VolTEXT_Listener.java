@@ -11,7 +11,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
@@ -269,7 +268,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override public void exitText(VolTextParser.TextContext ctx) {
 		try {
 			float h_p = PDF_page.getMediaBox().getHeight();
-			PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
+			org.apache.pdfbox.pdmodel.edit.PDPageContentStream cstream = new org.apache.pdfbox.pdmodel.edit.PDPageContentStream(PDF_doc, PDF_page, true, false); 
 			cstream.saveGraphicsState();
 			Paragraph p = new Paragraph();
 			TXT_Item txt=container.getTxt();
@@ -307,7 +306,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 			
 			//ERRORE cstream come non appartenente al build path
-			//p.draw(container.getPDF_doc(), cstream, pt, null);
+			p.draw(PDF_doc, cstream, pt, null);
 			cstream.close();
 			//cstream.restoreGraphicsState();
 		} catch (IOException e) {
@@ -538,10 +537,10 @@ public class VolTEXT_Listener implements VolTextListener {
 				case "angle-rotation":
 					div.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "h-img":
+				case "height":
 					div.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "w-img":
+				case "width":
 					div.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
 				case "layer":
@@ -565,10 +564,10 @@ public class VolTEXT_Listener implements VolTextListener {
 				case "angle-rotation":
 					img.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "h-img":
+				case "height":
 					img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "w-img":
+				case "width":
 					img.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
 				case "layer":
@@ -592,10 +591,10 @@ public class VolTEXT_Listener implements VolTextListener {
 				case "angle-rotation":
 					txt.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "h-img":
+				case "height":
 					txt.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "w-img":
+				case "width":
 					txt.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
 				case "layer":
@@ -619,10 +618,10 @@ public class VolTEXT_Listener implements VolTextListener {
 				case "angle-rotation":
 					list.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "h-img":
+				case "height":
 					list.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
-				case "w-img":
+				case "width":
 					list.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
 				case "layer":

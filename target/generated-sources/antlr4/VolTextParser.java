@@ -43,7 +43,7 @@ public class VolTextParser extends Parser {
 		return new String[] {
 			null, "'title:'", "'author:'", "'path:'", "'stylesheet'", "'@'", "'page'", 
 			"'div'", "'img'", "'URL:'", "'text'", "'String:'", "'list'", "'item:'", 
-			"'pos-x'", "'pos-y'", "'angle-rotation'", "'h-img'", "'w-img'", "'layer'", 
+			"'pos-x'", "'pos-y'", "'angle-rotation'", "'height'", "'width'", "'layer'", 
 			"':'", "'id:'", "'font-family:'", "'font-size'", "'color:'", "'position:'", 
 			"'orientation:'", "'ordered:'", null, null, null, null, null, null, null, 
 			"'\";'", "';'", "':{'", "'{'", "'}'"

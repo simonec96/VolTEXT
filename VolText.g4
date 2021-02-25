@@ -48,8 +48,8 @@ listElem: 	'item:' STRING ENDNLINE;
 imganumber: ('pos-x'
 		|	'pos-y'
 		|	'angle-rotation'
-		|	'h-img'
-		|	'w-img'
+		|	'height'
+		|	'width'
 		| 	'layer') ':' NVAL ENDNLINE;
 		 
 idval:		'id:' STRING ENDNLINE;

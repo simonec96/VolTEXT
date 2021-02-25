@@ -20,5 +20,8 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="antlr-4.9-complete.jar"/>
 	<classpathentry kind="lib" path="itextpdf-5.5.9.jar"/>
+	<classpathentry kind="lib" path="pdfbox-2.0.22-sources.jar"/>
+	<classpathentry kind="lib" path="pdfbox-2.0.22.jar"/>
+	<classpathentry kind="lib" path="pdfbox-1.8.11.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
