@@ -12,6 +12,7 @@ public class IMG_Item extends Item {
 		setWidth(0f);
 		setHeight(0f);
 		setLayer(0);
+		setFit(false);
 	}
 	private String URL;
 	private String ID;
@@ -21,6 +22,7 @@ public class IMG_Item extends Item {
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
+	private boolean Fit;
 	private Integer Layer;
 	/**
 	 * @return the uRL
@@ -129,5 +131,17 @@ public class IMG_Item extends Item {
 	 */
 	public void setLayer(Integer layer) {
 		Layer = layer;
+	}
+	/**
+	 * @return the fit
+	 */
+	public boolean isFit() {
+		return Fit;
+	}
+	/**
+	 * @param fit the fit to set
+	 */
+	public void setFit(boolean fit) {
+		Fit = fit;
 	}
 }

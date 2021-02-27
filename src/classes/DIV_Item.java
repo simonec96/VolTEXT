@@ -1,6 +1,10 @@
 package classes;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class DIV_Item extends Item {
 	
@@ -16,7 +20,9 @@ public class DIV_Item extends Item {
 		setHeight(0f);
 		setLayer(0);
 		setID("");
+		setFit(false);
 		setRGBAcolor(null);
+		setList(new LinkedList<Item>());
 	}
 	private Float PosX;
 	private Float PosY;
@@ -25,7 +31,9 @@ public class DIV_Item extends Item {
 	private Float Height;
 	private Integer Layer;
 	private String ID;
+	private boolean Fit;
 	private Color RGBAcolor;
+	private List<? extends Item> list;
 	
 	/**
 	 * @return the iD
@@ -122,6 +130,30 @@ public class DIV_Item extends Item {
 	 */
 	public void setRGBAcolor(Color rGBAcolor) {
 		RGBAcolor = rGBAcolor;
+	}
+	/**
+	 * @return the fit
+	 */
+	public boolean isFit() {
+		return Fit;
+	}
+	/**
+	 * @param fit the fit to set
+	 */
+	public void setFit(boolean fit) {
+		Fit = fit;
+	}
+	/**
+	 * @return the list
+	 */
+	public List<? extends Item> getList() {
+		return list;
+	}
+	/**
+	 * @param list the list to set
+	 */
+	public void setList(List<? extends Item> list) {
+		this.list = list;
 	}
 
 	

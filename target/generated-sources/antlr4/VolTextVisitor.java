@@ -112,6 +112,12 @@ public interface VolTextVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitListElem(VolTextParser.ListElemContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link VolTextParser#fitAttr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFitAttr(VolTextParser.FitAttrContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link VolTextParser#imganumber}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

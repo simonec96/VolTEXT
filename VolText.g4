@@ -21,7 +21,7 @@ page: 		'page' O pae* C;
 
 pae: 		pageattr | elemd | div;
 
-div:		'div' O (color | idval | imganumber | elemd | positionv)* C;
+div:		'div' O (color | idval | imganumber | elemd | positionv | fitAttr)* C;
 	
 elemd: 		text 
 	| 		list 
@@ -29,13 +29,13 @@ elemd: 		text
 	
 img: 		'img' O imgattr* imgElem imgattr* C;
 
-imgattr:	(idval | imganumber | positionv);
+imgattr:	(idval | imganumber | positionv | fitAttr);
 
 imgElem: 	'URL:' STRING ENDNLINE;
 
 text: 		'text' O txtattr* txtElem? txtattr* C;
 
-txtattr: 	(color | idval | imganumber | positionv | txtval);
+txtattr: 	(color | idval | imganumber | positionv | txtval | fitAttr);
 
 txtElem: 	'String:' STRING ENDNLINE;
 
@@ -45,12 +45,15 @@ listElem: 	'item:' STRING ENDNLINE;
 
 //ATTRIBUTES
 
+fitAttr:	'fit:' TFVAL ENDNLINE;
+
 imganumber: ('pos-x'
 		|	'pos-y'
 		|	'angle-rotation'
 		|	'height'
-		|	'width'
-		| 	'layer') ':' NVAL ENDNLINE;
+		|	'width') ':' NVAL (UNIT)? ENDNLINE;
+		
+UNIT:		'mm' | '%' | 'px';
 		 
 idval:		'id:' STRING ENDNLINE;
 
@@ -70,7 +73,8 @@ listattr: 	'ordered:' TFVAL ENDNLINE
 	|		imganumber
 	|		txtval
 	|		positionv
-	|		color;
+	|		color
+	|		fitAttr;
 
 //TERMINALI
 
@@ -78,16 +82,16 @@ TXTATF: 	'bold'
 	| 		'italics'
 	|		'underline';
 
-COLORVAL: 	'"#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]) '"';
+COLORVAL: 	'#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]);
 
-SVAL: 		[a-zA-Z]+;
+
 
 TFVAL: 		'true' 
 	| 		'false';
-
-POSVAL: 	'lu' 
-	| 		'cu' 
-	| 		'ru' 
+	
+POSVAL: 	'lt' 
+	| 		'ct' 
+	| 		'rt' 
 	| 		'lc' 
 	| 		'cc' 
 	| 		'rc' 

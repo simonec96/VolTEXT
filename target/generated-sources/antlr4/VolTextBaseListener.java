@@ -219,6 +219,18 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterFitAttr(VolTextParser.FitAttrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFitAttr(VolTextParser.FitAttrContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterImganumber(VolTextParser.ImganumberContext ctx) { }
 	/**
 	 * {@inheritDoc}

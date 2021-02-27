@@ -23,6 +23,7 @@ public class TXT_Item extends Item {
 		setPosY(0f);
 		setWidth(0f);
 		setHeight(0f);
+		setFit(false);
 		setLayer(0);
 		
 	}
@@ -41,6 +42,7 @@ public class TXT_Item extends Item {
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
+	private boolean Fit;
 	private Integer Layer;
 	/**
 	 * @return the text
@@ -233,6 +235,18 @@ public class TXT_Item extends Item {
 	 */
 	public void setrGBAcolor(Color rGBAcolor) {
 		this.rGBAcolor = rGBAcolor;
+	}
+	/**
+	 * @return the fit
+	 */
+	public boolean isFit() {
+		return Fit;
+	}
+	/**
+	 * @param fit the fit to set
+	 */
+	public void setFit(boolean fit) {
+		Fit = fit;
 	}
 
 

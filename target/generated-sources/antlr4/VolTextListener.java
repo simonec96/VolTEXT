@@ -177,6 +177,16 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitListElem(VolTextParser.ListElemContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VolTextParser#fitAttr}.
+	 * @param ctx the parse tree
+	 */
+	void enterFitAttr(VolTextParser.FitAttrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#fitAttr}.
+	 * @param ctx the parse tree
+	 */
+	void exitFitAttr(VolTextParser.FitAttrContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VolTextParser#imganumber}.
 	 * @param ctx the parse tree
 	 */

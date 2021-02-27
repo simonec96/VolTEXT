@@ -1,7 +1,8 @@
 package classes;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Item_Container {
 	private DIV_Item div;
@@ -10,8 +11,17 @@ public class Item_Container {
 	private PAGE_Item page;
 	private PDF_Item doc;
 	private TXT_Item txt;
-
+	private List<Item_TOT> list_tot;
 	
+	
+	
+	/**
+	 * 
+	 */
+	public Item_Container() {
+		super();
+		setList_tot(new LinkedList<Item_TOT>());
+	}
 	/**
 	 * @return the div
 	 */
@@ -83,5 +93,17 @@ public class Item_Container {
 	 */
 	public void setTxt(TXT_Item txt) {
 		this.txt = txt;
+	}
+	/**
+	 * @return the list_tot
+	 */
+	public List<Item_TOT> getList_tot() {
+		return list_tot;
+	}
+	/**
+	 * @param list_tot the list_tot to set
+	 */
+	public void setList_tot(List<Item_TOT> list_tot) {
+		this.list_tot = list_tot;
 	}
 }

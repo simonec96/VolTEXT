@@ -135,6 +135,13 @@ public class VolTextBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitFitAttr(VolTextParser.FitAttrContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitImganumber(VolTextParser.ImganumberContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

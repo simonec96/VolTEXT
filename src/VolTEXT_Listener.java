@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -18,13 +19,13 @@ import org.apache.pdfbox.util.Matrix;
 import classes.DIV_Item;
 import classes.IMG_Item;
 import classes.Item_Container;
+import classes.Item_TOT;
 import classes.LIST_Item;
 import classes.PAGE_Item;
 import classes.PDF_Item;
 import classes.TXT_Item;
 import classes.UnitConverter;
 import rst.pdfbox.layout.elements.Paragraph;
-import rst.pdfbox.layout.shape.Rect;
 import rst.pdfbox.layout.text.Alignment;
 import rst.pdfbox.layout.text.BaseFont;
 import rst.pdfbox.layout.text.Indent;
@@ -158,9 +159,26 @@ public class VolTEXT_Listener implements VolTextListener {
 		try (PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true))
 		{
 			DIV_Item div = container.getDiv();
+			float height_mm = UnitConverter.convPointmm(  h_p);
+			System.out.println(PDF_page.getArtBox().getWidth());
+			float width_mm = UnitConverter.convPointmm(  PDF_page.getArtBox().getWidth());
 			if(container.getDiv().getRGBAcolor() != null) cont.setNonStrokingColor(div.getRGBAcolor());
 			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
-			if(container.getDiv().getRGBAcolor() != null) graph.setNonStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
+			if(container.getDiv().getRGBAcolor() != null) graph.setStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
+			if(div.isFit())
+			{
+				div.setWidth(width_mm - div.getPosX());
+				div.setHeight(height_mm - div.getPosY());
+			}
+			if(div.getPosX() + div.getWidth() > width_mm)
+			{
+				div.setWidth(width_mm - div.getPosX());
+			}
+			if(div.getPosY() + div.getHeight() > height_mm)
+			{
+				div.setHeight(height_mm - div.getPosY());
+			}
+			
 			float dimx = UnitConverter.convmmPoint(div.getWidth());
 			float dimy = UnitConverter.convmmPoint(div.getHeight());
 			/* transform */
@@ -174,19 +192,67 @@ public class VolTEXT_Listener implements VolTextListener {
 			//cont.saveGraphicsState();
 			cont.fill();
 			cont.close();
+			System.out.println(dimx);
 			//cont.restoreGraphicsState();
 			//la riga seguente serve per la gestione dell'uscita da un div, che implica anche che gli
 			//elementi interni a esso devono avere dimensione e posizione interne a esso, quindi vanno controllate
 			//che le dimensioni e le posizioni non siano maggiori del div. inoltre se il div è ruotato, anche l'immagine o l'elemento interno deve essere ruotato
 			container.setDiv(null);
+			addItemToDiv(container.getList_tot());
 		}
 		catch(IOException ioex)
 		{
 			System.out.println(ioex);
 		}
-		
-		
+		container.getList_tot().clear();
 	}
+	
+	public void addItemToDiv(List<Item_TOT> list)
+	{
+		for(Item_TOT item : list)
+		{
+			if(item.getType() == "IMG")
+			{
+				PDF_page = PDF_doc.getPage(n_page);
+				float heigthPage = PDF_page.getMediaBox().getHeight();
+				
+				String Path = item.getURL();
+				try {
+					PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, PDF_doc);
+					PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
+
+					float dimx=UnitConverter.convmmPoint(item.getWidth());
+		            float dimy=UnitConverter.convmmPoint(item.getHeight());
+		            /* transform */
+		            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)item.getPosX())+dimx/2, heigthPage-dimy/2-UnitConverter.convmmPoint((float)item.getPosY())));
+		            cont.transform(Matrix.getRotateInstance(Math.toRadians(item.getAngle_Rotation()), 0, 0));
+		            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)item.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)item.getPosY()))));
+					
+					cont.drawImage(pdImage, UnitConverter.convmmPoint((float)item.getPosX()), heigthPage-dimy-UnitConverter.convmmPoint((float)item.getPosY()), dimx, dimy);
+					cont.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else if(item.getType() == "TXT")
+			{
+				
+			}
+			else if(item.getType() == "LIST")
+			{
+				
+			}
+			else
+			{
+				System.out.println("Elemento non riconosciuto.");
+			}
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -206,6 +272,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterImg(VolTextParser.ImgContext ctx) { 
 		container.setImg(new IMG_Item(ctx.imgElem().STRING().toString().substring(1, ctx.imgElem().STRING().toString().length() - 1)));
+
 	}
 	/**
 	 * {@inheritDoc}
@@ -216,16 +283,99 @@ public class VolTEXT_Listener implements VolTextListener {
 		try {
 			PDF_page = PDF_doc.getPage(n_page);
 			float heigthPage = PDF_page.getMediaBox().getHeight();
-			System.out.println("Altezza Pagina: " + heigthPage);
 			
 			String Path = ctx.imgElem().STRING().toString().substring(1, ctx.imgElem().STRING().toString().length() - 1);
 			PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, PDF_doc);
 			
-		  
+			
 			PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
-			IMG_Item img = container.getImg(); 
+			IMG_Item img = container.getImg();
+			img.setURL(Path);
 
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+			
+				if(container.getDiv() != null)
+				{
+					if(img.getPosX() >= 0 && img.getPosX() <= container.getDiv().getWidth())
+					{
+						if(img.isFit())
+						{
+							img.setWidth(container.getDiv().getWidth() - img.getPosX());
+						}
+						
+						
+						
+						if(img.getWidth() > container.getDiv().getWidth() - img.getPosX())
+						{
+							img.setWidth(Math.abs(container.getDiv().getWidth() - img.getPosX()));
+						}
+						
+						img.setPosX(container.getDiv().getPosX() + img.getPosX());
+					}
+					else
+					{
+						//img.setWidth(0f);
+					}
+					
+					if(img.getPosY() >= 0 && img.getPosY() <= container.getDiv().getHeight())
+					{
+						if(img.isFit())
+						{
+							img.setHeight(container.getDiv().getHeight() - img.getPosY());
+						}
+						
+						
+						
+						if(img.getHeight() > container.getDiv().getHeight() - img.getPosY())
+						{
+							img.setHeight(Math.abs(container.getDiv().getHeight() - img.getPosY()));
+						}
+						
+						img.setPosY(container.getDiv().getPosY() + img.getPosY());
+					}
+					else
+					{
+						//img.setHeight(0f);
+					}
+					
+				}
+				else
+				{
+					if(img.isFit())
+					{
+						float w_mm = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
+						float h_mm = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
+						img.setWidth(w_mm - img.getPosX());
+						img.setHeight(h_mm - img.getPosY());
+					}
+				}
+				
+			
+			if(container.getDiv() != null)
+			{
+				Item_TOT i = new Item_TOT("IMG", false, 
+						null, 
+						img.getID(), 
+						"", 
+						0, 
+						null, 
+						false, 
+						false, 
+						false, 
+						img.getPosition(), 
+						img.getPosX(), 
+						img.getPosY(), 
+						img.getAngle_Rotation(), 
+						img.getWidth(), img.getHeight(), 
+						img.isFit(), 
+						img.getLayer(), 
+						"", 
+						"", 
+						img.getURL());
+				container.getList_tot().add(i);
+			}
+			else
+			{
 			float dimx=UnitConverter.convmmPoint(img.getWidth());
             float dimy=UnitConverter.convmmPoint(img.getHeight());
             /* transform */
@@ -234,6 +384,7 @@ public class VolTEXT_Listener implements VolTextListener {
             cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)img.getPosX())+dimx/2), -(heigthPage-dimy/2-UnitConverter.convmmPoint((float)img.getPosY()))));
 			
 			cont.drawImage(pdImage, UnitConverter.convmmPoint((float)img.getPosX()), heigthPage-dimy-UnitConverter.convmmPoint((float)img.getPosY()), dimx, dimy);
+			}
 			cont.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -259,6 +410,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterText(VolTextParser.TextContext ctx) { 
 		container.setTxt(new TXT_Item());
+		
 	}
 	/**
 	 * {@inheritDoc}
@@ -272,6 +424,33 @@ public class VolTEXT_Listener implements VolTextListener {
 			cstream.saveGraphicsState();
 			Paragraph p = new Paragraph();
 			TXT_Item txt=container.getTxt();
+			if(container.getDiv() != null)
+			{
+				Item_TOT i = new Item_TOT("TXT", 
+						false, 
+						null, 
+						txt.getID(), 
+						txt.getFontFamily(), 
+						txt.getFontSize(), 
+						txt.getrGBAcolor(), 
+						txt.isBold(), 
+						txt.isItalics(), 
+						txt.isUnderline(), 
+						txt.getPosition(), 
+						txt.getPosX(), 
+						txt.getPosY(), 
+						txt.getAngle_Rotation(), 
+						txt.getWidth(), 
+						txt.getHeight(), 
+						txt.isFit(), 
+						txt.getLayer(), 
+						txt.getText(), 
+						txt.getFontFamilyTTF(), 
+						"");
+				container.getList_tot().add(i);
+			}
+			else
+			{
 			// Create a new font object by loading a TrueType font into the document
 			PDType0Font font = PDType0Font.load(PDF_doc, new File(txt.getFontFamilyTTF()));
 			p.addText(txt.getText(), txt.getFontSize(), font);
@@ -308,6 +487,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			//ERRORE cstream come non appartenente al build path
 			p.draw(PDF_doc, cstream, pt, null);
 			cstream.close();
+			}
 			//cstream.restoreGraphicsState();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -349,6 +529,33 @@ public class VolTEXT_Listener implements VolTextListener {
     		PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true);
     		float h_p = PDF_page.getMediaBox().getHeight();
     		LIST_Item li=container.getList();
+    		if(container.getDiv() != null)
+			{
+				Item_TOT i = new Item_TOT("LIST", 
+						false, 
+						null, 
+						li.getID(), 
+						li.getFontFamily(), 
+						li.getFontSize(), 
+						li.getRGBAcolor(), 
+						li.isBold(), 
+						li.isItalics(), 
+						li.isUnderline(), 
+						li.getPosition(), 
+						li.getPosX(), 
+						li.getPosY(), 
+						li.getAngle_Rotation(), 
+						li.getWidth(), 
+						li.getHeight(), 
+						li.isFit(), 
+						li.getLayer(), 
+						"", 
+						li.getFontFamily(), 
+						"");
+				container.getList_tot().add(i);
+			}
+    		else
+    		{
     		Paragraph pList = new Paragraph();
     		pList.setMaxWidth(li.getWidth());
 			if(!(container.getDiv()==null)) {
@@ -395,6 +602,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			//pList.draw(container.getPDF_doc(), cstream, pt,null);
         		cstream.close();
     			cstream.restoreGraphicsState();
+    		}
 		}catch(IOException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
@@ -529,19 +737,93 @@ public class VolTEXT_Listener implements VolTextListener {
 			DIV_Item div = container.getDiv();
 			switch(ctx.children.get(0).toString().toLowerCase()) {
 				case "pos-x":
-					div.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+					String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+					switch(unit_posx)
+					{
+					case "mm":
+						div.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+						break;
+					case "%":
+						float perc = Float.parseFloat(ctx.NVAL().toString());
+						float widthPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
+						div.setPosX(widthPage * perc / 100);
+						break;
+					case "pt":
+						float point = Float.parseFloat(ctx.NVAL().toString());
+						div.setPosX(UnitConverter.convPointmm(  point));
+						break;
+					default:
+						System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+						div.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+						break;
+					}
 					break;
 				case "pos-y":
-					div.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					String unit_posy = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+					switch(unit_posy)
+					{
+					case "mm":
+						div.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+						break;
+					case "%":
+						float perc = Float.parseFloat(ctx.NVAL().toString());
+						float heigthPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
+						div.setPosY(heigthPage * perc / 100);
+						break;
+					case "pt":
+						float point = Float.parseFloat(ctx.NVAL().toString());
+						div.setPosY(UnitConverter.convPointmm(  point));
+						break;
+					default:
+						System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+						div.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+						break;
+					}
 					break;
 				case "angle-rotation":
 					div.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
 				case "height":
-					div.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+					switch(unit)
+					{
+					case "mm":
+						div.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+						break;
+					case "%":
+						float perc = Float.parseFloat(ctx.NVAL().toString());
+						float heightPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
+						div.setHeight(heightPage * perc / 100);
+						break;
+					case "pt":
+						float point = Float.parseFloat(ctx.NVAL().toString());
+						div.setHeight(UnitConverter.convPointmm(  point));
+						break;
+					default:
+						div.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+						break;
+					}
 					break;
 				case "width":
-					div.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+					String unit_w = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+					switch(unit_w)
+					{
+					case "mm":
+						div.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+						break;
+					case "%":
+						float perc = Float.parseFloat(ctx.NVAL().toString());
+						float widthPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
+						div.setWidth(widthPage * perc / 100);
+						break;
+					case "pt":
+						float point = Float.parseFloat(ctx.NVAL().toString());
+						div.setWidth(UnitConverter.convPointmm(  point));
+						break;
+					default:
+						div.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+						break;
+					}
 					break;
 				case "layer":
 					div.setLayer(Integer.parseInt(ctx.NVAL().toString()));
@@ -555,81 +837,351 @@ public class VolTEXT_Listener implements VolTextListener {
 		{
 			IMG_Item img = container.getImg();
 			switch(ctx.children.get(0).toString().toLowerCase()) {
-				case "pos-x":
+			case "pos-x":
+				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_posx)
+				{
+				case "mm":
 					img.setPosX(Float.parseFloat((ctx.NVAL().toString())));
 					break;
-				case "pos-y":
-					img.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float widthPage = 0.0f;
+					if(container.getDiv() != null) 
+						widthPage = container.getDiv().getWidth();
+					else
+						widthPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+					img.setPosX(widthPage * perc / 100);
 					break;
-				case "angle-rotation":
-					img.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "height":
-					img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "width":
-					img.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "layer":
-					img.setLayer(Integer.parseInt(ctx.NVAL().toString()));
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					img.setPosX(UnitConverter.convPointmm(  point));
 					break;
 				default:
-					System.out.println("Valore non riconosciuto");
-			}
+					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+					img.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				}
+				break;
+			case "pos-y":
+				String unit_posy = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_posy)
+				{
+				case "mm":
+					img.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float heightPage = 0.0f;
+					if(container.getDiv() != null) 
+						heightPage = container.getDiv().getHeight();
+					else
+						heightPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
+					img.setPosY(heightPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					img.setPosY(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+					img.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				}
+				break;
+			case "angle-rotation":
+				img.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			case "height":
+				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit)
+				{
+				case "mm":
+					img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float heightPage = 0.0f;
+					if(container.getDiv() != null) 
+						heightPage = container.getDiv().getHeight();
+					else
+						heightPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
+					img.setHeight(heightPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					img.setHeight(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				}
+				break;
+			case "width":
+				String unit_w = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_w)
+				{
+				case "mm":
+					img.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float widthPage = 0.0f;
+					if(container.getDiv() != null) 
+						widthPage = container.getDiv().getWidth();
+					else
+						widthPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+					img.setWidth(widthPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					img.setWidth(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				}
+				break;
+			case "layer":
+				img.setLayer(Integer.parseInt(ctx.NVAL().toString()));
+				break;
+			default:
+				System.out.println("Valore non riconosciuto");
+		}
 			container.setImg(img);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
 		{
 			TXT_Item txt = container.getTxt();
 			switch(ctx.children.get(0).toString().toLowerCase()) {
-				case "pos-x":
+			case "pos-x":
+				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_posx)
+				{
+				case "mm":
 					txt.setPosX(Float.parseFloat((ctx.NVAL().toString())));
 					break;
-				case "pos-y":
-					txt.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float widthPage = 0.0f;
+					if(container.getDiv() != null) 
+						widthPage = container.getDiv().getWidth();
+					else
+						widthPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+					txt.setPosX(widthPage * perc / 100);
 					break;
-				case "angle-rotation":
-					txt.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "height":
-					txt.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "width":
-					txt.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "layer":
-					txt.setLayer(Integer.parseInt(ctx.NVAL().toString()));
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					txt.setPosX(UnitConverter.convPointmm(  point));
 					break;
 				default:
-					System.out.println("Valore non riconosciuto");
-			}
+					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+					txt.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				}
+				break;
+			case "pos-y":
+				String unit_posy = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_posy)
+				{
+				case "mm":
+					txt.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float heightPage = 0.0f;
+					if(container.getDiv() != null) 
+						heightPage = container.getDiv().getHeight();
+					else
+						heightPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
+					txt.setPosY(heightPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					txt.setPosY(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+					txt.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				}
+				break;
+			case "angle-rotation":
+				txt.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			case "height":
+				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit)
+				{
+				case "mm":
+					txt.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float heightPage = 0.0f;
+					if(container.getDiv() != null) 
+						heightPage = container.getDiv().getHeight();
+					else
+						heightPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
+					txt.setHeight(heightPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					txt.setHeight(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					txt.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				}
+				break;
+			case "width":
+				String unit_w = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_w)
+				{
+				case "mm":
+					txt.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float widthPage = 0.0f;
+					if(container.getDiv() != null) 
+						widthPage = container.getDiv().getWidth();
+					else
+						widthPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+					txt.setWidth(widthPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					txt.setWidth(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					txt.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				}
+				break;
+			case "layer":
+				txt.setLayer(Integer.parseInt(ctx.NVAL().toString()));
+				break;
+			default:
+				System.out.println("Valore non riconosciuto");
+		}
 			container.setTxt(txt);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
 		{
 			LIST_Item list = container.getList();
 			switch(ctx.children.get(0).toString().toLowerCase()) {
-				case "pos-x":
+			case "pos-x":
+				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_posx)
+				{
+				case "mm":
 					list.setPosX(Float.parseFloat((ctx.NVAL().toString())));
 					break;
-				case "pos-y":
-					list.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float widthPage = 0.0f;
+					if(container.getDiv() != null) 
+						widthPage = container.getDiv().getWidth();
+					else
+						widthPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+					list.setPosX(widthPage * perc / 100);
 					break;
-				case "angle-rotation":
-					list.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "height":
-					list.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "width":
-					list.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "layer":
-					list.setLayer(Integer.parseInt(ctx.NVAL().toString()));
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					list.setPosX(UnitConverter.convPointmm(  point));
 					break;
 				default:
-					System.out.println("Valore non riconosciuto");
-			}
+					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+					list.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				}
+				break;
+			case "pos-y":
+				String unit_posy = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_posy)
+				{
+				case "mm":
+					list.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float heightPage = 0.0f;
+					if(container.getDiv() != null) 
+						heightPage = container.getDiv().getHeight();
+					else
+						heightPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
+					list.setPosY(heightPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					list.setPosY(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
+					list.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+					break;
+				}
+				break;
+			case "angle-rotation":
+				list.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			case "height":
+				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit)
+				{
+				case "mm":
+					list.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float heightPage = 0.0f;
+					if(container.getDiv() != null) 
+						heightPage = container.getDiv().getHeight();
+					else
+						heightPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
+					list.setHeight(heightPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					list.setHeight(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					list.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				}
+				break;
+			case "width":
+				String unit_w = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+				switch(unit_w)
+				{
+				case "mm":
+					list.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				case "%":
+					float perc = Float.parseFloat(ctx.NVAL().toString());
+					float widthPage = 0.0f;
+					if(container.getDiv() != null) 
+						widthPage = container.getDiv().getWidth();
+					else
+						widthPage = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+					list.setWidth(widthPage * perc / 100);
+					break;
+				case "pt":
+					float point = Float.parseFloat(ctx.NVAL().toString());
+					list.setWidth(UnitConverter.convPointmm(  point));
+					break;
+				default:
+					list.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					break;
+				}
+				break;
+			case "layer":
+				list.setLayer(Integer.parseInt(ctx.NVAL().toString()));
+				break;
+			default:
+				System.out.println("Valore non riconosciuto");
+		}
 			container.setList(list);
 		}
 		else
@@ -766,8 +1318,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	public void enterPositionv(VolTextParser.PositionvContext ctx) {
 		// TODO Auto-generated method stub
 		String position = ctx.POSVAL().toString();
-		Float width = PDF_page.getMediaBox().getWidth();
-		Float height = PDF_page.getMediaBox().getHeight();
+		Float width = UnitConverter.convPointmm(  PDF_page.getMediaBox().getWidth());
+		Float height = UnitConverter.convPointmm(  PDF_page.getMediaBox().getHeight());
 		Float x = 0.0f;
 		Float y = 0.0f;
 		
@@ -790,13 +1342,13 @@ public class VolTEXT_Listener implements VolTextListener {
 			switch(position.toLowerCase().toCharArray()[1])
 			{
 				case 'b':
-					y = 0.0f;
+					y = height - div.getHeight();
 					break;
 				case 'c':
 					y = (height - div.getHeight())/2;
 					break;
-				case 'u':
-					y = height - div.getHeight();
+				case 't':
+					y = 0.0f;
 					break;
 			}
 			div.setPosY(y);
@@ -826,7 +1378,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				case 'c':
 					y = (height - img.getHeight())/2;
 					break;
-				case 'u':
+				case 't':
 					y = height - img.getHeight();
 					break;
 			}
@@ -857,7 +1409,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				case 'c':
 					y = (height - txt.getHeight())/2;
 					break;
-				case 'u':
+				case 't':
 					y = height - txt.getHeight();
 					break;
 			}
@@ -888,7 +1440,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				case 'c':
 					y = (height - list.getHeight())/2;
 					break;
-				case 'u':
+				case 't':
 					y = height - list.getHeight();
 					break;
 			}
@@ -909,7 +1461,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	public void enterColor(VolTextParser.ColorContext ctx) {
 		// TODO Auto-generated method stub
 		
-		String colore = ctx.COLORVAL().toString().substring(1, ctx.COLORVAL().toString().length()-1);
+		String colore = ctx.COLORVAL().toString();
 		Color c = new Color(Integer.parseInt(colore.substring(1, 3), 16), 
 				Integer.parseInt(colore.substring(3, 5), 16), 
 				Integer.parseInt(colore.substring(5, 7), 16), 
@@ -940,6 +1492,47 @@ public class VolTEXT_Listener implements VolTextListener {
 	}
 	@Override
 	public void exitColor(VolTextParser.ColorContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void enterFitAttr(VolTextParser.FitAttrContext ctx) {
+		// TODO Auto-generated method stub
+		boolean tf = false;
+		System.out.println(ctx.TFVAL().toString());
+		tf = Boolean.parseBoolean(ctx.TFVAL().toString());
+		if(ctx.getParent() instanceof VolTextParser.DivContext)
+		{
+			DIV_Item div = container.getDiv();
+			div.setFit(tf);
+			container.setDiv(div);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
+		{
+			IMG_Item img = container.getImg();
+			img.setFit(tf);
+			container.setImg(img);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+		{
+			TXT_Item txt = container.getTxt();
+			txt.setFit(tf);
+			container.setTxt(txt);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+		{
+			LIST_Item list = container.getList();
+			list.setFit(tf);
+			container.setList(list);
+		}
+		else
+		{
+			System.out.println("ALTRO");
+		}
+		
+	}
+	@Override
+	public void exitFitAttr(VolTextParser.FitAttrContext ctx) {
 		// TODO Auto-generated method stub
 		
 	}
