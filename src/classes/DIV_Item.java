@@ -20,7 +20,8 @@ public class DIV_Item extends Item {
 		setHeight(0f);
 		setLayer(0);
 		setID("");
-		setFit(false);
+		setFitX(false);
+		setFitY(false);
 		setRGBAcolor(null);
 		setList(new LinkedList<Item>());
 	}
@@ -31,7 +32,8 @@ public class DIV_Item extends Item {
 	private Float Height;
 	private Integer Layer;
 	private String ID;
-	private boolean Fit;
+	private boolean FitX;
+	private boolean FitY;
 	private Color RGBAcolor;
 	private List<? extends Item> list;
 	
@@ -132,16 +134,28 @@ public class DIV_Item extends Item {
 		RGBAcolor = rGBAcolor;
 	}
 	/**
-	 * @return the fit
+	 * @return the fitX
 	 */
-	public boolean isFit() {
-		return Fit;
+	public boolean isFitX() {
+		return FitX;
 	}
 	/**
-	 * @param fit the fit to set
+	 * @param fitX the fitX to set
 	 */
-	public void setFit(boolean fit) {
-		Fit = fit;
+	public void setFitX(boolean fitX) {
+		FitX = fitX;
+	}
+	/**
+	 * @return the fitY
+	 */
+	public boolean isFitY() {
+		return FitY;
+	}
+	/**
+	 * @param fitY the fitY to set
+	 */
+	public void setFitY(boolean fitY) {
+		FitY = fitY;
 	}
 	/**
 	 * @return the list

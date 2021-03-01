@@ -21,9 +21,10 @@ public class TXT_Item extends Item {
 		setPosition("ul");
 		setPosX(0f);
 		setPosY(0f);
-		setWidth(0f);
-		setHeight(0f);
-		setFit(false);
+		setWidth(null);
+		setHeight(null);
+		setFitX(false);
+		setFitY(false);
 		setLayer(0);
 		
 	}
@@ -42,7 +43,8 @@ public class TXT_Item extends Item {
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
-	private boolean Fit;
+	private boolean FitX;
+	private boolean FitY;
 	private Integer Layer;
 	/**
 	 * @return the text
@@ -237,16 +239,28 @@ public class TXT_Item extends Item {
 		this.rGBAcolor = rGBAcolor;
 	}
 	/**
-	 * @return the fit
+	 * @return the fitX
 	 */
-	public boolean isFit() {
-		return Fit;
+	public boolean isFitX() {
+		return FitX;
 	}
 	/**
-	 * @param fit the fit to set
+	 * @param fitX the fitX to set
 	 */
-	public void setFit(boolean fit) {
-		Fit = fit;
+	public void setFitX(boolean fitX) {
+		FitX = fitX;
+	}
+	/**
+	 * @return the fitY
+	 */
+	public boolean isFitY() {
+		return FitY;
+	}
+	/**
+	 * @param fitY the fitY to set
+	 */
+	public void setFitY(boolean fitY) {
+		FitY = fitY;
 	}
 
 

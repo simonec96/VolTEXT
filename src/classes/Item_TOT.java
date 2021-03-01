@@ -28,7 +28,7 @@ public class Item_TOT {
 	 */
 	public Item_TOT(String t, boolean ordered, List<String> items, String iD, String fontFamily, Integer fontSize,
 			Color rGBAcolor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
-			Float angle_Rotation, Float width, Float height, boolean fit, Integer layer, String text,
+			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY, Integer layer, String text,
 			String fontFamilyTTF, String uRL) {
 		super();
 		this.type = t;
@@ -47,7 +47,8 @@ public class Item_TOT {
 		Angle_Rotation = angle_Rotation;
 		Width = width;
 		Height = height;
-		Fit = fit;
+		setFitX(fitX);
+		setFitY(fitY);
 		Layer = layer;
 		Text = text;
 		FontFamilyTTF = fontFamilyTTF;
@@ -69,7 +70,8 @@ public class Item_TOT {
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
-	private boolean Fit;
+	private boolean FitX;
+	private boolean FitY;
 	private Integer Layer;
 	private String Text;
 	private String FontFamilyTTF;
@@ -254,17 +256,30 @@ public class Item_TOT {
 	public void setHeight(Float height) {
 		Height = height;
 	}
+
 	/**
-	 * @return the fit
+	 * @return the fitX
 	 */
-	public boolean isFit() {
-		return Fit;
+	public boolean isFitX() {
+		return FitX;
 	}
 	/**
-	 * @param fit the fit to set
+	 * @param fitX the fitX to set
 	 */
-	public void setFit(boolean fit) {
-		Fit = fit;
+	public void setFitX(boolean fitX) {
+		FitX = fitX;
+	}
+	/**
+	 * @return the fitY
+	 */
+	public boolean isFitY() {
+		return FitY;
+	}
+	/**
+	 * @param fitY the fitY to set
+	 */
+	public void setFitY(boolean fitY) {
+		FitY = fitY;
 	}
 	/**
 	 * @return the layer

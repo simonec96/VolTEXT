@@ -9,10 +9,11 @@ public class IMG_Item extends Item {
 		setPosition("ul");
 		setPosX(0f);
 		setPosY(0f);
-		setWidth(0f);
-		setHeight(0f);
+		setWidth(null);
+		setHeight(null);
 		setLayer(0);
-		setFit(false);
+		setFitX(false);
+		setFitY(false);
 	}
 	private String URL;
 	private String ID;
@@ -22,7 +23,8 @@ public class IMG_Item extends Item {
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
-	private boolean Fit;
+	private boolean FitX;
+	private boolean FitY;
 	private Integer Layer;
 	/**
 	 * @return the uRL
@@ -132,16 +134,16 @@ public class IMG_Item extends Item {
 	public void setLayer(Integer layer) {
 		Layer = layer;
 	}
-	/**
-	 * @return the fit
-	 */
-	public boolean isFit() {
-		return Fit;
+	public boolean isFitX() {
+		return FitX;
 	}
-	/**
-	 * @param fit the fit to set
-	 */
-	public void setFit(boolean fit) {
-		Fit = fit;
+	public void setFitX(boolean fitX) {
+		FitX = fitX;
+	}
+	public boolean isFitY() {
+		return FitY;
+	}
+	public void setFitY(boolean fitY) {
+		FitY = fitY;
 	}
 }

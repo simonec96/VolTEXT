@@ -12,6 +12,7 @@ public class PAGE_Item extends Item {
 
 	private String ID;
 	private Float AngleRotation;
+	private boolean oob;
 	/**
 	 * @return the iD
 	 */
@@ -38,5 +39,19 @@ public class PAGE_Item extends Item {
 	 */
 	public void setAngleRotation(Float angleRotation) {
 		AngleRotation = angleRotation;
+	}
+
+	/**
+	 * @return the oob
+	 */
+	public boolean isOob() {
+		return oob;
+	}
+
+	/**
+	 * @param oob the oob to set
+	 */
+	public void setOob(boolean oob) {
+		this.oob = oob;
 	}
 }

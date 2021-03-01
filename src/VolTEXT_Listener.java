@@ -165,10 +165,15 @@ public class VolTEXT_Listener implements VolTextListener {
 			if(container.getDiv().getRGBAcolor() != null) cont.setNonStrokingColor(div.getRGBAcolor());
 			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
 			if(container.getDiv().getRGBAcolor() != null) graph.setStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
-			if(div.isFit())
+			if(div.isFitX())
 			{
-				div.setWidth(width_mm - div.getPosX());
-				div.setHeight(height_mm - div.getPosY());
+				div.setWidth(width_mm);
+				div.setPosX(0f);
+			}
+			if(div.isFitY())
+			{
+				div.setPosY(0f);
+				div.setHeight(height_mm);
 			}
 			if(div.getPosX() + div.getWidth() > width_mm)
 			{
@@ -291,16 +296,22 @@ public class VolTEXT_Listener implements VolTextListener {
 			PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
 			IMG_Item img = container.getImg();
 			img.setURL(Path);
-
+			if(img.getWidth()==null && img.getHeight()==null)
+			{
+				img.setWidth(UnitConverter.convPointmm((float)pdImage.getWidth()));
+				img.setHeight(UnitConverter.convPointmm((float)pdImage.getHeight()));
+			}
+			
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 			
 				if(container.getDiv() != null)
 				{
 					if(img.getPosX() >= 0 && img.getPosX() <= container.getDiv().getWidth())
 					{
-						if(img.isFit())
+						if(img.isFitX())
 						{
-							img.setWidth(container.getDiv().getWidth() - img.getPosX());
+								img.setWidth(container.getDiv().getWidth() - img.getPosX());
+							
 						}
 						
 						
@@ -319,7 +330,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					
 					if(img.getPosY() >= 0 && img.getPosY() <= container.getDiv().getHeight())
 					{
-						if(img.isFit())
+						if(img.isFitY())
 						{
 							img.setHeight(container.getDiv().getHeight() - img.getPosY());
 						}
@@ -341,11 +352,24 @@ public class VolTEXT_Listener implements VolTextListener {
 				}
 				else
 				{
-					if(img.isFit())
+					float w_mm = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
+					float h_mm = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
+					if(img.isFitX())
 					{
-						float w_mm = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
-						float h_mm = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
+						img.setWidth(w_mm);
+						img.setPosX(0f);
+					}
+					if(img.isFitY())
+					{
+						img.setHeight(h_mm);
+						img.setPosY(0f);
+					}
+					if(img.getPosX() + img.getWidth() > w_mm)
+					{
 						img.setWidth(w_mm - img.getPosX());
+					}
+					if(img.getPosY() + img.getHeight() > h_mm)
+					{
 						img.setHeight(h_mm - img.getPosY());
 					}
 				}
@@ -367,7 +391,8 @@ public class VolTEXT_Listener implements VolTextListener {
 						img.getPosY(), 
 						img.getAngle_Rotation(), 
 						img.getWidth(), img.getHeight(), 
-						img.isFit(), 
+						img.isFitX(), 
+						img.isFitY(), 
 						img.getLayer(), 
 						"", 
 						"", 
@@ -442,7 +467,8 @@ public class VolTEXT_Listener implements VolTextListener {
 						txt.getAngle_Rotation(), 
 						txt.getWidth(), 
 						txt.getHeight(), 
-						txt.isFit(), 
+						txt.isFitX(), 
+						txt.isFitY(), 
 						txt.getLayer(), 
 						txt.getText(), 
 						txt.getFontFamilyTTF(), 
@@ -526,7 +552,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitList(VolTextParser.ListContext ctx) {
 		try{
-    		PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true);
+			org.apache.pdfbox.pdmodel.edit.PDPageContentStream cstream = new org.apache.pdfbox.pdmodel.edit.PDPageContentStream(PDF_doc, PDF_page, true, false); 
     		float h_p = PDF_page.getMediaBox().getHeight();
     		LIST_Item li=container.getList();
     		if(container.getDiv() != null)
@@ -547,7 +573,8 @@ public class VolTEXT_Listener implements VolTextListener {
 						li.getAngle_Rotation(), 
 						li.getWidth(), 
 						li.getHeight(), 
-						li.isFit(), 
+						li.isFitX(), 
+						li.isFitY(), 
 						li.getLayer(), 
 						"", 
 						li.getFontFamily(), 
@@ -583,8 +610,9 @@ public class VolTEXT_Listener implements VolTextListener {
 			Color fontColor=li.getRGBAcolor();
 			cstream.setNonStrokingColor(fontColor);
 			PDExtendedGraphicsState graph=new PDExtendedGraphicsState();
-			graph.setNonStrokingAlphaConstant((float) (li.getRGBAcolor().getAlpha() / 255f));
-			cstream.setGraphicsStateParameters(graph);
+			graph.setStrokingAlphaConstant((float) (li.getRGBAcolor().getAlpha() / 255f));
+			// il nuovo cstream non accetta graphicsStateParameters
+			//cstream.setGraphicsStateParameters(graph);
 			String bulletOdd = CompatibilityHelper.getBulletCharacter(1) + " ";
     		String bulletEven = CompatibilityHelper.getBulletCharacter(2) + " ";
     		RomanEnumerator e = new RomanEnumerator();
@@ -599,7 +627,7 @@ public class VolTEXT_Listener implements VolTextListener {
         		//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 			Position pt=new Position(UnitConverter.convmmPoint(li.getPosX()),h_p-pList.getHeight()-UnitConverter.convmmPoint(li.getPosY()));
 			//ERRORE cstream come non appartenente al build path
-			//pList.draw(container.getPDF_doc(), cstream, pt,null);
+			pList.draw(PDF_doc, cstream, pt, null);
         		cstream.close();
     			cstream.restoreGraphicsState();
     		}
@@ -631,9 +659,18 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterPageattr(VolTextParser.PageattrContext ctx) {
 		PAGE_Item p = container.getPage();
-		Float orientation = ctx.ORIENTATION().toString() == "hor" ? 90f : 0f;
-		p.setAngleRotation(orientation);
+		if(ctx.ORIENTATION()==null) {
+			p.setOob(Boolean.parseBoolean(ctx.TFVAL().toString()));
+		}else {
+			Float orientation = ctx.ORIENTATION().toString() == "hor" ? 90f : 0f;
+			p.setAngleRotation(orientation);
+			PDF_doc.removePage(PDF_page);
+			PDF_page=new PDPage(PDRectangle.A4);
+			PDF_page.setRotation(orientation.intValue());
+			PDF_doc.addPage(PDF_page);
+		}
 		container.setPage(p);
+		
 	}
 	/**
 	 * {@inheritDoc}
@@ -1501,33 +1538,64 @@ public class VolTEXT_Listener implements VolTextListener {
 		boolean tf = false;
 		System.out.println(ctx.TFVAL().toString());
 		tf = Boolean.parseBoolean(ctx.TFVAL().toString());
-		if(ctx.getParent() instanceof VolTextParser.DivContext)
-		{
-			DIV_Item div = container.getDiv();
-			div.setFit(tf);
-			container.setDiv(div);
-		}
-		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
-		{
-			IMG_Item img = container.getImg();
-			img.setFit(tf);
-			container.setImg(img);
-		}
-		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
-		{
-			TXT_Item txt = container.getTxt();
-			txt.setFit(tf);
-			container.setTxt(txt);
-		}
-		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
-		{
-			LIST_Item list = container.getList();
-			list.setFit(tf);
-			container.setList(list);
-		}
-		else
-		{
-			System.out.println("ALTRO");
+		if(ctx.children.get(0).toString()=="fit-x") {
+			if(ctx.getParent() instanceof VolTextParser.DivContext)
+			{
+				DIV_Item div = container.getDiv();
+				div.setFitX(tf);
+				container.setDiv(div);
+			}
+			else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
+			{
+				IMG_Item img = container.getImg();
+				img.setFitX(tf);
+				container.setImg(img);
+			}
+			else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+			{
+				TXT_Item txt = container.getTxt();
+				txt.setFitX(tf);
+				container.setTxt(txt);
+			}
+			else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+			{
+				LIST_Item list = container.getList();
+				list.setFitX(tf);
+				container.setList(list);
+			}
+			else
+			{
+				System.out.println("ALTRO");
+			}
+		}else {
+			if(ctx.getParent() instanceof VolTextParser.DivContext)
+			{
+				DIV_Item div = container.getDiv();
+				div.setFitY(tf);
+				container.setDiv(div);
+			}
+			else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
+			{
+				IMG_Item img = container.getImg();
+				img.setFitY(tf);
+				container.setImg(img);
+			}
+			else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
+			{
+				TXT_Item txt = container.getTxt();
+				txt.setFitY(tf);
+				container.setTxt(txt);
+			}
+			else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+			{
+				LIST_Item list = container.getList();
+				list.setFitY(tf);
+				container.setList(list);
+			}
+			else
+			{
+				System.out.println("ALTRO");
+			}
 		}
 		
 	}

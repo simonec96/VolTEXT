@@ -17,9 +17,9 @@ attrStyle: 	imganumber
 	|		positionv
 	|		txtval;
 	
-page: 		'page' O pae* C;
+page: 		'page' O pageattr* pae* C;
 
-pae: 		pageattr | elemd | div;
+pae: 		elemd | div;
 
 div:		'div' O (color | idval | imganumber | elemd | positionv | fitAttr)* C;
 	
@@ -45,7 +45,8 @@ listElem: 	'item:' STRING ENDNLINE;
 
 //ATTRIBUTES
 
-fitAttr:	'fit:' TFVAL ENDNLINE;
+fitAttr:	('fit-x'
+		|	 'fit-y') ':' TFVAL ENDNLINE;
 
 imganumber: ('pos-x'
 		|	'pos-y'
@@ -65,7 +66,8 @@ color:		'color:' COLORVAL ENDNLINE;
 
 positionv:	'position:' POSVAL ENDNLINE;
 
-pageattr:	'orientation:' ORIENTATION;
+pageattr:	'orientation:' ORIENTATION ENDNLINE
+	|		'oob:' TFVAL ENDNLINE;
 
 ORIENTATION:('hor' | 'ver');
 	
