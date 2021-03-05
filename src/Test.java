@@ -1,6 +1,4 @@
 import java.io.IOException;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -10,6 +8,7 @@ public class Test {
 		// TODO Auto-generated method stub
 		
 		
+		@SuppressWarnings("deprecation")
 		ANTLRInputStream input = new ANTLRInputStream( System.in);
 	    
 		VolTextLexer lexer = new VolTextLexer(input);

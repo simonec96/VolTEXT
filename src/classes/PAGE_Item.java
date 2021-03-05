@@ -13,6 +13,9 @@ public class PAGE_Item extends Item {
 	private String ID;
 	private Float AngleRotation;
 	private boolean oob;
+	private String format;
+	private float width;
+	private float height;
 	/**
 	 * @return the iD
 	 */
@@ -53,5 +56,47 @@ public class PAGE_Item extends Item {
 	 */
 	public void setOob(boolean oob) {
 		this.oob = oob;
+	}
+
+	/**
+	 * @return the format
+	 */
+	public String getFormat() {
+		return format;
+	}
+
+	/**
+	 * @param format the format to set
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	/**
+	 * @return the width
+	 */
+	public float getWidth() {
+		return width;
+	}
+
+	/**
+	 * @param width the width to set
+	 */
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	/**
+	 * @return the height
+	 */
+	public float getHeight() {
+		return height;
+	}
+
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(float height) {
+		this.height = height;
 	}
 }

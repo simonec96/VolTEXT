@@ -49,12 +49,14 @@ fitAttr:	('fit-x'
 		|	 'fit-y') ':' TFVAL ENDNLINE;
 
 imganumber: ('pos-x'
-		|	'pos-y'
-		|	'angle-rotation'
+		|	'pos-y') ':' NOTVAL? NVAL (UNIT)? ENDNLINE
+		|	('angle-rotation'
 		|	'height'
 		|	'width') ':' NVAL (UNIT)? ENDNLINE;
 		
-UNIT:		'mm' | '%' | 'px';
+NOTVAL:		'-';
+		
+UNIT:		'mm' | '%' | 'pt';
 		 
 idval:		'id:' STRING ENDNLINE;
 
@@ -67,7 +69,18 @@ color:		'color:' COLORVAL ENDNLINE;
 positionv:	'position:' POSVAL ENDNLINE;
 
 pageattr:	'orientation:' ORIENTATION ENDNLINE
-	|		'oob:' TFVAL ENDNLINE;
+	|		'oob:' TFVAL ENDNLINE
+	|		'width' ':' NVAL ENDNLINE
+	|		'height' ':' NVAL ENDNLINE
+	|		'format:' FORMATVAL ENDNLINE;
+	
+FORMATVAL:	'A0'
+	|		'A1'
+	|		'A2'
+	|		'A3'
+	|		'A4'
+	|		'A5'
+	|		'A6';
 
 ORIENTATION:('hor' | 'ver');
 	

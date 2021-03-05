@@ -1,8 +1,6 @@
 package classes;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +18,7 @@ public class DIV_Item extends Item {
 		setHeight(0f);
 		setLayer(0);
 		setID("");
+		setPosition("");
 		setFitX(false);
 		setFitY(false);
 		setRGBAcolor(null);
@@ -27,6 +26,7 @@ public class DIV_Item extends Item {
 	}
 	private Float PosX;
 	private Float PosY;
+	private String Position;
 	private Float Angle_Rotation;
 	private Float Width;
 	private Float Height;
@@ -168,6 +168,18 @@ public class DIV_Item extends Item {
 	 */
 	public void setList(List<? extends Item> list) {
 		this.list = list;
+	}
+	/**
+	 * @return the position
+	 */
+	public String getPosition() {
+		return Position;
+	}
+	/**
+	 * @param position the position to set
+	 */
+	public void setPosition(String position) {
+		Position = position;
 	}
 
 	

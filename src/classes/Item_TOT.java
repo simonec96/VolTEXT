@@ -29,7 +29,7 @@ public class Item_TOT {
 	public Item_TOT(String t, boolean ordered, List<String> items, String iD, String fontFamily, Integer fontSize,
 			Color rGBAcolor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
 			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY, Integer layer, String text,
-			String fontFamilyTTF, String uRL) {
+			String fontFamilyTTF, String uRL, String ux, String uy, String uw, String uh) {
 		super();
 		this.type = t;
 		this.ordered = ordered;
@@ -53,6 +53,10 @@ public class Item_TOT {
 		Text = text;
 		FontFamilyTTF = fontFamilyTTF;
 		URL = uRL;
+		setUnitX(ux);
+		setUnitY(uy);
+		setUnitHeight(uh);
+		setUnitWidth(uw);
 	}
 	private String type;
 	private boolean ordered;
@@ -76,6 +80,10 @@ public class Item_TOT {
 	private String Text;
 	private String FontFamilyTTF;
 	private String URL;
+	private String UnitX;
+	private String UnitY;
+	private String UnitWidth;
+	private String UnitHeight;
 	/**
 	 * @return the ordered
 	 */
@@ -340,6 +348,54 @@ public class Item_TOT {
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+	/**
+	 * @return the unitX
+	 */
+	public String getUnitX() {
+		return UnitX;
+	}
+	/**
+	 * @param unitX the unitX to set
+	 */
+	public void setUnitX(String unitX) {
+		UnitX = unitX;
+	}
+	/**
+	 * @return the unitY
+	 */
+	public String getUnitY() {
+		return UnitY;
+	}
+	/**
+	 * @param unitY the unitY to set
+	 */
+	public void setUnitY(String unitY) {
+		UnitY = unitY;
+	}
+	/**
+	 * @return the unitWidth
+	 */
+	public String getUnitWidth() {
+		return UnitWidth;
+	}
+	/**
+	 * @param unitWidth the unitWidth to set
+	 */
+	public void setUnitWidth(String unitWidth) {
+		UnitWidth = unitWidth;
+	}
+	/**
+	 * @return the unitHeight
+	 */
+	public String getUnitHeight() {
+		return UnitHeight;
+	}
+	/**
+	 * @param unitHeight the unitHeight to set
+	 */
+	public void setUnitHeight(String unitHeight) {
+		UnitHeight = unitHeight;
 	}
 
 }

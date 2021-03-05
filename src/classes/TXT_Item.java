@@ -12,13 +12,12 @@ public class TXT_Item extends Item {
 		setAngle_Rotation(0f);
 		setID("");
 		setFontFamily("");
-		setFontFamilyTTF("");
 		setFontSize(12);
 		setrGBAcolor(new Color(0, 0, 0, 0));
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
-		setPosition("ul");
+		setPosition("");
 		setPosX(0f);
 		setPosY(0f);
 		setWidth(null);
@@ -26,12 +25,14 @@ public class TXT_Item extends Item {
 		setFitX(false);
 		setFitY(false);
 		setLayer(0);
-		
+		setUnitX("mm");
+		setUnitY("mm");
+		setUnitWidth("mm");
+		setUnitHeight("mm");
 	}
 	private String Text;
 	private String ID;
 	private String FontFamily;
-	private String FontFamilyTTF;
 	private Integer FontSize;
 	private Color rGBAcolor;
 	private boolean Bold;
@@ -46,6 +47,10 @@ public class TXT_Item extends Item {
 	private boolean FitX;
 	private boolean FitY;
 	private Integer Layer;
+	private String UnitX;
+	private String UnitY;
+	private String UnitWidth;
+	private String UnitHeight;
 	/**
 	 * @return the text
 	 */
@@ -81,18 +86,6 @@ public class TXT_Item extends Item {
 	 */
 	public void setFontFamily(String fontFamily) {
 		FontFamily = fontFamily;
-	}
-	/**
-	 * @return the fontFamilyTTF
-	 */
-	public String getFontFamilyTTF() {
-		return FontFamilyTTF;
-	}
-	/**
-	 * @param fontFamilyTTF the fontFamilyTTF to set
-	 */
-	public void setFontFamilyTTF(String fontFamilyTTF) {
-		FontFamilyTTF = fontFamilyTTF;
 	}
 	/**
 	 * @return the fontSize
@@ -261,6 +254,54 @@ public class TXT_Item extends Item {
 	 */
 	public void setFitY(boolean fitY) {
 		FitY = fitY;
+	}
+	/**
+	 * @return the unitX
+	 */
+	public String getUnitX() {
+		return UnitX;
+	}
+	/**
+	 * @param unitX the unitX to set
+	 */
+	public void setUnitX(String unitX) {
+		UnitX = unitX;
+	}
+	/**
+	 * @return the unitY
+	 */
+	public String getUnitY() {
+		return UnitY;
+	}
+	/**
+	 * @param unitY the unitY to set
+	 */
+	public void setUnitY(String unitY) {
+		UnitY = unitY;
+	}
+	/**
+	 * @return the unitWidth
+	 */
+	public String getUnitWidth() {
+		return UnitWidth;
+	}
+	/**
+	 * @param unitWidth the unitWidth to set
+	 */
+	public void setUnitWidth(String unitWidth) {
+		UnitWidth = unitWidth;
+	}
+	/**
+	 * @return the unitHeight
+	 */
+	public String getUnitHeight() {
+		return UnitHeight;
+	}
+	/**
+	 * @param unitHeight the unitHeight to set
+	 */
+	public void setUnitHeight(String unitHeight) {
+		UnitHeight = unitHeight;
 	}
 
 

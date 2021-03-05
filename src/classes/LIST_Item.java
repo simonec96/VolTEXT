@@ -23,6 +23,10 @@ public class LIST_Item extends Item {
 	private boolean FitX;
 	private boolean FitY;
 	private Integer Layer;
+	private String UnitX;
+	private String UnitY;
+	private String UnitWidth;
+	private String UnitHeight;
 
 	public LIST_Item() {
 		super();
@@ -35,7 +39,7 @@ public class LIST_Item extends Item {
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
-		setPosition("ul");
+		setPosition("");
 		setPosX(0f);
 		setPosY(0f);
 		setWidth(null);
@@ -43,6 +47,10 @@ public class LIST_Item extends Item {
 		setFitX(false);
 		setFitY(false);
 		setLayer(0);
+		setUnitX("mm");
+		setUnitY("mm");
+		setUnitWidth("mm");
+		setUnitHeight("mm");
 	}
 	
 	/**
@@ -296,5 +304,61 @@ public class LIST_Item extends Item {
 	 */
 	public void setFitY(boolean fitY) {
 		FitY = fitY;
+	}
+
+	/**
+	 * @return the unitX
+	 */
+	public String getUnitX() {
+		return UnitX;
+	}
+
+	/**
+	 * @param unitX the unitX to set
+	 */
+	public void setUnitX(String unitX) {
+		UnitX = unitX;
+	}
+
+	/**
+	 * @return the unitY
+	 */
+	public String getUnitY() {
+		return UnitY;
+	}
+
+	/**
+	 * @param unitY the unitY to set
+	 */
+	public void setUnitY(String unitY) {
+		UnitY = unitY;
+	}
+
+	/**
+	 * @return the unitWidth
+	 */
+	public String getUnitWidth() {
+		return UnitWidth;
+	}
+
+	/**
+	 * @param unitWidth the unitWidth to set
+	 */
+	public void setUnitWidth(String unitWidth) {
+		UnitWidth = unitWidth;
+	}
+
+	/**
+	 * @return the unitHeight
+	 */
+	public String getUnitHeight() {
+		return UnitHeight;
+	}
+
+	/**
+	 * @param unitHeight the unitHeight to set
+	 */
+	public void setUnitHeight(String unitHeight) {
+		UnitHeight = unitHeight;
 	}
 }
