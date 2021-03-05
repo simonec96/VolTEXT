@@ -37,7 +37,7 @@ text: 		'text' O txtattr* txtElem? txtattr* C;
 
 txtattr: 	(color | idval | imganumber | positionv | txtval | fitAttr);
 
-txtElem: 	'String:' STRING ENDNLINE;
+txtElem: 	'string:' STRING ENDNLINE;
 
 list: 		'list' O (listattr | listElem)* C;
 

@@ -11,7 +11,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Matrix;
@@ -415,7 +417,127 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 			else if(item.getType() == "TXT")
 			{
-
+				try {
+					Paragraph p = new Paragraph();
+					// Create a new font object by loading a TrueType font into the document
+					PDFont font=null;
+					if(item.getFontFamilyTTF()!=null && item.getFontFamilyTTF()!="")
+						font = PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF()));
+					else
+						switch(item.getFontFamily().toLowerCase())
+						{
+						case "helvetica":
+							if(item.isBold())
+								if(item.isItalics())
+									font=PDType1Font.HELVETICA_BOLD_OBLIQUE;
+								else
+									font=PDType1Font.HELVETICA_BOLD;
+							else if(item.isItalics())
+								font=PDType1Font.HELVETICA_OBLIQUE;
+							else
+								font=PDType1Font.HELVETICA;
+							break;
+						case "courier":
+							if(item.isBold())
+								if(item.isItalics())
+									font=PDType1Font.COURIER_BOLD_OBLIQUE;
+								else
+									font=PDType1Font.COURIER_BOLD;
+							else if(item.isItalics())
+								font=PDType1Font.COURIER_OBLIQUE;
+							else
+								font=PDType1Font.COURIER;
+							break;
+						case "times":
+							if(item.isBold())
+								if(item.isItalics())
+									font=PDType1Font.TIMES_BOLD_ITALIC;
+								else
+									font=PDType1Font.TIMES_BOLD;
+							else if(item.isItalics())
+								font=PDType1Font.TIMES_ITALIC;
+							else
+								font=PDType1Font.TIMES_ROMAN;
+							break;
+						default:
+							if(item.isBold())
+								if(item.isItalics())
+									font=PDType1Font.HELVETICA_BOLD_OBLIQUE;
+								else
+									font=PDType1Font.HELVETICA_BOLD;
+							else if(item.isItalics())
+								font=PDType1Font.HELVETICA_OBLIQUE;
+							else
+								font=PDType1Font.HELVETICA;
+							break;
+						}
+					p.addText(item.getText(), item.getFontSize(), font);
+					p.setMaxWidth(item.getWidth());
+					if(item.getWidth()>container.getDiv().getWidth()||
+							item.getHeight()>container.getDiv().getHeight()) {
+						System.out.println("Testo " + item.getID() +" nel div "+
+								container.getDiv().getID()+" troncato");
+						if(item.getWidth()>container.getDiv().getWidth()) {
+							item.setWidth(container.getDiv().getWidth());
+							p.setMaxWidth(container.getDiv().getWidth());
+						}
+						if(item.getHeight()>container.getDiv().getHeight()) {
+							//item.setHeight(container.getDiv().getHeight());
+							System.out.println("Altezza testo " + item.getID() +" nel div "+
+									container.getDiv().getID()+" troppo grande. Riscrivere il testo");
+						}
+						if(p.getHeight()>container.getDiv().getHeight()) {
+							System.out.println("Testo " + item.getID() +" nel div "+
+									container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
+							//item.setHeight(container.getDiv().getHeight());
+						}
+					}
+					item.setPosX(container.getDiv().getPosX()+item.getPosX());
+					item.setPosY(item.getPosY());			
+					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+					Position pt=new Position(UnitConverter.convmmPoint(item.getPosX()),UnitConverter.convmmPoint(item.getPosY()));
+					
+					float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
+					float h_mm=UnitConverter.convPointmm(container.getDiv().getHeight());
+					if(item.getPosX()<=w_mm)
+						if(item.getWidth()+item.getPosX()>w_mm) {
+							p.setMaxWidth(container.getDiv().getWidth());
+							item.setWidth(container.getDiv().getWidth());
+						}else
+							p.setMaxWidth(item.getWidth());
+					else
+						System.out.println("Testo " + item.getID() + " in posizione esterna alla pagina.");
+					if(item.getPosY()+item.getHeight()>h_mm) {
+						System.out.println("Il testo " + item.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					}	
+					float dimx=UnitConverter.convmmPoint(item.getWidth());
+		            float dimy=UnitConverter.convmmPoint(item.getHeight());
+					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+										
+					if(pt.getY()<0) {
+						System.out.println("Il testo " + item.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					}
+					//if(p.getMaxWidth()>PDF_page.getMediaBox().getWidth())
+						//p.setMaxWidth(PDF_page.getMediaBox().getWidth());
+					//if(p.getHeight()>h_p)
+						//System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					/* transform */
+					PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND, true);
+		            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)item.getPosX())+dimx/2, PDF_page.getMediaBox().getHeight()-dimy/2-UnitConverter.convmmPoint((float)item.getPosY())));
+		            cont.transform(Matrix.getRotateInstance(Math.toRadians(item.getAngle_Rotation()), 0, 0));
+		            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)item.getPosX())+dimx/2), -(PDF_page.getMediaBox().getHeight()-dimy/2-UnitConverter.convmmPoint((float)item.getPosY()))));
+		            if(item.getrGBAcolor() != null) cont.setNonStrokingColor(item.getrGBAcolor());
+					PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
+					if(item.getrGBAcolor() != null) graph.setStrokingAlphaConstant((float) (item.getrGBAcolor().getAlpha() / 255f));
+					cont.setGraphicsStateParameters(graph);
+					//cont.saveGraphicsState();
+					cont.fill();
+					p.draw(PDF_doc, cont, pt, null);
+					cont.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 			}
 			else if(item.getType() == "LIST")
 			{
@@ -630,9 +752,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override public void exitText(VolTextParser.TextContext ctx) {
 		try {
 			float h_p = PDF_page.getMediaBox().getHeight();
-			org.apache.pdfbox.pdmodel.edit.PDPageContentStream cstream = new org.apache.pdfbox.pdmodel.edit.PDPageContentStream(PDF_doc, PDF_page, true, false); 
-			cstream.saveGraphicsState();
-			Paragraph p = new Paragraph();
+			
+			
 			TXT_Item txt=container.getTxt();
 			if(container.getDiv() != null)
 			{
@@ -656,48 +777,114 @@ public class VolTEXT_Listener implements VolTextListener {
 						txt.isFitY(), 
 						txt.getLayer(), 
 						txt.getText(), 
-						txt.getFontFamily(),
-						"", txt.getUnitX(), txt.getUnitY(), txt.getUnitWidth(), txt.getUnitHeight());
+						txt.getFontFamily(), 
+						"",
+						txt.getUnitX(), 
+						txt.getUnitY(), 
+						txt.getUnitWidth(), 
+						txt.getUnitHeight());
 				container.getList_tot().add(i);
 			}
 			else
 			{
-				// Create a new font object by loading a TrueType font into the document
-				PDType0Font font = PDType0Font.load(PDF_doc, new File(txt.getFontFamily()));
-				p.addText(txt.getText(), txt.getFontSize(), font);
-				p.setMaxWidth(txt.getWidth());
-				if(!(container.getDiv()==null)) {
-					if(txt.getWidth()>container.getDiv().getWidth()||
-							txt.getHeight()>container.getDiv().getHeight()) {
-						System.out.println("Testo " + txt.getID() +" nel div "+
-								container.getDiv().getID()+" troncato");
-						if(txt.getWidth()>container.getDiv().getWidth()) {
-							//?? txt.setWidth(container.getDiv().getWidth());
-							p.setMaxWidth(container.getDiv().getWidth());
-						}
-						if(txt.getHeight()>container.getDiv().getHeight()) {
-							//?? txt.setHeight(container.getDiv().getHeight());
-						}
-						if(p.getHeight()>container.getDiv().getHeight()) {
-							System.out.println("Testo " + txt.getID() +" nel div "+
-									container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
-						}
-					}else {
-						//CURVATURA DEL PARAGRAFO
-					}
-
+			Paragraph p = new Paragraph();
+			// Create a new font object by loading a TrueType font into the document
+			PDFont font=null;
+			if(txt.getFontFamily()!=null && txt.getFontFamily()!="") {
+				switch(txt.getFontFamily().toLowerCase())
+				{
+					case "helvetica":
+					if(txt.isBold())
+						if(txt.isItalics())
+							font=PDType1Font.HELVETICA_BOLD_OBLIQUE;
+						else
+							font=PDType1Font.HELVETICA_BOLD;
+					else if(txt.isItalics())
+						font=PDType1Font.HELVETICA_OBLIQUE;
+					else
+						font=PDType1Font.HELVETICA;
+					break;
+				case "courier":
+					if(txt.isBold())
+						if(txt.isItalics())
+							font=PDType1Font.COURIER_BOLD_OBLIQUE;
+						else
+							font=PDType1Font.COURIER_BOLD;
+					else if(txt.isItalics())
+						font=PDType1Font.COURIER_OBLIQUE;
+					else
+						font=PDType1Font.COURIER;
+					break;
+				case "times":
+					if(txt.isBold())
+						if(txt.isItalics())
+							font=PDType1Font.TIMES_BOLD_ITALIC;
+						else
+							font=PDType1Font.TIMES_BOLD;
+					else if(txt.isItalics())
+						font=PDType1Font.TIMES_ITALIC;
+					else
+						font=PDType1Font.TIMES_ROMAN;
+					break;
+				default:
+					font = PDType0Font.load(PDF_doc, new File(txt.getFontFamily()));
+					break;
 				}
-
-				//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
-				Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),h_p-p.getHeight()-UnitConverter.convmmPoint(txt.getPosY()));
-
-				if(pt.getY()<0) {
-					System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
-				}
-
-				//ERRORE cstream come non appartenente al build path
-				p.draw(PDF_doc, cstream, pt, null);
-				cstream.close();
+			}else {
+				if(txt.isBold())
+					if(txt.isItalics())
+						font=PDType1Font.HELVETICA_BOLD_OBLIQUE;
+					else
+						font=PDType1Font.HELVETICA_BOLD;
+				else if(txt.isItalics())
+					font=PDType1Font.HELVETICA_OBLIQUE;
+				else
+					font=PDType1Font.HELVETICA;
+							
+			}
+			p.addText(txt.getText(), txt.getFontSize(), font);
+			float w_mm=UnitConverter.convPointmm(PDF_page.getMediaBox().getWidth());
+			float h_mm=UnitConverter.convPointmm(h_p);
+			if(txt.getPosX()<=w_mm)
+				if(txt.getWidth()+txt.getPosX()>w_mm) {
+					p.setMaxWidth(PDF_page.getMediaBox().getWidth());
+					txt.setWidth(PDF_page.getMediaBox().getWidth());
+				}else
+					p.setMaxWidth(txt.getWidth());
+			else
+				System.out.println("Testo " + txt.getID() + " in posizione esterna alla pagina.");
+			if(txt.getPosY()+txt.getHeight()>h_mm) {
+				System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+			}	
+			float dimx=UnitConverter.convmmPoint(txt.getWidth());
+            float dimy=UnitConverter.convmmPoint(txt.getHeight());
+			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),h_p-UnitConverter.convmmPoint(txt.getPosY()));
+			
+			
+			if(pt.getY()<0) {
+				System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+			}
+			//if(p.getMaxWidth()>PDF_page.getMediaBox().getWidth())
+				//p.setMaxWidth(PDF_page.getMediaBox().getWidth());
+			//if(p.getHeight()>h_p)
+				//System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+			/* transform */
+			//PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page);
+			org.apache.pdfbox.pdmodel.PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND,true);
+            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)txt.getPosX())+dimx/2, h_p-dimy/2-UnitConverter.convmmPoint((float)txt.getPosY())));
+            cont.transform(Matrix.getRotateInstance(Math.toRadians(txt.getAngle_Rotation()), 0, 0));
+            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)txt.getPosX())+dimx/2), -(h_p-dimy/2-UnitConverter.convmmPoint((float)txt.getPosY()))));
+            if(txt.getrGBAcolor() != null) cont.setNonStrokingColor(txt.getrGBAcolor());
+			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
+			if(txt.getrGBAcolor() != null) graph.setStrokingAlphaConstant((float) (txt.getrGBAcolor().getAlpha() / 255f));
+			cont.setGraphicsStateParameters(graph);
+			//cont.saveGraphicsState();
+			cont.fill();
+			p.drawText(cont, pt, Alignment.Left,null);
+			
+			//cstream.close();
+			cont.close();
 			}
 			//cstream.restoreGraphicsState();
 		} catch (IOException e) {
@@ -737,7 +924,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitList(VolTextParser.ListContext ctx) {
 		try{
-			org.apache.pdfbox.pdmodel.edit.PDPageContentStream cstream = new org.apache.pdfbox.pdmodel.edit.PDPageContentStream(PDF_doc, PDF_page, true, false); 
+			PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND, true); 
 			float h_p = PDF_page.getMediaBox().getHeight();
 			LIST_Item li=container.getList();
 			if(container.getDiv() != null)
