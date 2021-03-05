@@ -8,6 +8,10 @@ public class PAGE_Item extends Item {
 		super();
 		setID("");
 		setAngleRotation(0f);
+		setOob(false);
+		setFormat("");
+		setWidth(0f);
+		setHeight(0f);
 	}
 
 	private String ID;

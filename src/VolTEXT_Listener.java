@@ -41,6 +41,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	public PDDocument PDF_doc;
 	public PDPage PDF_page;
 	public int n_page;
+	public float prev_angle;
 
 	public VolTEXT_Listener()
 	{
@@ -123,6 +124,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		n_page = n_page + 1;
 		PDF_page = (new PDPage(PDRectangle.A4));
 		PDF_doc.addPage(PDF_page);
+		container.setPage(new PAGE_Item());
 	}
 	/**
 	 * {@inheritDoc}
@@ -167,7 +169,51 @@ public class VolTEXT_Listener implements VolTextListener {
 			if(container.getDiv().getRGBAcolor() != null) cont.setNonStrokingColor(div.getRGBAcolor());
 			PDExtendedGraphicsState graph = new PDExtendedGraphicsState();
 			if(container.getDiv().getRGBAcolor() != null) graph.setStrokingAlphaConstant((float) (div.getRGBAcolor().getAlpha() / 255f));
-
+			
+			if(div.getUnitX().toCharArray()[0] == '%')
+			{
+				div.setUnitX("mm");
+				if(div.getPosX() >= 0)
+					div.setPosX(width_mm * div.getPosX() / 100);
+				else
+					div.setPosX(width_mm - div.getWidth() + width_mm * div.getPosX() / 100);
+			}
+			else if(div.getUnitX() == "pt")
+			{
+				div.setUnitX("mm");
+				if(div.getPosX() >= 0)
+					div.setPosX(UnitConverter.convPointmm(div.getPosX()));
+				else
+					div.setPosX(width_mm - div.getWidth() + UnitConverter.convPointmm(div.getPosX()));
+			}
+			else
+			{
+				if(div.getPosX() < 0)
+					div.setPosX(width_mm - div.getWidth() + div.getPosX());
+			}
+			
+			if(div.getUnitY().toCharArray()[0] == '%')
+			{
+				div.setUnitY("mm");
+				if(div.getPosY() >= 0)
+					div.setPosY(height_mm * div.getPosY() / 100);
+				else
+					div.setPosY(height_mm - div.getHeight() + height_mm * div.getPosY() / 100);
+			}
+			else if(div.getUnitY() == "pt")
+			{
+				div.setUnitY("mm");
+				if(div.getPosY() >= 0)
+					div.setPosY(UnitConverter.convPointmm(div.getPosY()));
+				else
+					div.setPosY(height_mm - div.getHeight() + UnitConverter.convPointmm(div.getPosY()));
+			}
+			else
+			{
+				if(div.getPosY() < 0)
+					div.setPosY(height_mm - div.getHeight() + div.getPosY());
+			}
+			
 			if(div.isFitX())
 			{
 				div.setWidth(width_mm);
@@ -223,15 +269,17 @@ public class VolTEXT_Listener implements VolTextListener {
 			float dimx = UnitConverter.convmmPoint(div.getWidth());
 			float dimy = UnitConverter.convmmPoint(div.getHeight());
 			/* transform */
-			cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)div.getPosX())+dimx/2, h_p-dimy/2-UnitConverter.convmmPoint((float)div.getPosY())));
+			//cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)div.getPosX())+dimx/2, h_p-dimy/2-UnitConverter.convmmPoint((float)div.getPosY())));
 			cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
 			//TH not needed previousAngle = tAngles[i - 1];
-			cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)div.getPosX())+dimx/2), -(h_p-dimy/2-UnitConverter.convmmPoint((float)div.getPosY()))));
 			//cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
 			cont.addRect(UnitConverter.convmmPoint(div.getPosX()), h_p - dimy - UnitConverter.convmmPoint(div.getPosY()), dimx, dimy);
 			cont.setGraphicsStateParameters(graph);
-			//cont.saveGraphicsState();
+			cont.saveGraphicsState();
 			cont.fill();
+			//cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)div.getPosX())+dimx/2), -(h_p-dimy/2-UnitConverter.convmmPoint((float)div.getPosY()))));
+			cont.transform(Matrix.getRotateInstance(Math.toRadians(-div.getAngle_Rotation()), 0, 0));
+			
 			cont.close();
 			//cont.restoreGraphicsState();
 			//la riga seguente serve per la gestione dell'uscita da un div, che implica anche che gli
@@ -259,82 +307,71 @@ public class VolTEXT_Listener implements VolTextListener {
 
 				String Path = item.getURL();
 				
-				switch(item.getUnitX())
+				
+				if(item.getUnitX().toCharArray()[0] == '%')
 				{
-				case "mm":
-					if(item.getPosX() < 0)
-					{
-						item.setPosX(container.getDiv().getWidth() - item.getPosX());
-					}
-					break;
-				case "%":
-					float perc = item.getPosX();
-					float width = container.getDiv().getWidth();
-					if(perc < 0)
-					{
-						item.setPosX(width * (100 - perc) / 100);
-					}
+					item.setUnitX("mm");
+					if(item.getPosX() >= 0)
+						item.setPosX(div_width * item.getPosX() / 100);
 					else
-					{
-						item.setPosX(width * perc / 100);
-					}
-					break;
-				case "pt":
-					float point = item.getPosX();
-					if(item.getPosX() < 0)
-					{
-						item.setPosX(container.getDiv().getWidth() - UnitConverter.convPointmm(point));
-					}
+						item.setPosX(div_width - item.getWidth() + div_width * item.getPosX() / 100);
+				}
+				else if(item.getUnitX() == "pt")
+				{
+					item.setUnitX("mm");
+					if(item.getPosX() >= 0)
+						item.setPosX(UnitConverter.convPointmm(item.getPosX()));
 					else
-					{
-						item.setPosX(UnitConverter.convPointmm(point));
-					}
-					break;
+						item.setPosX(div_width - item.getWidth() + UnitConverter.convPointmm(item.getPosX()));
+				}
+				else
+				{
+					if(item.getPosX() < 0)
+						item.setPosX(div_width - item.getWidth() + item.getPosX());
 				}
 				
-				switch(item.getUnitY())
+				if(item.getUnitY().toCharArray()[0] == '%')
 				{
-				case "mm":
-					if(item.getPosY() < 0)
-					{
-						item.setPosY(container.getDiv().getHeight() - item.getPosY());
-					}
-					break;
-				case "%":
-					float perc = item.getPosY();
-					float width = container.getDiv().getHeight();
-					if(perc < 0)
-					{
-						item.setPosY(width * (100 - perc) / 100);
-					}
+					item.setUnitY("mm");
+					if(item.getPosY() >= 0)
+						item.setPosY(div_height * item.getPosY() / 100);
 					else
-					{
-						item.setPosY(width * perc / 100);
-					}
-					break;
-				case "pt":
-					float point = item.getPosY();
-					if(item.getPosY() < 0)
-					{
-						item.setPosY(container.getDiv().getHeight() - UnitConverter.convPointmm(point));
-					}
+						item.setPosY(div_height - item.getHeight() + div_height * item.getPosY() / 100);
+				}
+				else if(item.getUnitY() == "pt")
+				{
+					item.setUnitY("mm");
+					if(item.getPosY() >= 0)
+						item.setPosY(UnitConverter.convPointmm(item.getPosY()));
 					else
-					{
-						item.setPosY(UnitConverter.convPointmm(point));
-					}
-					break;
+						item.setPosY(div_height - item.getHeight() + UnitConverter.convPointmm(item.getPosY()));
+				}
+				else
+				{
+					if(item.getPosY() < 0)
+						item.setPosY(div_height - item.getHeight() + item.getPosY());
 				}
 				
-				if(item.getUnitWidth() == "%")
+				if(item.getUnitWidth().toCharArray()[0] == '%')
 				{
 					item.setUnitWidth("mm");
 					item.setWidth(container.getDiv().getWidth() * item.getWidth() / 100);
 				}
+				else if(item.getUnitWidth() == "pt")
+				{
+					item.setUnitWidth("mm");
+					item.setWidth(UnitConverter.convPointmm(item.getWidth()));
+				}
 				
-				if(item.getUnitHeight() == "%")
+				if(item.getUnitHeight().toCharArray()[0] == '%')
 				{
 					item.setUnitHeight("mm");
 					item.setHeight(container.getDiv().getHeight() * item.getHeight() / 100);
+				}
+				else if(item.getUnitWidth() == "pt")
+				{
+					item.setUnitHeight("mm");
+					item.setHeight(UnitConverter.convPointmm(item.getHeight()));
 				}
 				
 				try {
@@ -589,6 +626,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
 			IMG_Item img = container.getImg();
 			img.setURL(Path);
+			
 			if(img.getWidth()==null && img.getHeight()==null)
 			{
 				img.setWidth(UnitConverter.convPointmm((float)pdImage.getWidth()));
@@ -607,21 +645,65 @@ public class VolTEXT_Listener implements VolTextListener {
 					img.setUnitWidth("mm");
 					img.setWidth(w_mm * img.getWidth() / 100);
 				}
+				else if(img.getUnitWidth() == "pt")
+				{
+					img.setUnitWidth("mm");
+					img.setWidth(UnitConverter.convPointmm(img.getWidth()));
+				}
+				
 				if(img.getUnitHeight() == "%")
 				{
 					img.setUnitHeight("mm");
 					img.setHeight(h_mm * img.getHeight() / 100);
 				}
-				//szwitch con tutte le unità i misura
+				else if(img.getUnitHeight() == "pt")
+				{
+					img.setUnitHeight("mm");
+					img.setHeight(UnitConverter.convPointmm(img.getHeight()));
+				}
+				
 				if(img.getUnitX() == "%")
 				{
 					img.setUnitX("mm");
-					img.setPosX(w_mm * img.getWidth() / 100);
+					if(img.getPosX() >= 0)
+						img.setPosX(w_mm * img.getPosX() / 100);
+					else
+						img.setPosX(w_mm - img.getWidth() + w_mm * img.getPosX() / 100);
 				}
+				else if(img.getUnitX() == "pt")
+				{
+					img.setUnitX("mm");
+					if(img.getPosX() >= 0)
+						img.setPosX(UnitConverter.convPointmm(img.getPosX()));
+					else
+						img.setPosX(w_mm - img.getWidth() + UnitConverter.convPointmm(img.getPosX()));
+				}
+				else
+				{
+					if(img.getPosX() < 0)
+						img.setPosX(w_mm - img.getWidth() + img.getPosX());
+				}
+				
 				if(img.getUnitY() == "%")
 				{
 					img.setUnitY("mm");
-					img.setPosY(h_mm * img.getHeight() / 100);
+					if(img.getPosY() >= 0)
+						img.setPosY(h_mm * img.getPosY() / 100);
+					else
+						img.setPosY(h_mm - img.getHeight() + h_mm * img.getPosY() / 100);
+				}
+				else if(img.getUnitY() == "pt")
+				{
+					img.setUnitY("mm");
+					if(img.getPosY() >= 0)
+						img.setPosY(UnitConverter.convPointmm(img.getPosY()));
+					else
+						img.setPosY(h_mm - img.getHeight() + UnitConverter.convPointmm(img.getPosY()));
+				}
+				else
+				{
+					if(img.getPosY() < 0)
+						img.setPosY(h_mm - img.getHeight() + img.getPosY());
 				}
 				
 				if(img.isFitX())
@@ -1045,7 +1127,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		}
 		else
 		{
-			if(ctx.children.get(0).toString() == "width")
+			if(ctx.getChild(0).toString().replaceAll("\\s+", "").equals("width"))
 				p.setWidth(Float.parseFloat(ctx.NVAL().toString()));
 			else
 				p.setHeight(Float.parseFloat(ctx.NVAL().toString()));
@@ -1079,7 +1161,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 		}
 		if(p.getFormat() == "" && p.getWidth() != 0f && p.getHeight() != 0f)
-			pdrect = new PDRectangle(p.getWidth(), p.getHeight());
+			pdrect = new PDRectangle(UnitConverter.convmmPoint(p.getWidth()), UnitConverter.convmmPoint(p.getHeight()));
 		if(p.getFormat() == "" && (p.getWidth() == 0f || p.getHeight() == 0f))
 			pdrect = PDRectangle.A4;
 
@@ -1190,50 +1272,22 @@ public class VolTEXT_Listener implements VolTextListener {
 		if(ctx.getParent() instanceof VolTextParser.DivContext)
 		{
 			DIV_Item div = container.getDiv();
-			switch(ctx.children.get(0).toString().toLowerCase()) {
+			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "pos-x":
 				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
-				switch(unit_posx)
-				{
-				case "mm":
+				div.setUnitX(unit_posx);
+				if(ctx.NOTVAL() == null)
 					div.setPosX(Float.parseFloat((ctx.NVAL().toString())));
-					break;
-				case "%":
-					float perc = Float.parseFloat(ctx.NVAL().toString());
-					float widthPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
-					div.setPosX(widthPage * perc / 100);
-					break;
-				case "pt":
-					float point = Float.parseFloat(ctx.NVAL().toString());
-					div.setPosX(UnitConverter.convPointmm(  point));
-					break;
-				default:
-					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
-					div.setPosX(Float.parseFloat((ctx.NVAL().toString())));
-					break;
-				}
+				else
+					div.setPosX(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "pos-y":
 				String unit_posy = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
-				switch(unit_posy)
-				{
-				case "mm":
+				div.setUnitY(unit_posy);
+				if(ctx.NOTVAL() == null)
 					div.setPosY(Float.parseFloat((ctx.NVAL().toString())));
-					break;
-				case "%":
-					float perc = Float.parseFloat(ctx.NVAL().toString());
-					float heigthPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
-					div.setPosY(heigthPage * perc / 100);
-					break;
-				case "pt":
-					float point = Float.parseFloat(ctx.NVAL().toString());
-					div.setPosY(UnitConverter.convPointmm(  point));
-					break;
-				default:
-					System.out.println("Unità di misura sconosciuta. Uso dei mm.");
-					div.setPosY(Float.parseFloat((ctx.NVAL().toString())));
-					break;
-				}
+				else
+					div.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "angle-rotation":
 				div.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
@@ -1291,59 +1345,35 @@ public class VolTEXT_Listener implements VolTextListener {
 		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
 		{
 			IMG_Item img = container.getImg();
-			switch(ctx.children.get(0).toString().toLowerCase()) {
+			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "pos-x":
 				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
 				img.setUnitX(unit_posx);
-				img.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+				if(ctx.NOTVAL() == null)
+					img.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+				else
+					img.setPosX(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "pos-y":
 				String unit_posy = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
 				img.setUnitY(unit_posy);
-				img.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+				if(ctx.NOTVAL() == null)
+					img.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+				else
+					img.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "angle-rotation":
 				img.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
 				break;
 			case "height":
 				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
-				switch(unit)
-				{
-				case "mm":
-					img.setUnitHeight("mm");
-					img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "%":
-					img.setUnitHeight("%");
-					float perc = Float.parseFloat(ctx.NVAL().toString());
-					img.setHeight(perc);
-					break;
-				case "pt":
-					img.setUnitHeight("pt");
-					float point = Float.parseFloat(ctx.NVAL().toString());
-					img.setHeight(UnitConverter.convPointmm(  point));
-					break;
-				}
+				img.setUnitHeight(unit);
+				img.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
 				break;
 			case "width":
 				String unit_w = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
-				switch(unit_w)
-				{
-				case "mm":
-					img.setUnitWidth(unit_w);
-					img.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
-					break;
-				case "%":
-					float perc = Float.parseFloat(ctx.NVAL().toString());
-					img.setUnitWidth(unit_w);
-					img.setWidth(perc);
-					break;
-				case "pt":
-					img.setUnitWidth(unit_w);
-					float point = Float.parseFloat(ctx.NVAL().toString());
-					img.setWidth(UnitConverter.convPointmm(  point));
-					break;
-				}
+				img.setUnitWidth(unit_w);
+				img.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
 				break;
 			case "layer":
 				img.setLayer(Integer.parseInt(ctx.NVAL().toString()));
@@ -1356,7 +1386,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
 		{
 			TXT_Item txt = container.getTxt();
-			switch(ctx.children.get(0).toString().toLowerCase()) {
+			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "pos-x":
 				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
 				switch(unit_posx)
@@ -1473,7 +1503,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
 		{
 			LIST_Item list = container.getList();
-			switch(ctx.children.get(0).toString().toLowerCase()) {
+			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "pos-x":
 				String unit_posx = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
 				switch(unit_posx)
@@ -1642,7 +1672,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
 		{
 			TXT_Item txt = container.getTxt();
-			switch(ctx.children.get(0).toString().toLowerCase()) {
+			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "id:":
 				txt.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 				break;
@@ -1678,7 +1708,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
 		{
 			LIST_Item list = container.getList();
-			switch(ctx.children.get(0).toString().toLowerCase()) {
+			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "id:":
 				list.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 				break;
@@ -1800,7 +1830,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		boolean tf = false;
 		System.out.println(ctx.TFVAL().toString());
 		tf = Boolean.parseBoolean(ctx.TFVAL().toString());
-		if(ctx.children.get(0).toString()=="fit-x") {
+		if(ctx.getChild(0).toString().equals("fit-x")) {
 			if(ctx.getParent() instanceof VolTextParser.DivContext)
 			{
 				DIV_Item div = container.getDiv();

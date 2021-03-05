@@ -1,44 +1,64 @@
 {
-title:"Test1";
-page:{
-div:{
-color:#12345678;
-width:100%;
-height:10mm;
-}
-div:{
-color:#82da3c66;
-width:10mm;
-height:10mm;
-}
-div:{
-color:#342365ff;
-width:70%;
-height:50%;
-img:{
-URL:"./SAM0043.jpg";
-width:5mm;
-height:5mm;
-position:cc;
-}
-position:cc;
-}
-div:{
-color:#23dc6777;
-width:1mm;
-height:100%;
-pos-x:-10%;
-}
-}
-page:{
-text:{
-id:"testo_fuori_div";
-pos-x:30%;
-pos-y:20%;
-width:50%;
-height:50%;
-string:"ciao a tutti di fuori!";
-color:#ff0000ff;
-}
-}
+	title:"TestA5";
+	path:"./PageDiv/";
+	page:{
+		width:1200;
+		height:1200;
+		div:{
+			id:"A";
+			color:#482A48FF;
+			width:50mm;
+			height:50mm;
+			pos-x:100;
+			pos-y:100;
+			position:cc;
+			fit-x:true;
+			angle-rotation:56;
+		}
+		div:{
+			id:"B";
+			position:lc;
+			color:#581845FF;
+			width:50mm;
+			height:50mm;
+			pos-x:60%;
+			pos-y:60%;
+			fit-y:true;
+		}
+		div:{
+			id:"C";
+			color:#900C3FFF;
+			width:50mm;
+			height:50mm;
+			pos-x:300pt;
+			position:rb;
+			pos-y:400pt;
+		}
+		div:{
+			id:"-A";
+			color:#C70039FF;
+			width:50mm;
+			height:50mm;
+			pos-x:-100;
+			pos-y:-100;
+			fit-y:true;
+		}
+		div:{
+			id:"-B";
+			color:#FF5733FF;
+			width:50mm;
+			height:50mm;
+			pos-x:-60%;
+			pos-y:-60%;
+		}
+		div:{
+			id:"-C";
+			color:#FFC300FF;
+			width:50mm;
+			fit-x:true;
+			height:50mm;
+			pos-x:-300pt;
+			pos-y:-400pt;
+		}
+	}
 }
