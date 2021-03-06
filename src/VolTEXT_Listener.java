@@ -1255,12 +1255,12 @@ public class VolTEXT_Listener implements VolTextListener {
 			    sb.insert(0, '0'); // pad with leading zero if needed
 			}
 			sb.append(Integer.toHexString(txt.getRGBAcolor().getGreen()));
-			if (sb.length() < 2) {
-			    sb.insert(0, '0'); // pad with leading zero if needed
+			if (sb.length() < 4) {
+			    sb.insert(2, '0'); // pad with leading zero if needed
 			}
 			sb.append(Integer.toHexString(txt.getRGBAcolor().getBlue()));
-			if (sb.length() < 2) {
-			    sb.insert(0, '0'); // pad with leading zero if needed
+			if (sb.length() < 6) {
+			    sb.insert(4, '0'); // pad with leading zero if needed
 			}
 			String hex = sb.toString();
 			if(txt.getRGBAcolor() != null) txt.setText("{color:#"+hex+"}"+txt.getText().substring(1, txt.getText().length()-1)+"{color:#000000}");
