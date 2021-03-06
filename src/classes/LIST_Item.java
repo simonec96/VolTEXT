@@ -9,6 +9,7 @@ public class LIST_Item extends Item {
 	private List<String> items;
 	private String ID;
 	private String FontFamily;
+	private String FontFamilyTTF;
 	private Integer FontSize;
 	private Color rGBAcolor;
 	private boolean Bold;
@@ -22,6 +23,7 @@ public class LIST_Item extends Item {
 	private Float Height;
 	private boolean FitX;
 	private boolean FitY;
+	private String Alignment;
 	private Integer Layer;
 	private String UnitX;
 	private String UnitY;
@@ -46,6 +48,8 @@ public class LIST_Item extends Item {
 		setHeight(null);
 		setFitX(false);
 		setFitY(false);
+		setAlignment(null);
+		setFontFamilyTTF("");
 		setLayer(0);
 		setUnitX("mm");
 		setUnitY("mm");
@@ -93,6 +97,20 @@ public class LIST_Item extends Item {
 	 */
 	public void setFontFamily(String fontFamily) {
 		FontFamily = fontFamily;
+	}
+
+	/**
+	 * @return the fontFamilyTTF
+	 */
+	public String getFontFamilyTTF() {
+		return FontFamilyTTF;
+	}
+
+	/**
+	 * @param fontFamilyTTF the fontFamilyTTF to set
+	 */
+	public void setFontFamilyTTF(String fontFamilyTTF) {
+		FontFamilyTTF = fontFamilyTTF;
 	}
 
 	/**
@@ -304,6 +322,20 @@ public class LIST_Item extends Item {
 	 */
 	public void setFitY(boolean fitY) {
 		FitY = fitY;
+	}
+
+	/**
+	 * @return the alignment
+	 */
+	public String getAlignment() {
+		return Alignment;
+	}
+
+	/**
+	 * @param alignment the alignment to set
+	 */
+	public void setAlignment(String alignment) {
+		Alignment = alignment;
 	}
 
 	/**

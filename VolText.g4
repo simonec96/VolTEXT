@@ -35,7 +35,7 @@ imgElem: 	'URL:' STRING ENDNLINE;
 
 text: 		'text' O txtattr* txtElem? txtattr* C;
 
-txtattr: 	(color | idval | imganumber | positionv | txtval | fitAttr);
+txtattr: 	(color | idval | imganumber | positionv | alignment |  txtval | fitAttr);
 
 txtElem: 	'string:' STRING ENDNLINE;
 
@@ -60,13 +60,16 @@ UNIT:		'mm' | '%' | 'pt';
 		 
 idval:		'id:' STRING ENDNLINE;
 
-txtval:		'font-family:' STRING ENDNLINE 
+txtval:		('font-family' 
+	|		 'font-family-ttf') ':' STRING ENDLINE
 	| 		'font-size' ':' NVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE;
 	
 color:		'color:' COLORVAL ENDNLINE;
 
 positionv:	'position:' POSVAL ENDNLINE;
+
+alignment:  'alignment:' ALIGNVAL ENDLINE;
 
 pageattr:	'orientation:' ORIENTATION ENDNLINE
 	|		'oob:' TFVAL ENDNLINE
@@ -99,7 +102,10 @@ TXTATF: 	'bold'
 
 COLORVAL: 	'#' ([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]);
 
-
+ALIGNVAL:    'left'
+	|		 'center'
+	|		 'right'
+	|		 'justify';
 
 TFVAL: 		'true' 
 	| 		'false';

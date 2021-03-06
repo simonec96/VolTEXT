@@ -61,4 +61,15 @@
 			pos-y:-400pt;
 		}
 	}
+	page:{
+		format:A5;
+		text:{
+			id:"TESTO";
+			color:#FF0000FF;
+			pos-x:20%;
+			pos-y:10%;
+			height:10%;
+			string:"io \\bold sono \\italic un bel \\italic \\bold ragazzo";
+		}
+	}
 }

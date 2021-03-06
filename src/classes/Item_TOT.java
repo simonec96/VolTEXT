@@ -20,7 +20,9 @@ public class Item_TOT {
 	 * @param angle_Rotation
 	 * @param width
 	 * @param height
-	 * @param fit
+	 * @param fitx
+	 * @param fity
+	 * @param alignment
 	 * @param layer
 	 * @param text
 	 * @param fontFamilyTTF
@@ -28,7 +30,7 @@ public class Item_TOT {
 	 */
 	public Item_TOT(String t, boolean ordered, List<String> items, String iD, String fontFamily, Integer fontSize,
 			Color rGBAcolor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
-			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY, Integer layer, String text,
+			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY,String align, Integer layer, String text,
 			String fontFamilyTTF, String uRL, String ux, String uy, String uw, String uh) {
 		super();
 		this.type = t;
@@ -49,6 +51,7 @@ public class Item_TOT {
 		Height = height;
 		setFitX(fitX);
 		setFitY(fitY);
+		setAlignment(align);
 		Layer = layer;
 		Text = text;
 		FontFamilyTTF = fontFamilyTTF;
@@ -76,6 +79,7 @@ public class Item_TOT {
 	private Float Height;
 	private boolean FitX;
 	private boolean FitY;
+	private String Alignment;
 	private Integer Layer;
 	private String Text;
 	private String FontFamilyTTF;
@@ -147,13 +151,13 @@ public class Item_TOT {
 	/**
 	 * @return the rGBAcolor
 	 */
-	public Color getrGBAcolor() {
+	public Color getRGBAcolor() {
 		return rGBAcolor;
 	}
 	/**
 	 * @param rGBAcolor the rGBAcolor to set
 	 */
-	public void setrGBAcolor(Color rGBAcolor) {
+	public void setRGBAcolor(Color rGBAcolor) {
 		this.rGBAcolor = rGBAcolor;
 	}
 	/**
@@ -288,6 +292,18 @@ public class Item_TOT {
 	 */
 	public void setFitY(boolean fitY) {
 		FitY = fitY;
+	}
+	/**
+	 * @return the alignment
+	 */
+	public String getAlignment() {
+		return Alignment;
+	}
+	/**
+	 * @param alignment the alignment to set
+	 */
+	public void setAlignment(String alignment) {
+		Alignment = alignment;
 	}
 	/**
 	 * @return the layer

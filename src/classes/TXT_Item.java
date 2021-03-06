@@ -12,8 +12,9 @@ public class TXT_Item extends Item {
 		setAngle_Rotation(0f);
 		setID("");
 		setFontFamily("");
+		setFontFamilyTTF(null);
 		setFontSize(12);
-		setrGBAcolor(new Color(0, 0, 0, 0));
+		setRGBAcolor(new Color(0, 0, 0, 0));
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
@@ -24,6 +25,7 @@ public class TXT_Item extends Item {
 		setHeight(null);
 		setFitX(false);
 		setFitY(false);
+		setAlignment(null);
 		setLayer(0);
 		setUnitX("mm");
 		setUnitY("mm");
@@ -33,6 +35,7 @@ public class TXT_Item extends Item {
 	private String Text;
 	private String ID;
 	private String FontFamily;
+	private String FontFamilyTTF;
 	private Integer FontSize;
 	private Color rGBAcolor;
 	private boolean Bold;
@@ -46,6 +49,7 @@ public class TXT_Item extends Item {
 	private Float Height;
 	private boolean FitX;
 	private boolean FitY;
+	private String Alignment;
 	private Integer Layer;
 	private String UnitX;
 	private String UnitY;
@@ -86,6 +90,18 @@ public class TXT_Item extends Item {
 	 */
 	public void setFontFamily(String fontFamily) {
 		FontFamily = fontFamily;
+	}
+	/**
+	 * @return the fontFamilyTTF
+	 */
+	public String getFontFamilyTTF() {
+		return FontFamilyTTF;
+	}
+	/**
+	 * @param fontFamilyTTF the fontFamilyTTF to set
+	 */
+	public void setFontFamilyTTF(String fontFamilyTTF) {
+		FontFamilyTTF = fontFamilyTTF;
 	}
 	/**
 	 * @return the fontSize
@@ -222,13 +238,13 @@ public class TXT_Item extends Item {
 	/**
 	 * @return the rGBAcolor
 	 */
-	public Color getrGBAcolor() {
+	public Color getRGBAcolor() {
 		return rGBAcolor;
 	}
 	/**
 	 * @param rGBAcolor the rGBAcolor to set
 	 */
-	public void setrGBAcolor(Color rGBAcolor) {
+	public void setRGBAcolor(Color rGBAcolor) {
 		this.rGBAcolor = rGBAcolor;
 	}
 	/**
@@ -254,6 +270,18 @@ public class TXT_Item extends Item {
 	 */
 	public void setFitY(boolean fitY) {
 		FitY = fitY;
+	}
+	/**
+	 * @return the alignment
+	 */
+	public String getAlignment() {
+		return Alignment;
+	}
+	/**
+	 * @param alignment the alignment to set
+	 */
+	public void setAlignment(String alignment) {
+		Alignment = alignment;
 	}
 	/**
 	 * @return the unitX
