@@ -3,6 +3,10 @@
  */
 grammar VolText;
 
+@header {
+    package antlr;
+}
+
 // match keyword hello followed by an identifier
 pdf : 		A pdfattr* (stylesheet)? (page)+ C;
 pdfattr: 	'title:' STRING ENDNLINE

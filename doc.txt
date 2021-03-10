@@ -1,12 +1,12 @@
 {
-	title:"TestA5";
+	title:"TestA6";
 	path:"./PageDiv/";
 	page:{
 		width:1200;
 		height:1200;
 		div:{
 			id:"A";
-			color:#482A48FF;
+			color:#482A4822;
 			width:50mm;
 			height:50mm;
 			pos-x:100;
@@ -18,7 +18,7 @@
 		div:{
 			id:"B";
 			position:lc;
-			color:#581845FF;
+			color:#58184544;
 			width:50mm;
 			height:50mm;
 			pos-x:60%;
@@ -27,7 +27,7 @@
 		}
 		div:{
 			id:"C";
-			color:#900C3FFF;
+			color:#900C3F66;
 			width:50mm;
 			height:50mm;
 			pos-x:300pt;
@@ -59,6 +59,42 @@
 			height:50mm;
 			pos-x:-300pt;
 			pos-y:-400pt;
+		}
+	}
+	page:{
+		format:A4;
+		img:{
+			URL:"./Sid.png";
+			position:lb;
+			angle-rotation:30;
+			width:30%;
+			height:30%;
+		}
+		div:{
+			position:cc;
+			color:#AA36F0FF;
+			height: 30%;
+			width: 30%;
+			angle-rotation: 90;
+			img:{
+				URL:"./Sid.png";
+				width:30%;
+				height:30%;
+			}
+			img:{
+				URL:"./Sid.png";
+				position:lc;
+				width:30%;
+				height:30%;
+				angle-rotation: 30;
+			}
+			img:{
+				URL:"./Sid.png";
+				position:ct;
+				width:30%;
+				height:30%;
+				angle-rotation: 40;
+			}
 		}
 	}
 	page:{
