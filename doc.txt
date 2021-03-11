@@ -102,12 +102,11 @@
 		text:{
 			id:"TESTO";
 			color:#FF0000FF;
-			pos-x:20mm;
-			pos-y:20mm;
+			position:cc;
 			height:10mm;
 			width:50mm;
 			string:"io sono un bel ragazzo hshskgddhdkdbkbdkwaj dhajhnahc sjdhjsahgc dajfhea";
-			angle-rotation: 45;
+			angle-rotation: 0;
 		}
 	}
 }

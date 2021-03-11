@@ -66,7 +66,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		}
 		catch(Exception ex)
 		{
-			System.out.println(ex);
+			//System.out.println(ex);
 		}
 		finally {
 		}
@@ -298,7 +298,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		}
 		catch(IOException ioex)
 		{
-			System.out.println(ioex);
+			//System.out.println(ioex);
 		}
 		container.getList_tot().clear();
 	}
@@ -1371,7 +1371,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
             System.out.println("txt_posX "+txt.getPosX());
             System.out.println("txt_posY "+txt.getPosY());
-			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX())-dimx/2,-UnitConverter.convmmPoint(txt.getPosY())+dimy/2);
+			Position pt=new Position(-dimx/2,+dimy/2);
 			
 			
 			if(txt.getPosY()<0) {
@@ -1383,35 +1383,15 @@ public class VolTEXT_Listener implements VolTextListener {
 			/* transform */
 			p.setAlignment(al);
 			PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND,true);
-			/*PDFont f=font.getPlainFont();
-			float largh_txt=f.getStringWidth(txt.getText());*/
-			float alt=p.getHeight();
-			
-			System.out.println("alt p: "+UnitConverter.convPointmm(alt));
-			//for(int k=0;k<10;k++) {
-				//p.draw(PDF_doc,cont, pt,null);
-            	//transizione di posx+dimX/2 asse x, posy+dimY/2 asse y
-            	cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(txt.getPosX()) + dimx/2, h_p -dimy/2- UnitConverter.convmmPoint(txt.getPosY())));
-				System.out.println(UnitConverter.convmmPoint(txt.getPosX()) + dimx/2);
-				System.out.println("nostra posy"+(h_p-dimy/2 - UnitConverter.convmmPoint(txt.getPosY())));
-            	//rotazione di n radianti del contesto
-            	cont.transform(Matrix.getRotateInstance(Math.toRadians(txt.getAngle_Rotation()), 0, 0));
-				//cont.saveGraphicsState();
-            	cont.addRect(0, 0, 20, 20);
-				cont.fill();
-				p.draw(PDF_doc,cont, pt,null);
-				//ritorno indietro di rotazione del contesto (per risettarsi a 0)
-				cont.transform(Matrix.getRotateInstance(Math.toRadians(-txt.getAngle_Rotation()), 0, 0));
-				//transizione di ritorno al punto origine
-				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(-txt.getPosX()) - dimx/2, -h_p +dimy/2+ UnitConverter.convmmPoint(txt.getPosY())));
-				cont.addRect(0, 0, 20, 20);
-				cont.fill();
-			//}
-			//	System.out.println("abs pos: "+p.getAbsolutePosition().getY());
-			//cstream.close();
+        	cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(txt.getPosX()) + dimx/2, h_p - dimy/2 - UnitConverter.convmmPoint(txt.getPosY())));
+        	cont.transform(Matrix.getRotateInstance(Math.toRadians(txt.getAngle_Rotation()), 0, 0));
+			p.draw(PDF_doc,cont, pt,null);
+			//ritorno indietro di rotazione del contesto (per risettarsi a 0)
+			cont.transform(Matrix.getRotateInstance(Math.toRadians(-txt.getAngle_Rotation()), 0, 0));
+			//transizione di ritorno al punto origine
+			cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(-txt.getPosX()) - dimx/2, -h_p +dimy/2+ UnitConverter.convmmPoint(txt.getPosY())));		
 			cont.close();
 			}
-			//cstream.restoreGraphicsState();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
