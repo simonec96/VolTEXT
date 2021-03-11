@@ -1,5 +1,5 @@
 {
-	title:"TestA6";
+	title:"TestA6_text";
 	path:"./PageDiv/";
 	page:{
 		width:1200;
@@ -98,14 +98,16 @@
 		}
 	}
 	page:{
-		format:A5;
+		format:A4;
 		text:{
 			id:"TESTO";
 			color:#FF0000FF;
-			pos-x:20%;
-			pos-y:10%;
-			height:10%;
-			string:"io \\bold sono \\italic un bel \\italic \\bold ragazzo";
+			pos-x:20mm;
+			pos-y:20mm;
+			height:10mm;
+			width:50mm;
+			string:"io sono un bel ragazzo hshskgddhdkdbkbdkwaj dhajhnahc sjdhjsahgc dajfhea";
+			angle-rotation: 45;
 		}
 	}
 }

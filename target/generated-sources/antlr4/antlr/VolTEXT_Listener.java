@@ -449,7 +449,15 @@ public class VolTEXT_Listener implements VolTextListener {
 					float dimx=UnitConverter.convmmPoint(container.getDiv().getWidth());
 					float dimy=UnitConverter.convmmPoint(container.getDiv().getHeight());
 					/* transform */
-					
+					//transizione SUL DIV di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di n radianti del DIV del contesto 
+					//transizione indietro sul div e in avanti sull'oggetto di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di n radianti dell'oggetto del contesto 
+					//DISEGNO ITEM
+					//rotazione di - n radianti dell'oggetto del contesto
+					//transizione avanti sul div e all'indietro sull'oggetto di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di -n radianti del DIV del contesto 
+					//transizione all'indietro SUL DIV di posx+dimX/2 asse x, posy+dimY/2 asse y
 					cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(container.getDiv().getPosX()) + dimx/2, heigthPage - dimy/2 - UnitConverter.convmmPoint(container.getDiv().getPosY())));
 					cont.transform(Matrix.getRotateInstance(Math.toRadians(container.getDiv().getAngle_Rotation()), 0, 0));
 					cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(container.getDiv().getPosX()) + UnitConverter.convmmPoint((float)item.getPosX()) - dimx/2 + dimitemx/2, UnitConverter.convmmPoint((float)container.getDiv().getPosY()) - UnitConverter.convmmPoint(item.getPosY()) + dimy/2 - dimitemy/2));
@@ -641,11 +649,46 @@ public class VolTEXT_Listener implements VolTextListener {
 						}
 					}
 					if(item.isUnderline()) {
-						item.setText("__"+item.getText()+"__");
+						
+		        		PDAnnotationLink txtUnderline = new PDAnnotationLink();
+						// add an underline
+						PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
+						underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+						txtUnderline.setBorderStyle(underline);
+						        		 
+						// set up the markup area
+						float textWidth = (font.getPlainFont().getStringWidth(item.getText())/1000)*item.getFontSize();
+						PDRectangle position = new PDRectangle();
+						position.setLowerLeftX(0);
+						position.setLowerLeftY(p.getHeight() - 24f);
+						position.setUpperRightX(textWidth);
+						position.setUpperRightY(p.getHeight() -4);
+						txtUnderline.setRectangle(position);
+						        		 
+						PDF_page.getAnnotations().add(txtUnderline);
 					}
-					if(item.getRGBAcolor() != null) item.setText("{color:#"+Integer.toHexString(item.getRGBAcolor().getRed())+
-																			Integer.toHexString(item.getRGBAcolor().getGreen())+
-																			Integer.toHexString(item.getRGBAcolor().getBlue())+"}"+item.getText()+"{color:#000000");
+					/*if(txt.isUnderline()) {
+						txt.setText("__"+txt.getText()+"__");
+					}*/
+					if(item.getRGBAcolor() != null)
+						{
+							StringBuilder sb = new StringBuilder();
+						
+							sb.append(Integer.toHexString(item.getRGBAcolor().getRed()));
+							if (sb.length() < 2) {
+								sb.insert(0, '0'); // pad with leading zero if needed
+							}
+							sb.append(Integer.toHexString(item.getRGBAcolor().getGreen()));
+							if (sb.length() < 4) {
+								sb.insert(2, '0'); // pad with leading zero if needed
+							}
+							sb.append(Integer.toHexString(item.getRGBAcolor().getBlue()));
+							if (sb.length() < 6) {
+								sb.insert(4, '0'); // pad with leading zero if needed
+							}
+							String hex = sb.toString();
+							item.setText("{color:#"+hex+"}"+item.getText().substring(1, item.getText().length()-1)+"{color:#000000}");
+					 }
 					//p.addText(item.getText(), item.getFontSize(), font);
 					p.addMarkup(item.getText(), item.getFontSize(), font);
 					
@@ -686,22 +729,37 @@ public class VolTEXT_Listener implements VolTextListener {
 					if(item.getPosY()+item.getHeight()>h_mm) {
 						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 					}	
-					float dimx=UnitConverter.convmmPoint(item.getWidth());
-		            float dimy=UnitConverter.convmmPoint(item.getHeight());
 					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 										
 					if(pt.getY()<0) {
 						System.out.println("Il testo " + item.getID() +" eccede i limiti del del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 					}
-					
+					float dimitemx=UnitConverter.convmmPoint(item.getWidth());
+					float dimitemy=UnitConverter.convmmPoint(item.getHeight());
+					float dimx=UnitConverter.convmmPoint(container.getDiv().getWidth());
+					float dimy=UnitConverter.convmmPoint(container.getDiv().getHeight());
 					/* transform */
+					//transizione SUL DIV di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di n radianti del DIV del contesto 
+					//transizione indietro sul div e in avanti sull'oggetto di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di n radianti dell'oggetto del contesto 
+					//DISEGNO ITEM
+					//rotazione di - n radianti dell'oggetto del contesto
+					//transizione avanti sul div e all'indietro sull'oggetto di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di -n radianti del DIV del contesto 
+					//transizione all'indietro SUL DIV di posx+dimX/2 asse x, posy+dimY/2 asse y
 					PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND, true);
-		            cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)item.getPosX())+dimx/2, PDF_page.getMediaBox().getHeight()-dimy/2-UnitConverter.convmmPoint((float)item.getPosY())));
-		            cont.transform(Matrix.getRotateInstance(Math.toRadians(item.getAngle_Rotation()), 0, 0));
-		            cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)item.getPosX())+dimx/2), -(PDF_page.getMediaBox().getHeight()-dimy/2-UnitConverter.convmmPoint((float)item.getPosY()))));
+					cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(container.getDiv().getPosX()) + dimx/2, heigthPage - dimy/2 - UnitConverter.convmmPoint(container.getDiv().getPosY())));
+					cont.transform(Matrix.getRotateInstance(Math.toRadians(container.getDiv().getAngle_Rotation()), 0, 0));
+					cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(container.getDiv().getPosX()) + UnitConverter.convmmPoint((float)item.getPosX()) - dimx/2 + dimitemx/2, UnitConverter.convmmPoint((float)container.getDiv().getPosY()) - UnitConverter.convmmPoint(item.getPosY()) + dimy/2 - dimitemy/2));
+					cont.transform(Matrix.getRotateInstance(Math.toRadians(item.getAngle_Rotation()), 0, 0));
+					p.draw(PDF_doc,cont, pt, null);
+					cont.transform(Matrix.getRotateInstance(Math.toRadians(-item.getAngle_Rotation()), 0, 0));
+					cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(container.getDiv().getPosX()) - UnitConverter.convmmPoint((float)item.getPosX()) + dimx/2 - dimitemx/2, -UnitConverter.convmmPoint((float)container.getDiv().getPosY()) + UnitConverter.convmmPoint(item.getPosY()) - dimy/2 + dimitemy/2));
+					cont.transform(Matrix.getRotateInstance(-Math.toRadians(container.getDiv().getAngle_Rotation()), 0, 0));
+					cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(container.getDiv().getPosX()) - dimx/2, -heigthPage + dimy/2 + UnitConverter.convmmPoint(container.getDiv().getPosY())));
 					//cont.saveGraphicsState();
 					cont.fill();
-					p.drawText(cont, pt,al, null);
 					cont.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -930,7 +988,10 @@ public class VolTEXT_Listener implements VolTextListener {
 				float dimx=UnitConverter.convmmPoint(img.getWidth());
 				float dimy=UnitConverter.convmmPoint(img.getHeight());
 				/* transform */
-				
+				//transizione di posx+dimX/2 asse x, posy+dimY/2 asse y
+				//rotazione di n radianti del contesto
+            	//ritorno indietro di rotazione del contesto (per risettarsi a 0)
+				//transizione di ritorno al punto origine
 				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(img.getPosX()) + dimx/2, heigthPage - dimy/2 - UnitConverter.convmmPoint(img.getPosY())));
 				cont.transform(Matrix.getRotateInstance(Math.toRadians(img.getAngle_Rotation()), 0, 0));
 				cont.drawImage(pdImage, -dimx/2, -dimy/2, dimx, dimy);
@@ -1274,21 +1335,23 @@ public class VolTEXT_Listener implements VolTextListener {
 			/*if(txt.isUnderline()) {
 				txt.setText("__"+txt.getText()+"__");
 			}*/
-			StringBuilder sb = new StringBuilder();
-			sb.append(Integer.toHexString(txt.getRGBAcolor().getRed()));
-			if (sb.length() < 2) {
-			    sb.insert(0, '0'); // pad with leading zero if needed
+			if(txt.getRGBAcolor() != null) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(Integer.toHexString(txt.getRGBAcolor().getRed()));
+				if (sb.length() < 2) {
+					sb.insert(0, '0'); // pad with leading zero if needed
+				}
+				sb.append(Integer.toHexString(txt.getRGBAcolor().getGreen()));
+				if (sb.length() < 4) {
+					sb.insert(2, '0'); // pad with leading zero if needed
+				}
+				sb.append(Integer.toHexString(txt.getRGBAcolor().getBlue()));
+				if (sb.length() < 6) {
+					sb.insert(4, '0'); // pad with leading zero if needed
+				}
+				String hex = sb.toString();
+				txt.setText("{color:#"+hex+"}"+txt.getText().substring(1, txt.getText().length()-1)+"{color:#000000}");
 			}
-			sb.append(Integer.toHexString(txt.getRGBAcolor().getGreen()));
-			if (sb.length() < 4) {
-			    sb.insert(2, '0'); // pad with leading zero if needed
-			}
-			sb.append(Integer.toHexString(txt.getRGBAcolor().getBlue()));
-			if (sb.length() < 6) {
-			    sb.insert(4, '0'); // pad with leading zero if needed
-			}
-			String hex = sb.toString();
-			if(txt.getRGBAcolor() != null) txt.setText("{color:#"+hex+"}"+txt.getText().substring(1, txt.getText().length()-1)+"{color:#000000}");
 			//p.addText(item.getText(), item.getFontSize(), font);
 			p.addMarkup(txt.getText(), txt.getFontSize(), font);
 			if(txt.getPosX()<=w_mm) {
@@ -1302,29 +1365,49 @@ public class VolTEXT_Listener implements VolTextListener {
 			if(txt.getPosY()+txt.getHeight()>h_mm) {
 				System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
 			}	
-			float dimx=UnitConverter.convmmPoint(txt.getWidth());
-            float dimy=UnitConverter.convmmPoint(txt.getHeight());
+			float dimx=p.getWidth();
+			System.out.println("dimx:"+dimx);
+            float dimy=p.getHeight();
 			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
             System.out.println("txt_posX "+txt.getPosX());
             System.out.println("txt_posY "+txt.getPosY());
-			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX()),UnitConverter.convmmPoint(txt.getPosY()));
+			Position pt=new Position(UnitConverter.convmmPoint(txt.getPosX())-dimx/2,-UnitConverter.convmmPoint(txt.getPosY())+dimy/2);
 			
 			
-			if(pt.getY()<0) {
+			if(txt.getPosY()<0) {
 				System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
 			}
 			
+			
+			
 			/* transform */
-			
+			p.setAlignment(al);
 			PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND,true);
-            if(txt.getAngle_Rotation()!=0f) {
-            	cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint((float)txt.getPosX())+dimx/2, h_p-dimy/2-UnitConverter.convmmPoint((float)txt.getPosY())));
-            	cont.transform(Matrix.getRotateInstance(Math.toRadians(txt.getAngle_Rotation()), 0, 0));
-            	cont.transform(Matrix.getTranslateInstance(-(UnitConverter.convmmPoint((float)txt.getPosX())+dimx/2), -(h_p-dimy/2-UnitConverter.convmmPoint((float)txt.getPosY()))));
-            }
-            p.setAlignment(al);
-			p.draw(PDF_doc,cont, pt,null);
+			/*PDFont f=font.getPlainFont();
+			float largh_txt=f.getStringWidth(txt.getText());*/
+			float alt=p.getHeight();
 			
+			System.out.println("alt p: "+UnitConverter.convPointmm(alt));
+			//for(int k=0;k<10;k++) {
+				//p.draw(PDF_doc,cont, pt,null);
+            	//transizione di posx+dimX/2 asse x, posy+dimY/2 asse y
+            	cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(txt.getPosX()) + dimx/2, h_p -dimy/2- UnitConverter.convmmPoint(txt.getPosY())));
+				System.out.println(UnitConverter.convmmPoint(txt.getPosX()) + dimx/2);
+				System.out.println("nostra posy"+(h_p-dimy/2 - UnitConverter.convmmPoint(txt.getPosY())));
+            	//rotazione di n radianti del contesto
+            	cont.transform(Matrix.getRotateInstance(Math.toRadians(txt.getAngle_Rotation()), 0, 0));
+				//cont.saveGraphicsState();
+            	cont.addRect(0, 0, 20, 20);
+				cont.fill();
+				p.draw(PDF_doc,cont, pt,null);
+				//ritorno indietro di rotazione del contesto (per risettarsi a 0)
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(-txt.getAngle_Rotation()), 0, 0));
+				//transizione di ritorno al punto origine
+				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(-txt.getPosX()) - dimx/2, -h_p +dimy/2+ UnitConverter.convmmPoint(txt.getPosY())));
+				cont.addRect(0, 0, 20, 20);
+				cont.fill();
+			//}
+			//	System.out.println("abs pos: "+p.getAbsolutePosition().getY());
 			//cstream.close();
 			cont.close();
 			}

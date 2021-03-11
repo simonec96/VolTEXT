@@ -11,7 +11,7 @@ public class Test2 {
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("doc.txt") );
 	    
 		VolTextLexer lexer = new VolTextLexer(codePointCharStream);
-
+     
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 
 		VolTextParser parser = new VolTextParser(tokens);
