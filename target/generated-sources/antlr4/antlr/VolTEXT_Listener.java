@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 
 
@@ -2070,39 +2071,33 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override
 	public void enterColor(VolTextParser.ColorContext ctx) {
 		// TODO Auto-generated method stub
-		String colore;
+		Color c = null;
 		switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "color:":
-				 colore= ctx.COLORVAL().toString();
+				 String colore= ctx.COLORVAL().toString();
+				 int r = Integer.parseInt(colore.substring(1, 3), 16);
+				 int g = Integer.parseInt(colore.substring(3, 5), 16);
+				 int b = Integer.parseInt(colore.substring(5, 7), 16);
+				 int a = Integer.parseInt(colore.substring(7, 9), 16);
+				 c = new Color(r, g, b ,a);
 				break;
-			case "colorV:":
-				Color colorRGB=Color.getColor(ctx.STRING().toString());
-				StringBuilder sb = new StringBuilder();
-				sb.append(Integer.toHexString(colorRGB.getRed()));
-				if (sb.length() < 2) {
-					sb.insert(0, '0'); // pad with leading zero if needed
+			case "colort:":
+				
+				try {
+					Field f = Class.forName("java.awt.Color").getField(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+					c=(Color)f.get(null);
+				} catch (Exception e) {
+					c=Color.BLACK;
 				}
-				sb.append(Integer.toHexString(colorRGB.getGreen()));
-				if (sb.length() < 4) {
-					sb.insert(2, '0'); // pad with leading zero if needed
-				}
-				sb.append(Integer.toHexString(colorRGB.getBlue()));
-				if (sb.length() < 6) {
-					sb.insert(4, '0'); // pad with leading zero if needed
-				}
-				colore = "#"+sb.toString();
+
 				break;
 			default:
-				colore = "#000000";
+				c=Color.BLACK;
 				break;
 		}
 		
 
-		int r = Integer.parseInt(colore.substring(1, 3), 16);
-		int g = Integer.parseInt(colore.substring(3, 5), 16);
-		int b = Integer.parseInt(colore.substring(5, 7), 16);
-		int a = Integer.parseInt(colore.substring(7, 9), 16);
-		Color c = new Color(r, g, b ,a);
+		
 
 		if(ctx.getParent() instanceof VolTextParser.DivContext)
 		{

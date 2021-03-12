@@ -1686,9 +1686,8 @@ public class VolTextParser extends Parser {
 	}
 
 	public static class ColorContext extends ParserRuleContext {
-		public TerminalNode COLORVAL() { return getToken(VolTextParser.COLORVAL, 0); }
 		public TerminalNode ENDNLINE() { return getToken(VolTextParser.ENDNLINE, 0); }
-		public TerminalNode ENDLINE() { return getToken(VolTextParser.ENDLINE, 0); }
+		public TerminalNode COLORVAL() { return getToken(VolTextParser.COLORVAL, 0); }
 		public TerminalNode STRING() { return getToken(VolTextParser.STRING, 0); }
 		public ColorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1715,20 +1714,20 @@ public class VolTextParser extends Parser {
 		try {
 			setState(283);
 			switch (_input.LA(1)) {
-			case T__23:
+			case T__13:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(277); match(T__23);
-				setState(278); match(COLORVAL);
+				setState(277); match(T__13);
+				setState(278); match(STRING);
 				setState(279); match(ENDNLINE);
 				}
 				break;
-			case T__13:
+			case T__23:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(280); match(T__13);
-				setState(281); match(STRING);
-				setState(282); match(ENDLINE);
+				setState(280); match(T__23);
+				setState(281); match(COLORVAL);
+				setState(282); match(ENDNLINE);
 				}
 				break;
 			default:
@@ -2125,13 +2124,13 @@ public class VolTextParser extends Parser {
 		"\u010e\7#\2\2\u010e\u010f\7\27\2\2\u010f\u0110\7-\2\2\u0110\u0116\7/\2"+
 		"\2\u0111\u0112\7(\2\2\u0112\u0113\7\27\2\2\u0113\u0114\7+\2\2\u0114\u0116"+
 		"\7/\2\2\u0115\u0109\3\2\2\2\u0115\u010d\3\2\2\2\u0115\u0111\3\2\2\2\u0116"+
-		"+\3\2\2\2\u0117\u0118\7\f\2\2\u0118\u0119\7)\2\2\u0119\u011e\7/\2\2\u011a"+
-		"\u011b\7\26\2\2\u011b\u011c\7\63\2\2\u011c\u011e\7.\2\2\u011d\u0117\3"+
-		"\2\2\2\u011d\u011a\3\2\2\2\u011e-\3\2\2\2\u011f\u0120\7\24\2\2\u0120\u0121"+
-		"\7,\2\2\u0121\u0122\7/\2\2\u0122/\3\2\2\2\u0123\u0124\7!\2\2\u0124\u0125"+
-		"\7*\2\2\u0125\u0126\7.\2\2\u0126\61\3\2\2\2\u0127\u0128\7\21\2\2\u0128"+
-		"\u0129\7\'\2\2\u0129\u0139\7/\2\2\u012a\u012b\7\7\2\2\u012b\u012c\7+\2"+
-		"\2\u012c\u0139\7/\2\2\u012d\u012e\7\31\2\2\u012e\u012f\7\27\2\2\u012f"+
+		"+\3\2\2\2\u0117\u0118\7\26\2\2\u0118\u0119\7\63\2\2\u0119\u011e\7/\2\2"+
+		"\u011a\u011b\7\f\2\2\u011b\u011c\7)\2\2\u011c\u011e\7/\2\2\u011d\u0117"+
+		"\3\2\2\2\u011d\u011a\3\2\2\2\u011e-\3\2\2\2\u011f\u0120\7\24\2\2\u0120"+
+		"\u0121\7,\2\2\u0121\u0122\7/\2\2\u0122/\3\2\2\2\u0123\u0124\7!\2\2\u0124"+
+		"\u0125\7*\2\2\u0125\u0126\7.\2\2\u0126\61\3\2\2\2\u0127\u0128\7\21\2\2"+
+		"\u0128\u0129\7\'\2\2\u0129\u0139\7/\2\2\u012a\u012b\7\7\2\2\u012b\u012c"+
+		"\7+\2\2\u012c\u0139\7/\2\2\u012d\u012e\7\31\2\2\u012e\u012f\7\27\2\2\u012f"+
 		"\u0130\7-\2\2\u0130\u0139\7/\2\2\u0131\u0132\7\3\2\2\u0132\u0133\7\27"+
 		"\2\2\u0133\u0134\7-\2\2\u0134\u0139\7/\2\2\u0135\u0136\7\20\2\2\u0136"+
 		"\u0137\7&\2\2\u0137\u0139\7/\2\2\u0138\u0127\3\2\2\2\u0138\u012a\3\2\2"+

@@ -69,9 +69,9 @@ txtval:		('font-family'
 	| 		'font-size' ':' NVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE;
 	
-color:		'color:' COLORVAL ENDNLINE
-	|		'colorT:' STRING ENDLINE;
-
+color:		'colorT:' STRING ENDNLINE
+	|		'color:' COLORVAL ENDNLINE;
+ 
 positionv:	'position:' POSVAL ENDNLINE;
 
 alignment:  'alignment:' ALIGNVAL ENDLINE;

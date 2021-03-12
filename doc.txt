@@ -101,7 +101,7 @@
 		format:A4;
 		text:{
 			id:"TESTO";
-			color:#FF0000FF;
+			colorT:"blue";
 			position:cc;
 			width:50mm;
 			string:"io sono un bel ragazzo hshskgddhdkdbkbdkwaj dhajhnahc sjdhjsahgc dajfhea";
