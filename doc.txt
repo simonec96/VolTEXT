@@ -99,14 +99,21 @@
 	}
 	page:{
 		format:A4;
-		text:{
-			id:"TESTO";
-			colorT:"blue";
+		div:{
 			position:cc;
-			width:50mm;
-			string:"io sono un bel ragazzo hshskgddhdkdbkbdkwaj dhajhnahc sjdhjsahgc dajfhea";
-			string:"io sono un bel ragazzo hshskgddhdkdbkbdkwaj dhajhnahc sjdhjsahgc dajfhea";
-			angle-rotation: 0;
+			color:#581845FF;
+			height: 50%;
+			width: 170mm;
+			
+			
+			text:{
+				id:"TESTO2";
+				colorT:"red";
+				position:ct;
+				height:30mm;
+				string:"io non sono bello ma spaccio (solo fin quando posso)";
+				angle-rotation: 0;
+			}
 		}
 	}
 }
