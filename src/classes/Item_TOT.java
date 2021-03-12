@@ -1,6 +1,7 @@
 package classes;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Item_TOT {
@@ -30,7 +31,7 @@ public class Item_TOT {
 	 */
 	public Item_TOT(String t, boolean ordered, List<String> items, String iD, String fontFamily, Integer fontSize,
 			Color rGBAcolor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
-			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY,String align, Integer layer, String text,
+			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY,String align, Integer layer, ArrayList<String> text,
 			String fontFamilyTTF, String uRL, String ux, String uy, String uw, String uh) {
 		super();
 		this.type = t;
@@ -81,7 +82,7 @@ public class Item_TOT {
 	private boolean FitY;
 	private String Alignment;
 	private Integer Layer;
-	private String Text;
+	private ArrayList<String> Text;
 	private String FontFamilyTTF;
 	private String URL;
 	private String UnitX;
@@ -320,13 +321,13 @@ public class Item_TOT {
 	/**
 	 * @return the text
 	 */
-	public String getText() {
+	public ArrayList<String> getText() {
 		return Text;
 	}
 	/**
 	 * @param text the text to set
 	 */
-	public void setText(String text) {
+	public void setText(ArrayList<String> text) {
 		Text = text;
 	}
 	/**

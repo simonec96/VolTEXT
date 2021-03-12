@@ -37,7 +37,7 @@ imgattr:	(idval | imganumber | positionv | fitAttr);
 
 imgElem: 	'URL:' STRING ENDNLINE;
 
-text: 		'text' O txtattr* txtElem? txtattr* C;
+text: 		'text' O txtattr* txtElem* txtattr* txtElem* txtattr* C;
 
 txtattr: 	(color | idval | imganumber | positionv | alignment |  txtval | fitAttr);
 
@@ -69,7 +69,8 @@ txtval:		('font-family'
 	| 		'font-size' ':' NVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE;
 	
-color:		'color:' COLORVAL ENDNLINE;
+color:		'color:' COLORVAL ENDNLINE
+	|		'colorT:' STRING ENDLINE;
 
 positionv:	'position:' POSVAL ENDNLINE;
 

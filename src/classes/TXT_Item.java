@@ -1,6 +1,8 @@
 package classes;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TXT_Item extends Item {
 	/**
@@ -8,7 +10,7 @@ public class TXT_Item extends Item {
 	 */
 	public TXT_Item() {
 		super();
-		setText("");
+		Text=new ArrayList<String>();
 		setAngle_Rotation(0f);
 		setID("");
 		setFontFamily("");
@@ -32,7 +34,7 @@ public class TXT_Item extends Item {
 		setUnitWidth("mm");
 		setUnitHeight("mm");
 	}
-	private String Text;
+	private ArrayList<String> Text;
 	private String ID;
 	private String FontFamily;
 	private String FontFamilyTTF;
@@ -58,15 +60,16 @@ public class TXT_Item extends Item {
 	/**
 	 * @return the text
 	 */
-	public String getText() {
+	public ArrayList<String> getText() {
 		return Text;
 	}
 	/**
 	 * @param text the text to set
 	 */
-	public void setText(String text) {
-		Text = text;
+	public void addText(String text) {
+		Text.add(text);
 	}
+	
 	/**
 	 * @return the iD
 	 */
