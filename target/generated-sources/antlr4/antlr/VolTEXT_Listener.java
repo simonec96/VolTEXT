@@ -708,15 +708,15 @@ public class VolTEXT_Listener implements VolTextListener {
 					
 					float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
 					float h_mm=UnitConverter.convPointmm(container.getDiv().getHeight());
-					if(item.getPosX()<=w_mm)
+					/*if(item.getPosX()<=w_mm)
 						if(item.getWidth()+item.getPosX()>w_mm) {
-							p.setMaxWidth(container.getDiv().getWidth());
-							item.setWidth(container.getDiv().getWidth());
+							p.setMaxWidth(container.getDiv().getWidth()-item.getPosX());
+							item.setWidth(container.getDiv().getWidth()-item.getPosX());
 						}else
 							p.setMaxWidth(item.getWidth());
 					else
 						System.out.println("Testo " + item.getID() + " in posizione esterna al div "+container.getDiv().getID() + " .");
-					if(item.getPosY()+item.getHeight()>h_mm) {
+					*/if(-container.getDiv().getPosY()+item.getPosY()+item.getHeight()>h_mm) {
 						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 					}	
 					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
@@ -1708,7 +1708,10 @@ public class VolTEXT_Listener implements VolTextListener {
 					div.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "angle-rotation":
-				div.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				if(ctx.NOTVAL() == null)
+					div.setAngle_Rotation(Float.parseFloat((ctx.NVAL().toString())));
+				else
+					div.setAngle_Rotation(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "height":
 				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
@@ -1781,7 +1784,10 @@ public class VolTEXT_Listener implements VolTextListener {
 					img.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "angle-rotation":
-				img.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				if(ctx.NOTVAL() == null)
+					img.setAngle_Rotation(Float.parseFloat((ctx.NVAL().toString())));
+				else
+					img.setAngle_Rotation(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "height":
 				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
@@ -1822,7 +1828,10 @@ public class VolTEXT_Listener implements VolTextListener {
 					txt.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "angle-rotation":
-				txt.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				if(ctx.NOTVAL() == null)
+					txt.setAngle_Rotation(Float.parseFloat((ctx.NVAL().toString())));
+				else
+					txt.setAngle_Rotation(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "height":
 				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
@@ -1863,7 +1872,10 @@ public class VolTEXT_Listener implements VolTextListener {
 					list.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "angle-rotation":
-				list.setAngle_Rotation((Float.parseFloat((ctx.NVAL().toString()))));
+				if(ctx.NOTVAL() == null)
+					list.setAngle_Rotation(Float.parseFloat((ctx.NVAL().toString())));
+				else
+					list.setAngle_Rotation(0 - Float.parseFloat((ctx.NVAL().toString())));
 				break;
 			case "height":
 				String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";

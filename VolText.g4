@@ -53,9 +53,9 @@ fitAttr:	('fit-x'
 		|	 'fit-y') ':' TFVAL ENDNLINE;
 
 imganumber: ('pos-x'
-		|	'pos-y') ':' NOTVAL? NVAL (UNIT)? ENDNLINE
-		|	('angle-rotation'
-		|	'height'
+		|	'pos-y' 
+		|	'angle-rotation') ':' NOTVAL? NVAL (UNIT)? ENDNLINE
+		|	('height'
 		|	'width') ':' NVAL (UNIT)? ENDNLINE;
 		
 NOTVAL:		'-';

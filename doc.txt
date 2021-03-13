@@ -116,4 +116,16 @@
 			}
 		}
 	}
+	page:{
+		format:A4;
+		text:{
+				id:"TESTO";
+				colorT:"cyan";
+				position:lc;
+				height:50mm;
+				string:"io non sono bello ma spaccio (solo fin quando posso)";
+				angle-rotation: 270;
+			}
+		}
+	}
 }

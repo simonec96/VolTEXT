@@ -1491,12 +1491,13 @@ public class VolTextParser extends Parser {
 			setState(257);
 			switch (_input.LA(1)) {
 			case T__21:
+			case T__16:
 			case T__7:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(240);
 				_la = _input.LA(1);
-				if ( !(_la==T__21 || _la==T__7) ) {
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__16) | (1L << T__7))) != 0)) ) {
 				_errHandler.recoverInline(this);
 				}
 				consume();
@@ -1522,13 +1523,12 @@ public class VolTextParser extends Parser {
 				}
 				break;
 			case T__32:
-			case T__16:
 			case T__10:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(250);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__32) | (1L << T__16) | (1L << T__10))) != 0)) ) {
+				if ( !(_la==T__32 || _la==T__10) ) {
 				_errHandler.recoverInline(this);
 				}
 				consume();
@@ -2053,7 +2053,7 @@ public class VolTextParser extends Parser {
 		"\3\31\3\32\3\32\3\32\3\32\3\32\3\32\3\32\3\32\3\32\3\32\3\32\3\32\3\32"+
 		"\3\32\3\32\3\32\3\32\5\32\u0139\n\32\3\33\3\33\3\33\3\33\3\33\3\33\3\33"+
 		"\3\33\5\33\u0143\n\33\3\33\2\2\34\2\4\6\b\n\f\16\20\22\24\26\30\32\34"+
-		"\36 \"$&(*,.\60\62\64\2\6\4\2\r\r\35\35\4\2\16\16\34\34\5\2\3\3\23\23"+
+		"\36 \"$&(*,.\60\62\64\2\6\4\2\r\r\35\35\5\2\16\16\23\23\34\34\4\2\3\3"+
 		"\31\31\4\2\6\6\17\17\u0160\2\66\3\2\2\2\4P\3\2\2\2\6R\3\2\2\2\b\\\3\2"+
 		"\2\2\nj\3\2\2\2\fl\3\2\2\2\16~\3\2\2\2\20\u0080\3\2\2\2\22\u0092\3\2\2"+
 		"\2\24\u0094\3\2\2\2\26\u00a9\3\2\2\2\30\u00ab\3\2\2\2\32\u00af\3\2\2\2"+
