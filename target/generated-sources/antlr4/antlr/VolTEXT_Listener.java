@@ -1459,52 +1459,356 @@ public class VolTEXT_Listener implements VolTextListener {
 			else
 			{
 				Paragraph pList = new Paragraph();
-				pList.setMaxWidth(li.getWidth());
-				if(!(container.getDiv()==null)) {
-					if(li.getWidth()>container.getDiv().getWidth()||
-							li.getHeight()>container.getDiv().getHeight()) {
-						System.out.println("Lista " + li.getID() +" nel div "+
-								container.getDiv().getID()+" troncata");
-						if(li.getWidth()>container.getDiv().getWidth()) {
-							//?? txt.setWidth(container.getDiv().getWidth());
-							pList.setMaxWidth(container.getDiv().getWidth());
+				Alignment al=null;
+				float w_mm = UnitConverter.convPointmm(PDF_page.getMediaBox().getWidth());
+				float h_mm = UnitConverter.convPointmm(PDF_page.getMediaBox().getHeight());
+				if(li.getUnitX().toCharArray()[0] == '%')
+				{
+					li.setUnitX("mm");
+					if(li.getPosX() >= 0)
+						li.setPosX(w_mm * (li.getPosX() / 100));
+					else
+						li.setPosX(w_mm - li.getWidth() + w_mm * (li.getPosX() / 100));
+				}
+				else if(li.getUnitX() == "pt")
+				{
+					li.setUnitX("mm");
+					if(li.getPosX() >= 0)
+						li.setPosX(UnitConverter.convPointmm(li.getPosX()));
+					else
+						li.setPosX(w_mm - li.getWidth() + UnitConverter.convPointmm(li.getPosX()));
+				}
+				else
+				{
+					if(li.getPosX() < 0)
+						li.setPosX(w_mm - li.getWidth() + li.getPosX());
+				}
+
+				if(li.getUnitY().toCharArray()[0] == '%')
+				{
+					li.setUnitY("mm");
+					if(li.getPosY() >= 0)
+						li.setPosY(h_mm * (li.getPosY() / 100));
+					else
+						li.setPosY(h_mm - li.getHeight() + h_mm * (li.getPosY() / 100));
+				}
+				else if(li.getUnitY() == "pt")
+				{
+					li.setUnitY("mm");
+					if(li.getPosY() >= 0)
+						li.setPosY(UnitConverter.convPointmm(li.getPosY()));
+					else
+						li.setPosY(h_mm - li.getHeight() + UnitConverter.convPointmm(li.getPosY()));
+				}
+				else
+				{
+					if(li.getPosY() < 0)
+						li.setPosY(h_mm - li.getHeight() + li.getPosY());
+				}
+
+				if(li.getUnitWidth().toCharArray()[0] == '%')
+				{
+					li.setUnitWidth("mm");
+					if(li.getWidth()!=null)
+						li.setWidth(w_mm * (li.getWidth() / 100));
+				}
+				else if(li.getUnitWidth() == "pt")
+				{
+					li.setUnitWidth("mm");
+					li.setWidth(UnitConverter.convPointmm(li.getWidth()));
+				}
+
+				if(li.getUnitHeight().toCharArray()[0] == '%')
+				{
+					li.setUnitHeight("mm");
+					li.setHeight(h_mm * (li.getHeight() / 100));
+				}
+				else if(li.getUnitWidth() == "pt")
+				{
+					li.setUnitHeight("mm");
+					li.setHeight(UnitConverter.convPointmm(li.getHeight()));
+				}
+
+				if(li.getAlignment()!=null) {
+					if(li.getAlignment().toLowerCase()=="left"||
+							li.getAlignment().toLowerCase()=="center"||
+							li.getAlignment().toLowerCase()=="right"||
+							li.getAlignment().toLowerCase()=="justify")
+						al=Alignment.valueOf(li.getAlignment().toLowerCase());
+					else
+						al=Alignment.Left;
+				}else
+					al=Alignment.Left;
+
+				Paragraph p = new Paragraph();
+				
+				// Create a new font object by loading a TrueType font into the document
+				BaseFont font=null;
+				for(String elem:li.getItems()) {
+					int bNum=0;
+					int iNum=0;
+					for(String parola : elem.split(" ")) {
+						if(parola.contains("\\bold")) {
+							bNum++;
 						}
-						if(li.getHeight()>container.getDiv().getHeight()) {
-							//?? txt.setHeight(container.getDiv().getHeight());
+						if(parola.contains("\\italic")) {
+							iNum++;
 						}
-						if(li.getHeight()>container.getDiv().getHeight()) {
-							System.out.println("Lista " + li.getID() +" nel div "+
-									container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
+
+					}
+					elem.replace("*", "\\*");
+					elem.replace("_", "\\_");
+					if(bNum%2==0)
+						elem=elem.replace("\\\\bold", "*");
+					if(iNum%2==0)
+						elem=elem.replace("\\\\italic", "_");
+
+					if(li.getFontFamily()!=null && li.getFontFamily()!="") {
+						switch(li.getFontFamily().toLowerCase())
+						{
+						case "helvetica":
+							font=BaseFont.Helvetica;
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+
+							break;
+						case "courier":
+							font=BaseFont.Courier;
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+							break;
+						case "times":
+							font=BaseFont.Times;
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+							break;
+						default:
+							font=BaseFont.Helvetica;
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+							break;
 						}
 					}else {
-						//CURVATURA DEL PARAGRAFO
+						if(li.getFontFamilyTTF()!="" && li.getFontFamilyTTF()!=null) {
+							//DUBBI SU QUESTA:
+							font = BaseFont.valueOf(PDType0Font.load(PDF_doc, new File(li.getFontFamilyTTF())).getBaseFont());
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+							//nel case applicare questa:
+							//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
+
+						}else {
+							font=BaseFont.Helvetica;
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+						}
 					}
+					if(li.isUnderline()) {
+
+						PDAnnotationLink txtUnderline = new PDAnnotationLink();
+						// add an underline
+						PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
+						underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+						txtUnderline.setBorderStyle(underline);
+
+						// set up the markup area
+						float textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*li.getFontSize();
+						PDRectangle position = new PDRectangle();
+						position.setLowerLeftX(0);
+						position.setLowerLeftY(p.getHeight() - 24f);
+						position.setUpperRightX(textWidth);
+						position.setUpperRightY(p.getHeight() -4);
+						txtUnderline.setRectangle(position);
+
+						PDF_page.getAnnotations().add(txtUnderline);
+					}
+					/*if(txt.isUnderline()) {
+				txt.setText("__"+txt.getText()+"__");
+			}*/
+					if(li.getRGBAcolor() != null) {
+						StringBuilder sb = new StringBuilder();
+						sb.append(Integer.toHexString(li.getRGBAcolor().getRed()));
+						if (sb.length() < 2) {
+							sb.insert(0, '0'); // pad with leading zero if needed
+						}
+						sb.append(Integer.toHexString(li.getRGBAcolor().getGreen()));
+						if (sb.length() < 4) {
+							sb.insert(2, '0'); // pad with leading zero if needed
+						}
+						sb.append(Integer.toHexString(li.getRGBAcolor().getBlue()));
+						if (sb.length() < 6) {
+							sb.insert(4, '0'); // pad with leading zero if needed
+						}
+						String hex = sb.toString();
+						elem="{color:#"+hex+"}"+elem.substring(1, elem.length()-1)+"{color:#000000}";
+					}
+					//p.addText(item.getText(), item.getFontSize(), font);
+					String bullet="";
+					switch(li.getBullet().substring(0,3)) {
+					case "odd":
+						bullet= CompatibilityHelper.getBulletCharacter(1) + " ";
+						break;
+					case "eve":
+						bullet= CompatibilityHelper.getBulletCharacter(2) + " ";
+						break;
+					case "new":
+						bullet="-+{"+li.getBullet().substring(li.getBullet().indexOf("("), li.getBullet().lastIndexOf(")"))+":4em} ";
+						break;
+					default:
+						bullet= CompatibilityHelper.getBulletCharacter(1) + " ";
+						break;
+					}
+					 
+					RomanEnumerator e = new RomanEnumerator();
+					if(li.isOrdered()) {
+						pList.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
+					}else {
+						p.add(new Indent(bullet, 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
+					}
+					p.addMarkup(elem+"\n", li.getFontSize(), font);
+					
+				}
+				if(li.isFitX())
+				{
+					li.setWidth(w_mm);
+					li.setPosX(0f);
 
 				}
-				PDType0Font font = PDType0Font.load(PDF_doc, new File(li.getFontFamily()));
-				Color fontColor=li.getRGBAcolor();
-				cstream.setNonStrokingColor(fontColor);
-				PDExtendedGraphicsState graph=new PDExtendedGraphicsState();
-				graph.setStrokingAlphaConstant((float) (li.getRGBAcolor().getAlpha() / 255f));
-				// il nuovo cstream non accetta graphicsStateParameters
-				//cstream.setGraphicsStateParameters(graph);
-				String bulletOdd = CompatibilityHelper.getBulletCharacter(1) + " ";
-				String bulletEven = CompatibilityHelper.getBulletCharacter(2) + " ";
-				RomanEnumerator e = new RomanEnumerator();
-				for(String item: li.getItems()) {
-					if(li.isOrdered()) {
-						pList.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font, Alignment.Right));
-					}else {
-						pList.add(new Indent(bulletOdd, 4, SpaceUnit.em, li.getFontSize(),font, Alignment.Right));
-					}
-					pList.addMarkup(item+"\n", li.getFontSize(), BaseFont.valueOf(font.getBaseFont()));
+				if(li.isFitY())
+				{
+					li.setHeight(h_mm);
+					li.setPosY(0f);
 				}
+				if(li.getWidth()==null) {
+					li.setWidth(UnitConverter.convPointmm(p.getWidth()));
+				}
+				if(li.getHeight()==null) {
+					li.setHeight(UnitConverter.convPointmm(p.getHeight()));
+				}
+
+				if(li.getPosition() != "")
+				{
+					if(!li.isFitX())
+					{
+						switch(li.getPosition().toCharArray()[0])
+						{
+						case 'l':
+							li.setPosX(0f);
+
+							break;
+						case 'c':
+							li.setPosX((w_mm - li.getWidth()) / 2);
+
+							break;
+						case 'r':
+							li.setPosX(w_mm - li.getWidth());
+
+							break;
+						default:
+							li.setPosX(0f);
+
+							break;
+						}
+					}
+
+					if(!li.isFitY())
+					{
+						switch(li.getPosition().toCharArray()[1])
+						{
+						case 'b':
+							li.setPosY(0f);
+							break;
+						case 'c':
+							li.setPosY((h_mm - li.getHeight()) / 2);
+							break;
+						case 't':
+							li.setPosY(h_mm - li.getHeight());
+							break;
+						default:
+							li.setPosY(0f);
+							break;
+						}
+					}
+					if(li.getPosX() + li.getWidth() > w_mm && !container.getPage().isOob())
+					{
+						li.setWidth(w_mm - li.getPosX());
+					}
+
+					if(li.getPosY() + li.getHeight() > h_mm && !container.getPage().isOob())
+					{
+						li.setHeight(h_mm - li.getPosY());
+					}
+				}
+				p.setMaxWidth(UnitConverter.convmmPoint(li.getWidth()));
+				if(li.getPosX()<=w_mm) {
+					if(li.getWidth()+li.getPosX()>w_mm) {
+						p.setMaxWidth(PDF_page.getMediaBox().getWidth()-UnitConverter.convmmPoint(li.getPosX()));
+						li.setWidth(w_mm-li.getPosX());
+					}
+				}
+				else
+					System.out.println("Testo " + li.getID() + " in posizione esterna alla pagina.");
+				if(li.getPosY()+li.getHeight()>h_mm) {
+					System.out.println("Il testo " + li.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+				}	
+				float dimx=p.getWidth();
+				System.out.println("dimx:"+dimx);
+				float dimy=p.getHeight();
 				//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
-				Position pt=new Position(UnitConverter.convmmPoint(li.getPosX()),h_p-pList.getHeight()-UnitConverter.convmmPoint(li.getPosY()));
-				//ERRORE cstream come non appartenente al build path
-				pList.draw(PDF_doc, cstream, pt, null);
-				cstream.close();
-				cstream.restoreGraphicsState();
+				System.out.println("txt_posX "+li.getPosX());
+				System.out.println("txt_posY "+li.getPosY());
+				Position pt=new Position(-dimx/2,+dimy/2);
+
+
+				if(li.getPosY()<0) {
+					System.out.println("Il testo " + li.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+				}
+
+
+
+				/* transform */
+				p.setAlignment(al);
+				PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND,true);
+				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(li.getPosX()) + dimx/2, h_p - dimy/2 - UnitConverter.convmmPoint(li.getPosY())));
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(li.getAngle_Rotation()), 0, 0));
+				p.draw(PDF_doc,cont, pt,null);
+				//ritorno indietro di rotazione del contesto (per risettarsi a 0)
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(-li.getAngle_Rotation()), 0, 0));
+				//transizione di ritorno al punto origine
+				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(-li.getPosX()) - dimx/2, -h_p +dimy/2+ UnitConverter.convmmPoint(li.getPosY())));		
+				cont.close();
+				
+
 			}
 		}catch(IOException ex) {
 			// TODO Auto-generated catch block
