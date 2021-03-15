@@ -29,13 +29,14 @@ public class Item_TOT {
 	 * @param fontFamilyTTF
 	 * @param uRL
 	 */
-	public Item_TOT(String t, boolean ordered, List<String> items, String iD, String fontFamily, Integer fontSize,
+	public Item_TOT(String t, boolean ordered, String bullet, List<String> items, String iD, String fontFamily, Integer fontSize,
 			Color rGBAcolor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
 			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY,String align, Integer layer, ArrayList<String> text,
 			String fontFamilyTTF, String uRL, String ux, String uy, String uw, String uh) {
 		super();
 		this.type = t;
 		this.ordered = ordered;
+		this.setBullet(bullet);
 		this.items = items;
 		ID = iD;
 		FontFamily = fontFamily;
@@ -64,6 +65,7 @@ public class Item_TOT {
 	}
 	private String type;
 	private boolean ordered;
+	private String bullet;
 	private List<String> items;
 	private String ID;
 	private String FontFamily;
@@ -100,6 +102,18 @@ public class Item_TOT {
 	 */
 	public void setOrdered(boolean ordered) {
 		this.ordered = ordered;
+	}
+	/**
+	 * @return the bullet
+	 */
+	public String getBullet() {
+		return bullet;
+	}
+	/**
+	 * @param bullet the bullet to set
+	 */
+	public void setBullet(String bullet) {
+		this.bullet = bullet;
 	}
 	/**
 	 * @return the items

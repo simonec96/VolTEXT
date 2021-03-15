@@ -93,6 +93,7 @@ FORMATVAL:	'A0'
 ORIENTATION:('hor' | 'ver');
 	
 listattr: 	'ordered:' TFVAL ENDNLINE
+	|		'bullet:' STRING ENDNLINE
 	|		imganumber
 	|		txtval
 	|		positionv

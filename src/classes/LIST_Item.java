@@ -7,6 +7,7 @@ import java.util.List;
 public class LIST_Item extends Item {
 	private boolean ordered;
 	private List<String> items;
+	private String bullet;
 	private String ID;
 	private String FontFamily;
 	private String FontFamilyTTF;
@@ -34,6 +35,8 @@ public class LIST_Item extends Item {
 		super();
 		setItems(new ArrayList<String>());
 		setAngle_Rotation(0f);
+		setOrdered(false);
+		setBullet(null);
 		setID("");
 		setFontFamily("");
 		setFontSize(12);
@@ -69,6 +72,20 @@ public class LIST_Item extends Item {
 	 */
 	public void setOrdered(boolean ordered) {
 		this.ordered = ordered;
+	}
+
+	/**
+	 * @return the bullet
+	 */
+	public String getBullet() {
+		return bullet;
+	}
+
+	/**
+	 * @param bullet the bullet to set
+	 */
+	public void setBullet(String bullet) {
+		this.bullet = bullet;
 	}
 
 	/**

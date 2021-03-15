@@ -951,6 +951,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			{
 				Item_TOT i = new Item_TOT("IMG", false, 
 						null, 
+						null,
 						img.getID(), 
 						"", 
 						0, 
@@ -1028,7 +1029,8 @@ public class VolTEXT_Listener implements VolTextListener {
 			if(container.getDiv() != null)
 			{
 				Item_TOT i = new Item_TOT("TXT", 
-						false, 
+						false,
+						null,
 						null, 
 						txt.getID(), 
 						txt.getFontFamily(), 
@@ -1429,8 +1431,9 @@ public class VolTEXT_Listener implements VolTextListener {
 			if(container.getDiv() != null)
 			{
 				Item_TOT i = new Item_TOT("LIST", 
-						false, 
-						null, 
+						li.isOrdered(), 
+						li.getBullet(), 
+						li.getItems(),
 						li.getID(), 
 						li.getFontFamily(), 
 						li.getFontSize(), 
@@ -1601,7 +1604,30 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterListattr(VolTextParser.ListattrContext ctx) { }
+	@Override public void enterListattr(VolTextParser.ListattrContext ctx) { 
+		if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+		{
+			LIST_Item list = container.getList();
+			switch(ctx.getChild(0).toString().toLowerCase()) {
+			case "ordered:":
+				if(ctx.TFVAL().toString().toLowerCase()=="true")
+					list.setOrdered(true);
+				else
+					list.setOrdered(false);
+				break;
+			case "bullet:":
+				list.setBullet(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+				break;
+			default:
+				System.out.println("Valore non riconosciuto");
+			}
+			container.setList(list);
+		}
+		else
+		{
+			System.out.println("ALTRO");
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
