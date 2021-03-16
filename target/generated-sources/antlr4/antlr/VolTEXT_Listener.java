@@ -308,78 +308,78 @@ public class VolTEXT_Listener implements VolTextListener {
 	{
 		for(Item_TOT item : list)
 		{
-			if(item.getUnitX().toCharArray()[0] == '%')
-			{
-				item.setUnitX("mm");
-				if(item.getPosX() >= 0)
-					item.setPosX(div_width * (item.getPosX() / 100));
-				else
-					item.setPosX(div_width - item.getWidth() + div_width * (item.getPosX() / 100));
-			}
-			else if(item.getUnitX() == "pt")
-			{
-				item.setUnitX("mm");
-				if(item.getPosX() >= 0)
-					item.setPosX(UnitConverter.convPointmm(item.getPosX()));
-				else
-					item.setPosX(div_width - item.getWidth() + UnitConverter.convPointmm(item.getPosX()));
-			}
-			else
-			{
-				if(item.getPosX() < 0)
-					item.setPosX(div_width - item.getWidth() + item.getPosX());
-			}
-				
-			if(item.getUnitY().toCharArray()[0] == '%')
-			{
-				item.setUnitY("mm");
-				if(item.getPosY() >= 0)
-					item.setPosY(div_height * (item.getPosY() / 100));
-				else
-					item.setPosY(div_height - item.getHeight() + div_height * (item.getPosY() / 100));
-			}
-			else if(item.getUnitY() == "pt")
-			{
-				item.setUnitY("mm");
-				if(item.getPosY() >= 0)
-					item.setPosY(UnitConverter.convPointmm(item.getPosY()));
-				else
-					item.setPosY(div_height - item.getHeight() + UnitConverter.convPointmm(item.getPosY()));
-			}
-			else
-			{
-				if(item.getPosY() < 0)
-					item.setPosY(div_height - item.getHeight() + item.getPosY());
-			}
-				
-			if(item.getUnitWidth().toCharArray()[0] == '%')
-			{
-				item.setUnitWidth("mm");
-				item.setWidth(container.getDiv().getWidth() * (item.getWidth() / 100));
-			}
-			else if(item.getUnitWidth() == "pt")
-			{
-				item.setUnitWidth("mm");
-				item.setWidth(UnitConverter.convPointmm(item.getWidth()));
-			}
-				
-			if(item.getUnitHeight().toCharArray()[0] == '%')
-			{
-				item.setUnitHeight("mm");
-				item.setHeight(container.getDiv().getHeight() * (item.getHeight() / 100));
-			}
-			else if(item.getUnitWidth() == "pt")
-			{
-				item.setUnitHeight("mm");
-				item.setHeight(UnitConverter.convPointmm(item.getHeight()));
-			}
+
 			
 			PDF_page = PDF_doc.getPage(n_page);
 			float heigthPage = PDF_page.getMediaBox().getHeight();
 			if(item.getType() == "IMG")
 			{
 				String Path = item.getURL();
-				
+				if(item.getUnitX().toCharArray()[0] == '%')
+				{
+					item.setUnitX("mm");
+					if(item.getPosX() >= 0)
+						item.setPosX(div_width * (item.getPosX() / 100));
+					else
+						item.setPosX(div_width - item.getWidth() + div_width * (item.getPosX() / 100));
+				}
+				else if(item.getUnitX() == "pt")
+				{
+					item.setUnitX("mm");
+					if(item.getPosX() >= 0)
+						item.setPosX(UnitConverter.convPointmm(item.getPosX()));
+					else
+						item.setPosX(div_width - item.getWidth() + UnitConverter.convPointmm(item.getPosX()));
+				}
+				else
+				{
+					if(item.getPosX() < 0)
+						item.setPosX(div_width - item.getWidth() + item.getPosX());
+				}
+					
+				if(item.getUnitY().toCharArray()[0] == '%')
+				{
+					item.setUnitY("mm");
+					if(item.getPosY() >= 0)
+						item.setPosY(div_height * (item.getPosY() / 100));
+					else
+						item.setPosY(div_height - item.getHeight() + div_height * (item.getPosY() / 100));
+				}
+				else if(item.getUnitY() == "pt")
+				{
+					item.setUnitY("mm");
+					if(item.getPosY() >= 0)
+						item.setPosY(UnitConverter.convPointmm(item.getPosY()));
+					else
+						item.setPosY(div_height - item.getHeight() + UnitConverter.convPointmm(item.getPosY()));
+				}
+				else
+				{
+					if(item.getPosY() < 0)
+						item.setPosY(div_height - item.getHeight() + item.getPosY());
+				}
+					
+				if(item.getUnitWidth().toCharArray()[0] == '%')
+				{
+					item.setUnitWidth("mm");
+					item.setWidth(container.getDiv().getWidth() * (item.getWidth() / 100));
+				}
+				else if(item.getUnitWidth() == "pt")
+				{
+					item.setUnitWidth("mm");
+					item.setWidth(UnitConverter.convPointmm(item.getWidth()));
+				}
+					
+				if(item.getUnitHeight().toCharArray()[0] == '%')
+				{
+					item.setUnitHeight("mm");
+					item.setHeight(container.getDiv().getHeight() * (item.getHeight() / 100));
+				}
+				else if(item.getUnitWidth() == "pt")
+				{
+					item.setUnitHeight("mm");
+					item.setHeight(UnitConverter.convPointmm(item.getHeight()));
+				}
 				try {
 					PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, PDF_doc);
 					PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
@@ -685,7 +685,71 @@ public class VolTEXT_Listener implements VolTextListener {
 							}
 						}
 					}
-					
+					if(item.getUnitX().toCharArray()[0] == '%')
+					{
+						item.setUnitX("mm");
+						if(item.getPosX() >= 0)
+							item.setPosX(div_width * (item.getPosX() / 100));
+						else
+							item.setPosX(div_width - item.getWidth() + div_width * (item.getPosX() / 100));
+					}
+					else if(item.getUnitX() == "pt")
+					{
+						item.setUnitX("mm");
+						if(item.getPosX() >= 0)
+							item.setPosX(UnitConverter.convPointmm(item.getPosX()));
+						else
+							item.setPosX(div_width - item.getWidth() + UnitConverter.convPointmm(item.getPosX()));
+					}
+					else
+					{
+						if(item.getPosX() < 0)
+							item.setPosX(div_width - item.getWidth() + item.getPosX());
+					}
+						
+					if(item.getUnitY().toCharArray()[0] == '%')
+					{
+						item.setUnitY("mm");
+						if(item.getPosY() >= 0)
+							item.setPosY(div_height * (item.getPosY() / 100));
+						else
+							item.setPosY(div_height - item.getHeight() + div_height * (item.getPosY() / 100));
+					}
+					else if(item.getUnitY() == "pt")
+					{
+						item.setUnitY("mm");
+						if(item.getPosY() >= 0)
+							item.setPosY(UnitConverter.convPointmm(item.getPosY()));
+						else
+							item.setPosY(div_height - item.getHeight() + UnitConverter.convPointmm(item.getPosY()));
+					}
+					else
+					{
+						if(item.getPosY() < 0)
+							item.setPosY(div_height - item.getHeight() + item.getPosY());
+					}
+						
+					if(item.getUnitWidth().toCharArray()[0] == '%')
+					{
+						item.setUnitWidth("mm");
+						item.setWidth(container.getDiv().getWidth() * (item.getWidth() / 100));
+					}
+					else if(item.getUnitWidth() == "pt")
+					{
+						item.setUnitWidth("mm");
+						item.setWidth(UnitConverter.convPointmm(item.getWidth()));
+					}
+						
+					if(item.getUnitHeight().toCharArray()[0] == '%')
+					{
+						item.setUnitHeight("mm");
+						item.setHeight(container.getDiv().getHeight() * (item.getHeight() / 100));
+					}
+					else if(item.getUnitWidth() == "pt")
+					{
+						item.setUnitHeight("mm");
+						item.setHeight(UnitConverter.convPointmm(item.getHeight()));
+					}
 					
 					p.setMaxWidth(UnitConverter.convmmPoint(item.getWidth()));
 					
@@ -757,7 +821,362 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 			else if(item.getType() == "LIST")
 			{
+				try {
+					
+					Alignment al=null;		
+					if(item.getAlignment()!=null) {
+						if(item.getAlignment().toLowerCase()=="left"||
+								item.getAlignment().toLowerCase()=="center"||
+								item.getAlignment().toLowerCase()=="right"||
+								item.getAlignment().toLowerCase()=="justify")
+							al=Alignment.valueOf(item.getAlignment().toLowerCase());
+						else
+							al=Alignment.Left;
+					}else
+						al=Alignment.Left;
+					float textWidth=0f;
+					
+					Paragraph p = new Paragraph();
+					if(item.getWidth()!=null) {
+						p.setMaxWidth(UnitConverter.convmmPoint(item.getWidth()));
+					}
+					// Create a new font object by loading a TrueType font into the document
+					BaseFont font=null;
+					for(String elem:item.getText()) {
+						int bNum=0;
+						int iNum=0;
+						for(String parola : elem.split(" ")) {
+							if(parola.contains("\\bold")) {
+								bNum++;
+							}
+							if(parola.contains("\\italic")) {
+								iNum++;
+							}
 
+						}
+						elem.replace("*", "\\*");
+						elem.replace("_", "\\_");
+						if(bNum%2==0)
+							elem=elem.replace("\\\\bold", "*");
+						if(iNum%2==0)
+							elem=elem.replace("\\\\italic", "_");
+
+						if(item.getFontFamily()!=null && item.getFontFamily()!="") {
+							if(item.isBold())
+								if(item.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(item.isItalics())
+								elem="_"+elem+"_";
+							switch(item.getFontFamily().toLowerCase())
+							{
+							case "helvetica":
+								font=BaseFont.Helvetica;
+								break;
+							case "courier":
+								font=BaseFont.Courier;
+								break;
+							case "times":
+								font=BaseFont.Times;
+								break;
+							default:
+								font=BaseFont.Helvetica;
+								break;
+							}
+						}else {
+							if(item.getFontFamilyTTF()!="" && item.getFontFamilyTTF()!=null) {
+								//DUBBI SU QUESTA:
+								font = BaseFont.valueOf(PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())).getBaseFont());
+								if(item.isBold())
+									if(item.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(item.isItalics())
+									elem="_"+elem+"_";
+								//nel case applicare questa:
+								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
+
+							}else {
+								font=BaseFont.Helvetica;
+								if(item.isBold())
+									if(item.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(item.isItalics())
+									elem="_"+elem+"_";
+							}
+						}
+						if(textWidth<(font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize()){
+							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+						};
+						if(item.isUnderline()) {
+
+							PDAnnotationLink txtUnderline = new PDAnnotationLink();
+							// add an underline
+							PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
+							underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+							txtUnderline.setBorderStyle(underline);
+
+							// set up the markup area
+							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+							PDRectangle position = new PDRectangle();
+							position.setLowerLeftX(0);
+							position.setLowerLeftY(p.getHeight() - 24f);
+							position.setUpperRightX(textWidth);
+							position.setUpperRightY(p.getHeight() -4);
+							txtUnderline.setRectangle(position);
+
+							PDF_page.getAnnotations().add(txtUnderline);
+						}
+						/*if(txt.isUnderline()) {
+					txt.setText("__"+txt.getText()+"__");
+				}*/
+						if(item.getRGBAcolor() != null) {
+							StringBuilder sb = new StringBuilder();
+							sb.append(Integer.toHexString(item.getRGBAcolor().getRed()));
+							if (sb.length() < 2) {
+								sb.insert(0, '0'); // pad with leading zero if needed
+							}
+							sb.append(Integer.toHexString(item.getRGBAcolor().getGreen()));
+							if (sb.length() < 4) {
+								sb.insert(2, '0'); // pad with leading zero if needed
+							}
+							sb.append(Integer.toHexString(item.getRGBAcolor().getBlue()));
+							if (sb.length() < 6) {
+								sb.insert(4, '0'); // pad with leading zero if needed
+							}
+							String hex = sb.toString();
+							elem="{color:#"+hex+"}"+elem.substring(1, elem.length()-1)+"{color:#000000}";
+						}
+						//p.addText(item.getText(), item.getFontSize(), font);
+						String bullet="";
+						switch(item.getBullet().substring(0,3)) {
+						case "odd":
+							bullet= CompatibilityHelper.getBulletCharacter(1) + " ";
+							break;
+						case "eve":
+							bullet= CompatibilityHelper.getBulletCharacter(2) + " ";
+							break;
+						case "new":
+							bullet="-+{"+item.getBullet().substring(item.getBullet().indexOf("("), item.getBullet().lastIndexOf(")"))+":4em} ";  //es: new(<<)
+							break;
+						default:
+							bullet= CompatibilityHelper.getBulletCharacter(1) + " ";
+							break;
+						}
+						 
+						RomanEnumerator e = new RomanEnumerator();
+						if(item.isOrdered()) {
+							p.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, item.getFontSize(),font.getPlainFont(), Alignment.Right));
+						}else {
+							p.add(new Indent(bullet, 4, SpaceUnit.em, item.getFontSize(),font.getPlainFont(), Alignment.Right));
+						}
+						p.addMarkup(elem+"\n", item.getFontSize(), font);
+					}
+					if(item.getWidth()==null) {
+						item.setWidth(UnitConverter.convPointmm(textWidth>p.getWidth()?textWidth:p.getWidth()));
+					}
+					if(item.getHeight()==null) {
+						item.setHeight(UnitConverter.convPointmm(p.getHeight()));
+					}
+					if(item.getUnitX().toCharArray()[0] == '%')
+					{
+						item.setUnitX("mm");
+						if(item.getPosX() >= 0)
+							item.setPosX(div_width * (item.getPosX() / 100));
+						else
+							item.setPosX(div_width - item.getWidth() + div_width * (item.getPosX() / 100));
+					}
+					else if(item.getUnitX() == "pt")
+					{
+						item.setUnitX("mm");
+						if(item.getPosX() >= 0)
+							item.setPosX(UnitConverter.convPointmm(item.getPosX()));
+						else
+							item.setPosX(div_width - item.getWidth() + UnitConverter.convPointmm(item.getPosX()));
+					}
+					else
+					{
+						if(item.getPosX() < 0)
+							item.setPosX(div_width - item.getWidth() + item.getPosX());
+					}
+						
+					if(item.getUnitY().toCharArray()[0] == '%')
+					{
+						item.setUnitY("mm");
+						if(item.getPosY() >= 0)
+							item.setPosY(div_height * (item.getPosY() / 100));
+						else
+							item.setPosY(div_height - item.getHeight() + div_height * (item.getPosY() / 100));
+					}
+					else if(item.getUnitY() == "pt")
+					{
+						item.setUnitY("mm");
+						if(item.getPosY() >= 0)
+							item.setPosY(UnitConverter.convPointmm(item.getPosY()));
+						else
+							item.setPosY(div_height - item.getHeight() + UnitConverter.convPointmm(item.getPosY()));
+					}
+					else
+					{
+						if(item.getPosY() < 0)
+							item.setPosY(div_height - item.getHeight() + item.getPosY());
+					}
+						
+					if(item.getUnitWidth().toCharArray()[0] == '%')
+					{
+						item.setUnitWidth("mm");
+						item.setWidth(container.getDiv().getWidth() * (item.getWidth() / 100));
+					}
+					else if(item.getUnitWidth() == "pt")
+					{
+						item.setUnitWidth("mm");
+						item.setWidth(UnitConverter.convPointmm(item.getWidth()));
+					}
+						
+					if(item.getUnitHeight().toCharArray()[0] == '%')
+					{
+						item.setUnitHeight("mm");
+						item.setHeight(container.getDiv().getHeight() * (item.getHeight() / 100));
+					}
+					else if(item.getUnitWidth() == "pt")
+					{
+						item.setUnitHeight("mm");
+						item.setHeight(UnitConverter.convPointmm(item.getHeight()));
+					}
+					if(item.getPosX() >= 0 && item.getPosX() <= container.getDiv().getWidth())
+					{
+						if(item.isFitX())
+						{
+							item.setPosX(container.getDiv().getPosX());
+							item.setWidth(container.getDiv().getWidth());
+						}
+						else {
+						if(item.getWidth() > container.getDiv().getWidth())
+						{
+							item.setWidth(container.getDiv().getWidth() - item.getPosX());
+						}
+						item.setPosX(container.getDiv().getPosX() + item.getPosX());
+						}
+						if(item.getPosition() != "" && !item.isFitX())
+						{
+							switch(item.getPosition().toCharArray()[0])
+							{
+							case 'l':
+								item.setPosX(container.getDiv().getPosX());
+								break;
+							case 'c':
+								item.setPosX(container.getDiv().getPosX() + (container.getDiv().getWidth() - item.getWidth()) / 2);
+								break;
+							case 'r':
+								item.setPosX(container.getDiv().getPosX() + container.getDiv().getWidth() - item.getWidth());
+								break;
+							}
+						}
+					}
+
+					if(item.getPosY() >= 0 && item.getPosY() <= container.getDiv().getHeight())
+					{
+						if(item.isFitY())
+						{
+							item.setHeight(container.getDiv().getHeight() - item.getPosY());
+							item.setPosY(container.getDiv().getPosY());
+						}
+						else {
+						if(item.getHeight() > container.getDiv().getHeight())
+						{
+							item.setHeight(container.getDiv().getHeight() - item.getPosY());
+						}
+						item.setPosY(container.getDiv().getPosY() + item.getPosY());
+						}
+						if(item.getPosition() != "" && !item.isFitY())
+						{
+							switch(item.getPosition().toCharArray()[1])
+							{
+							case 'b':
+								item.setPosY(container.getDiv().getPosY() + container.getDiv().getHeight() - item.getHeight());
+								break;
+							case 'c':
+								item.setPosY(container.getDiv().getPosY() + (container.getDiv().getHeight() - item.getHeight()) / 2);
+								break;
+							case 't':
+								item.setPosY(container.getDiv().getPosY());
+								break;
+							}
+						}
+					}
+					
+					
+					p.setMaxWidth(UnitConverter.convmmPoint(item.getWidth()));
+					
+					
+					if(item.getWidth()>container.getDiv().getWidth() || item.getHeight()>container.getDiv().getHeight()) {
+						System.out.println("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troncato");
+						if(item.getHeight()>container.getDiv().getHeight()) {
+							//item.setHeight(container.getDiv().getHeight());
+							System.out.println("Altezza testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troppo grande. Riscrivere il testo");
+						}
+						if(p.getHeight()>container.getDiv().getHeight()) {
+							System.out.println("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
+							//item.setHeight(container.getDiv().getHeight());
+						}
+					}
+					
+					float dimitemx=p.getWidth();
+					float dimitemy=p.getHeight();
+					Position pt=new Position(-dimitemx/2,+dimitemy/2);
+					
+					float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
+					float h_mm=UnitConverter.convPointmm(container.getDiv().getHeight());
+					/*if(item.getPosX()<=w_mm)
+						if(item.getWidth()+item.getPosX()>w_mm) {
+							p.setMaxWidth(container.getDiv().getWidth()-item.getPosX());
+							item.setWidth(container.getDiv().getWidth()-item.getPosX());
+						}else
+							p.setMaxWidth(item.getWidth());
+					else
+						System.out.println("Testo " + item.getID() + " in posizione esterna al div "+container.getDiv().getID() + " .");
+					*/if(-container.getDiv().getPosY()+item.getPosY()+item.getHeight()>h_mm) {
+						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+					}	
+					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+										
+					if(pt.getY()<0) {
+						System.out.println("Il testo " + item.getID() +" eccede i limiti del del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+					}
+					
+					float dimx=UnitConverter.convmmPoint(container.getDiv().getWidth());
+					float dimy=UnitConverter.convmmPoint(container.getDiv().getHeight());
+					/* transform */
+					//transizione SUL DIV di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di n radianti del DIV del contesto 
+					//transizione indietro sul div e in avanti sull'oggetto di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di n radianti dell'oggetto del contesto 
+					//DISEGNO ITEM
+					//rotazione di - n radianti dell'oggetto del contesto
+					//transizione avanti sul div e all'indietro sull'oggetto di posx+dimX/2 asse x, posy+dimY/2 asse y
+					//rotazione di -n radianti del DIV del contesto 
+					//transizione all'indietro SUL DIV di posx+dimX/2 asse x, posy+dimY/2 asse y
+					PDPageContentStream cont=new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND, true);
+					cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(container.getDiv().getPosX()) + dimx/2, heigthPage - dimy/2 - UnitConverter.convmmPoint(container.getDiv().getPosY())));
+					cont.transform(Matrix.getRotateInstance(Math.toRadians(container.getDiv().getAngle_Rotation()), 0, 0));
+					cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(container.getDiv().getPosX()) + UnitConverter.convmmPoint((float)item.getPosX()) - dimx/2 + dimitemx/2, UnitConverter.convmmPoint((float)container.getDiv().getPosY()) - UnitConverter.convmmPoint(item.getPosY()) + dimy/2 - dimitemy/2));
+					cont.transform(Matrix.getRotateInstance(Math.toRadians(item.getAngle_Rotation()), 0, 0));
+					p.draw(PDF_doc,cont, pt, null);
+					cont.transform(Matrix.getRotateInstance(Math.toRadians(-item.getAngle_Rotation()), 0, 0));
+					cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(container.getDiv().getPosX()) - UnitConverter.convmmPoint((float)item.getPosX()) + dimx/2 - dimitemx/2, -UnitConverter.convmmPoint((float)container.getDiv().getPosY()) + UnitConverter.convmmPoint(item.getPosY()) - dimy/2 + dimitemy/2));
+					cont.transform(Matrix.getRotateInstance(-Math.toRadians(container.getDiv().getAngle_Rotation()), 0, 0));
+					cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(container.getDiv().getPosX()) - dimx/2, -heigthPage + dimy/2 + UnitConverter.convmmPoint(container.getDiv().getPosY())));
+					//cont.saveGraphicsState();
+					//cont.fill();
+					cont.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 			}
 			else
 			{
@@ -1063,73 +1482,6 @@ public class VolTEXT_Listener implements VolTextListener {
 				Alignment al=null;
 				float w_mm = UnitConverter.convPointmm(PDF_page.getMediaBox().getWidth());
 				float h_mm = UnitConverter.convPointmm(PDF_page.getMediaBox().getHeight());
-				if(txt.getUnitX().toCharArray()[0] == '%')
-				{
-					txt.setUnitX("mm");
-					if(txt.getPosX() >= 0)
-						txt.setPosX(w_mm * (txt.getPosX() / 100));
-					else
-						txt.setPosX(w_mm - txt.getWidth() + w_mm * (txt.getPosX() / 100));
-				}
-				else if(txt.getUnitX() == "pt")
-				{
-					txt.setUnitX("mm");
-					if(txt.getPosX() >= 0)
-						txt.setPosX(UnitConverter.convPointmm(txt.getPosX()));
-					else
-						txt.setPosX(w_mm - txt.getWidth() + UnitConverter.convPointmm(txt.getPosX()));
-				}
-				else
-				{
-					if(txt.getPosX() < 0)
-						txt.setPosX(w_mm - txt.getWidth() + txt.getPosX());
-				}
-
-				if(txt.getUnitY().toCharArray()[0] == '%')
-				{
-					txt.setUnitY("mm");
-					if(txt.getPosY() >= 0)
-						txt.setPosY(h_mm * (txt.getPosY() / 100));
-					else
-						txt.setPosY(h_mm - txt.getHeight() + h_mm * (txt.getPosY() / 100));
-				}
-				else if(txt.getUnitY() == "pt")
-				{
-					txt.setUnitY("mm");
-					if(txt.getPosY() >= 0)
-						txt.setPosY(UnitConverter.convPointmm(txt.getPosY()));
-					else
-						txt.setPosY(h_mm - txt.getHeight() + UnitConverter.convPointmm(txt.getPosY()));
-				}
-				else
-				{
-					if(txt.getPosY() < 0)
-						txt.setPosY(h_mm - txt.getHeight() + txt.getPosY());
-				}
-
-				if(txt.getUnitWidth().toCharArray()[0] == '%')
-				{
-					txt.setUnitWidth("mm");
-					if(txt.getWidth()!=null)
-						txt.setWidth(w_mm * (txt.getWidth() / 100));
-				}
-				else if(txt.getUnitWidth() == "pt")
-				{
-					txt.setUnitWidth("mm");
-					txt.setWidth(UnitConverter.convPointmm(txt.getWidth()));
-				}
-
-				if(txt.getUnitHeight().toCharArray()[0] == '%')
-				{
-					txt.setUnitHeight("mm");
-					txt.setHeight(h_mm * (txt.getHeight() / 100));
-				}
-				else if(txt.getUnitWidth() == "pt")
-				{
-					txt.setUnitHeight("mm");
-					txt.setHeight(UnitConverter.convPointmm(txt.getHeight()));
-				}
-
 				if(txt.getAlignment()!=null) {
 					if(txt.getAlignment().toLowerCase()=="left"||
 							txt.getAlignment().toLowerCase()=="center"||
@@ -1339,6 +1691,84 @@ public class VolTEXT_Listener implements VolTextListener {
 							break;
 						}
 					}
+				if(txt.getUnitX().toCharArray()[0] == '%')
+				{
+					txt.setUnitX("mm");
+					if(txt.getPosX() >= 0)
+						txt.setPosX(w_mm * (txt.getPosX() / 100));
+					else
+						txt.setPosX(w_mm - txt.getWidth() + w_mm * (txt.getPosX() / 100));
+				}
+				else if(txt.getUnitX() == "pt")
+				{
+					txt.setUnitX("mm");
+					if(txt.getPosX() >= 0)
+						txt.setPosX(UnitConverter.convPointmm(txt.getPosX()));
+					else
+						txt.setPosX(w_mm - txt.getWidth() + UnitConverter.convPointmm(txt.getPosX()));
+				}
+				else
+				{
+					if(txt.getPosX() < 0)
+						txt.setPosX(w_mm - txt.getWidth() + txt.getPosX());
+				}
+
+				if(txt.getUnitY().toCharArray()[0] == '%')
+				{
+					txt.setUnitY("mm");
+					if(txt.getPosY() >= 0)
+						txt.setPosY(h_mm * (txt.getPosY() / 100));
+					else
+						txt.setPosY(h_mm - txt.getHeight() + h_mm * (txt.getPosY() / 100));
+				}
+				else if(txt.getUnitY() == "pt")
+				{
+					txt.setUnitY("mm");
+					if(txt.getPosY() >= 0)
+						txt.setPosY(UnitConverter.convPointmm(txt.getPosY()));
+					else
+						txt.setPosY(h_mm - txt.getHeight() + UnitConverter.convPointmm(txt.getPosY()));
+				}
+				else
+				{
+					if(txt.getPosY() < 0)
+						txt.setPosY(h_mm - txt.getHeight() + txt.getPosY());
+				}
+
+				if(txt.getUnitWidth().toCharArray()[0] == '%')
+				{
+					txt.setUnitWidth("mm");
+					if(txt.getWidth()!=null)
+						txt.setWidth(w_mm * (txt.getWidth() / 100));
+				}
+				else if(txt.getUnitWidth() == "pt")
+				{
+					txt.setUnitWidth("mm");
+					txt.setWidth(UnitConverter.convPointmm(txt.getWidth()));
+				}
+
+				if(txt.getUnitHeight().toCharArray()[0] == '%')
+				{
+					txt.setUnitHeight("mm");
+					txt.setHeight(h_mm * (txt.getHeight() / 100));
+				}
+				else if(txt.getUnitWidth() == "pt")
+				{
+					txt.setUnitHeight("mm");
+					txt.setHeight(UnitConverter.convPointmm(txt.getHeight()));
+				}
+
+				if(txt.getAlignment()!=null) {
+					if(txt.getAlignment().toLowerCase()=="left"||
+							txt.getAlignment().toLowerCase()=="center"||
+							txt.getAlignment().toLowerCase()=="right"||
+							txt.getAlignment().toLowerCase()=="justify")
+						al=Alignment.valueOf(txt.getAlignment().toLowerCase());
+					else
+						al=Alignment.Left;
+				}else
+					al=Alignment.Left;
+
 					if(txt.getPosX() + txt.getWidth() > w_mm && !container.getPage().isOob())
 					{
 						txt.setWidth(w_mm - txt.getPosX());
@@ -1425,7 +1855,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void exitList(VolTextParser.ListContext ctx) {
 		try{
-			PDPageContentStream cstream = new PDPageContentStream(PDF_doc, PDF_page,AppendMode.APPEND, true); 
+			
 			float h_p = PDF_page.getMediaBox().getHeight();
 			LIST_Item li=container.getList();
 			if(container.getDiv() != null)
@@ -1458,76 +1888,10 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 			else
 			{
-				Paragraph pList = new Paragraph();
 				Alignment al=null;
 				float w_mm = UnitConverter.convPointmm(PDF_page.getMediaBox().getWidth());
 				float h_mm = UnitConverter.convPointmm(PDF_page.getMediaBox().getHeight());
-				if(li.getUnitX().toCharArray()[0] == '%')
-				{
-					li.setUnitX("mm");
-					if(li.getPosX() >= 0)
-						li.setPosX(w_mm * (li.getPosX() / 100));
-					else
-						li.setPosX(w_mm - li.getWidth() + w_mm * (li.getPosX() / 100));
-				}
-				else if(li.getUnitX() == "pt")
-				{
-					li.setUnitX("mm");
-					if(li.getPosX() >= 0)
-						li.setPosX(UnitConverter.convPointmm(li.getPosX()));
-					else
-						li.setPosX(w_mm - li.getWidth() + UnitConverter.convPointmm(li.getPosX()));
-				}
-				else
-				{
-					if(li.getPosX() < 0)
-						li.setPosX(w_mm - li.getWidth() + li.getPosX());
-				}
-
-				if(li.getUnitY().toCharArray()[0] == '%')
-				{
-					li.setUnitY("mm");
-					if(li.getPosY() >= 0)
-						li.setPosY(h_mm * (li.getPosY() / 100));
-					else
-						li.setPosY(h_mm - li.getHeight() + h_mm * (li.getPosY() / 100));
-				}
-				else if(li.getUnitY() == "pt")
-				{
-					li.setUnitY("mm");
-					if(li.getPosY() >= 0)
-						li.setPosY(UnitConverter.convPointmm(li.getPosY()));
-					else
-						li.setPosY(h_mm - li.getHeight() + UnitConverter.convPointmm(li.getPosY()));
-				}
-				else
-				{
-					if(li.getPosY() < 0)
-						li.setPosY(h_mm - li.getHeight() + li.getPosY());
-				}
-
-				if(li.getUnitWidth().toCharArray()[0] == '%')
-				{
-					li.setUnitWidth("mm");
-					if(li.getWidth()!=null)
-						li.setWidth(w_mm * (li.getWidth() / 100));
-				}
-				else if(li.getUnitWidth() == "pt")
-				{
-					li.setUnitWidth("mm");
-					li.setWidth(UnitConverter.convPointmm(li.getWidth()));
-				}
-
-				if(li.getUnitHeight().toCharArray()[0] == '%')
-				{
-					li.setUnitHeight("mm");
-					li.setHeight(h_mm * (li.getHeight() / 100));
-				}
-				else if(li.getUnitWidth() == "pt")
-				{
-					li.setUnitHeight("mm");
-					li.setHeight(UnitConverter.convPointmm(li.getHeight()));
-				}
+				
 
 				if(li.getAlignment()!=null) {
 					if(li.getAlignment().toLowerCase()=="left"||
@@ -1691,7 +2055,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					 
 					RomanEnumerator e = new RomanEnumerator();
 					if(li.isOrdered()) {
-						pList.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
+						p.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
 					}else {
 						p.add(new Indent(bullet, 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
 					}
@@ -1714,6 +2078,72 @@ public class VolTEXT_Listener implements VolTextListener {
 				}
 				if(li.getHeight()==null) {
 					li.setHeight(UnitConverter.convPointmm(p.getHeight()));
+				}
+				if(li.getUnitX().toCharArray()[0] == '%')
+				{
+					li.setUnitX("mm");
+					if(li.getPosX() >= 0)
+						li.setPosX(w_mm * (li.getPosX() / 100));
+					else
+						li.setPosX(w_mm - li.getWidth() + w_mm * (li.getPosX() / 100));
+				}
+				else if(li.getUnitX() == "pt")
+				{
+					li.setUnitX("mm");
+					if(li.getPosX() >= 0)
+						li.setPosX(UnitConverter.convPointmm(li.getPosX()));
+					else
+						li.setPosX(w_mm - li.getWidth() + UnitConverter.convPointmm(li.getPosX()));
+				}
+				else
+				{
+					if(li.getPosX() < 0)
+						li.setPosX(w_mm - li.getWidth() + li.getPosX());
+				}
+
+				if(li.getUnitY().toCharArray()[0] == '%')
+				{
+					li.setUnitY("mm");
+					if(li.getPosY() >= 0)
+						li.setPosY(h_mm * (li.getPosY() / 100));
+					else
+						li.setPosY(h_mm - li.getHeight() + h_mm * (li.getPosY() / 100));
+				}
+				else if(li.getUnitY() == "pt")
+				{
+					li.setUnitY("mm");
+					if(li.getPosY() >= 0)
+						li.setPosY(UnitConverter.convPointmm(li.getPosY()));
+					else
+						li.setPosY(h_mm - li.getHeight() + UnitConverter.convPointmm(li.getPosY()));
+				}
+				else
+				{
+					if(li.getPosY() < 0)
+						li.setPosY(h_mm - li.getHeight() + li.getPosY());
+				}
+
+				if(li.getUnitWidth().toCharArray()[0] == '%')
+				{
+					li.setUnitWidth("mm");
+					if(li.getWidth()!=null)
+						li.setWidth(w_mm * (li.getWidth() / 100));
+				}
+				else if(li.getUnitWidth() == "pt")
+				{
+					li.setUnitWidth("mm");
+					li.setWidth(UnitConverter.convPointmm(li.getWidth()));
+				}
+
+				if(li.getUnitHeight().toCharArray()[0] == '%')
+				{
+					li.setUnitHeight("mm");
+					li.setHeight(h_mm * (li.getHeight() / 100));
+				}
+				else if(li.getUnitWidth() == "pt")
+				{
+					li.setUnitHeight("mm");
+					li.setHeight(UnitConverter.convPointmm(li.getHeight()));
 				}
 
 				if(li.getPosition() != "")

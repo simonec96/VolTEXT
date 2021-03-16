@@ -120,12 +120,20 @@
 		format:A4;
 		text:{
 				id:"TESTO";
-				colorT:"cyan";
+				colorT:"blue";
 				position:lc;
-				height:50mm;
 				string:"io non sono bello ma spaccio (solo fin quando posso)";
-				angle-rotation: 270;
-			}
+				angle-rotation: 0;
+		}
+		
+		list:{
+				id:"LISTA";
+				colorT:"red";
+				position:cc;
+				item:"Hola 1";
+				item:"Hola 2";
+				ordered:false;
+				bullet:"odd";
 		}
 	}
 }
