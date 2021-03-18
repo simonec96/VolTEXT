@@ -294,6 +294,13 @@ public class LIST_Item extends Item {
 	/**
 	 * @param items the items to set
 	 */
+	public void addItem(String item) {
+		this.items.add(item);
+	}
+	
+	/**
+	 * @param items the items to set
+	 */
 	public void setItems(List<String> items) {
 		this.items = items;
 	}

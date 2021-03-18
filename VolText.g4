@@ -37,15 +37,17 @@ imgattr:	(idval | imganumber | positionv | fitAttr);
 
 imgElem: 	'URL:' STRING ENDNLINE;
 
+list: 		'list' O (listattr | listElem)* C;
+
+listElem: 	'item:' STRING ENDNLINE;
+
 text: 		'text' O txtattr* txtElem* txtattr* txtElem* txtattr* C;
 
 txtattr: 	(color | idval | imganumber | positionv | alignment |  txtval | fitAttr);
 
 txtElem: 	'string:' STRING ENDNLINE;
 
-list: 		'list' O (listattr | listElem)* C;
 
-listElem: 	'item:' STRING ENDNLINE;
 
 //ATTRIBUTES
 
@@ -63,6 +65,14 @@ NOTVAL:		'-';
 UNIT:		'mm' | '%' | 'pt';
 		 
 idval:		'id:' STRING ENDNLINE;
+
+listattr: 	'ordered:' TFVAL ENDNLINE
+	|		'bullet:' STRING ENDNLINE
+	|		imganumber
+	|		txtval
+	|		positionv
+	|		color
+	|		fitAttr;
 
 txtval:		('font-family' 
 	|		 'font-family-ttf') ':' STRING ENDLINE
@@ -83,7 +93,7 @@ pageattr:	'orientation:' ORIENTATION ENDNLINE
 	|		'format:' FORMATVAL ENDNLINE;
 	
 FORMATVAL:	'A0'
-	|		'A1'
+	|		'A1' 
 	|		'A2'
 	|		'A3'
 	|		'A4'
@@ -92,13 +102,7 @@ FORMATVAL:	'A0'
 
 ORIENTATION:('hor' | 'ver');
 	
-listattr: 	'ordered:' TFVAL ENDNLINE
-	|		'bullet:' STRING ENDNLINE
-	|		imganumber
-	|		txtval
-	|		positionv
-	|		color
-	|		fitAttr;
+
 
 //TERMINALI
 

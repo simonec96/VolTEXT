@@ -1,0 +1,13 @@
+{
+	title:"TestA6_list";
+	path:"./PageDiv/";
+	page:{
+		format:A4;
+		list:{
+				id:"LISTA";
+				position:cc;
+				item:"Hola 1";
+				item:"Hola 2";
+		}
+	}
+}

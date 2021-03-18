@@ -2253,7 +2253,9 @@ public class VolTEXT_Listener implements VolTextListener {
 	 */
 	@Override public void enterListElem(VolTextParser.ListElemContext ctx) {
 		String elem = ctx.STRING().toString();
-		container.getList().getItems().add(elem);
+		LIST_Item li=container.getList();
+		li.addItem(elem);
+		container.setList(li);
 	}
 	/**
 	 * {@inheritDoc}
