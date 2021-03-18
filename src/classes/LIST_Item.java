@@ -13,6 +13,7 @@ public class LIST_Item extends Item {
 	private String FontFamilyTTF;
 	private Integer FontSize;
 	private Color rGBAcolor;
+	private Color RGBBulletColor;
 	private boolean Bold;
 	private boolean Italics;
 	private boolean Underline;
@@ -36,11 +37,12 @@ public class LIST_Item extends Item {
 		setItems(new ArrayList<String>());
 		setAngle_Rotation(0f);
 		setOrdered(false);
-		setBullet(null);
+		setBullet("odd");
 		setID("");
 		setFontFamily("");
 		setFontSize(12);
 		setRGBAcolor(new Color(0, 0, 0, 0));
+		setRGBBulletColor(null);
 		setBold(false);
 		setItalics(false);
 		setUnderline(false);
@@ -319,6 +321,20 @@ public class LIST_Item extends Item {
 		this.rGBAcolor = rGBAcolor;
 	}
 
+
+	/**
+	 * @return the rGBBulletColor
+	 */
+	public Color getRGBBulletColor() {
+		return RGBBulletColor;
+	}
+
+	/**
+	 * @param rGBBulletColor the rGBBulletColor to set
+	 */
+	public void setRGBBulletColor(Color rGBBulletColor) {
+		RGBBulletColor = rGBBulletColor;
+	}
 
 	/**
 	 * @return the fitX

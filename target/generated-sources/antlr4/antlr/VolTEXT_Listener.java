@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.Matrix;
 
+import antlr.VolTextParser.ColorBulletContext;
 import classes.DIV_Item;
 import classes.IMG_Item;
 import classes.Item_Container;
@@ -1375,6 +1376,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						"", 
 						0, 
 						null, 
+						null, 
 						false, 
 						false, 
 						false, 
@@ -1455,6 +1457,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						txt.getFontFamily(), 
 						txt.getFontSize(), 
 						txt.getRGBAcolor(), 
+						null,
 						txt.isBold(), 
 						txt.isItalics(), 
 						txt.isUnderline(), 
@@ -1858,6 +1861,9 @@ public class VolTEXT_Listener implements VolTextListener {
 			
 			float h_p = PDF_page.getMediaBox().getHeight();
 			LIST_Item li=container.getList();
+			if(li.getRGBBulletColor()==null) {
+				li.setRGBBulletColor(li.getRGBAcolor());
+			}
 			if(container.getDiv() != null)
 			{
 				Item_TOT i = new Item_TOT("LIST", 
@@ -1868,6 +1874,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						li.getFontFamily(), 
 						li.getFontSize(), 
 						li.getRGBAcolor(), 
+						li.getRGBBulletColor(),
 						li.isBold(), 
 						li.isItalics(), 
 						li.isUnderline(), 
@@ -2018,7 +2025,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					}
 					/*if(txt.isUnderline()) {
 				txt.setText("__"+txt.getText()+"__");
-			}*/
+			}*/String hex = "000000";
 					if(li.getRGBAcolor() != null) {
 						StringBuilder sb = new StringBuilder();
 						sb.append(Integer.toHexString(li.getRGBAcolor().getRed()));
@@ -2033,7 +2040,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						if (sb.length() < 6) {
 							sb.insert(4, '0'); // pad with leading zero if needed
 						}
-						String hex = sb.toString();
+						hex=sb.toString();
 						elem="{color:#"+hex+"}"+elem.substring(1, elem.length()-1)+"{color:#000000}";
 					}
 					//p.addText(item.getText(), item.getFontSize(), font);
@@ -2055,9 +2062,9 @@ public class VolTEXT_Listener implements VolTextListener {
 					 
 					RomanEnumerator e = new RomanEnumerator();
 					if(li.isOrdered()) {
-						p.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
+						p.add(new Indent(e.next() + ". ", 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right,li.getRGBBulletColor()));
 					}else {
-						p.add(new Indent(bullet, 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right));
+						p.add(new Indent(bullet, 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right,li.getRGBBulletColor()));
 					}
 					p.addMarkup(elem+"\n", li.getFontSize(), font);
 					
@@ -2341,9 +2348,7 @@ public class VolTEXT_Listener implements VolTextListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterListattr(VolTextParser.ListattrContext ctx) { 
-		if(ctx.getParent() instanceof VolTextParser.ListattrContext)
-		{
-			LIST_Item list = container.getList();
+		LIST_Item list = container.getList();
 			switch(ctx.getChild(0).toString().toLowerCase()) {
 			case "ordered:":
 				if(ctx.TFVAL().toString().toLowerCase()=="true")
@@ -2358,11 +2363,8 @@ public class VolTEXT_Listener implements VolTextListener {
 				System.out.println("Valore non riconosciuto");
 			}
 			container.setList(list);
-		}
-		else
-		{
-			System.out.println("ALTRO");
-		}
+		
+		
 	}
 	/**
 	 * {@inheritDoc}
@@ -2988,6 +2990,50 @@ public class VolTEXT_Listener implements VolTextListener {
 	}
 	@Override
 	public void exitAlignment(VolTextParser.AlignmentContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void enterColorBullet(ColorBulletContext ctx) {
+		// TODO Auto-generated method stub
+				Color c = null;
+				switch(ctx.getChild(0).toString().toLowerCase()) {
+					case "color-bullet:":
+						 String colore= ctx.COLORVAL().toString();
+						 int r = Integer.parseInt(colore.substring(1, 3), 16);
+						 int g = Integer.parseInt(colore.substring(3, 5), 16);
+						 int b = Integer.parseInt(colore.substring(5, 7), 16);
+						 int a = Integer.parseInt(colore.substring(7, 9), 16);
+						 c = new Color(r, g, b ,a);
+						break;
+					case "colort-bullet:":
+						
+						try {
+							Field f = Class.forName("java.awt.Color").getField(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+							c=(Color)f.get(null);
+						} catch (Exception e) {
+							c=Color.BLACK;
+						}
+
+						break;
+					default:
+						c=Color.BLACK;
+						break;
+				}
+				if(ctx.getParent() instanceof VolTextParser.ListattrContext)
+				{
+					LIST_Item list = container.getList();
+					list.setRGBBulletColor(c);
+					container.setList(list);
+				}
+				else
+				{
+					System.out.println("il colore del bullet non può essere insierito nell'elemento");
+				}
+		
+	}
+	@Override
+	public void exitColorBullet(ColorBulletContext ctx) {
 		// TODO Auto-generated method stub
 		
 	}

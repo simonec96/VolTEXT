@@ -90,6 +90,13 @@ public class VolTextBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitColorBullet(@NotNull VolTextParser.ColorBulletContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitPae(@NotNull VolTextParser.PaeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

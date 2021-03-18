@@ -139,6 +139,18 @@ public class VolTextBaseListener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterColorBullet(@NotNull VolTextParser.ColorBulletContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitColorBullet(@NotNull VolTextParser.ColorBulletContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPae(@NotNull VolTextParser.PaeContext ctx) { }
 	/**
 	 * {@inheritDoc}

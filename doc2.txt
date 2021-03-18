@@ -6,8 +6,11 @@
 		list:{
 				id:"LISTA";
 				position:cc;
+				colorT:"red";
 				item:"Hola 1";
 				item:"Hola 2";
+				ordered:false;
+				bullet:"even";
 		}
 	}
 }

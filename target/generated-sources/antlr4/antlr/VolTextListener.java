@@ -111,6 +111,16 @@ public interface VolTextListener extends ParseTreeListener {
 	 */
 	void exitIdval(@NotNull VolTextParser.IdvalContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VolTextParser#colorBullet}.
+	 * @param ctx the parse tree
+	 */
+	void enterColorBullet(@NotNull VolTextParser.ColorBulletContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VolTextParser#colorBullet}.
+	 * @param ctx the parse tree
+	 */
+	void exitColorBullet(@NotNull VolTextParser.ColorBulletContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VolTextParser#pae}.
 	 * @param ctx the parse tree
 	 */

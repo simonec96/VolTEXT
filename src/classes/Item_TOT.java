@@ -30,7 +30,7 @@ public class Item_TOT {
 	 * @param uRL
 	 */
 	public Item_TOT(String t, boolean ordered, String bullet, List<String> items, String iD, String fontFamily, Integer fontSize,
-			Color rGBAcolor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
+			Color rGBAcolor, Color RGBBulletColor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
 			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY,String align, Integer layer, ArrayList<String> text,
 			String fontFamilyTTF, String uRL, String ux, String uy, String uw, String uh) {
 		super();
@@ -42,6 +42,7 @@ public class Item_TOT {
 		FontFamily = fontFamily;
 		FontSize = fontSize;
 		this.rGBAcolor = rGBAcolor;
+		this.RGBBulletColor = RGBBulletColor;
 		Bold = bold;
 		Italics = italics;
 		Underline = underline;
@@ -71,6 +72,7 @@ public class Item_TOT {
 	private String FontFamily;
 	private Integer FontSize;
 	private Color rGBAcolor;
+	private Color RGBBulletColor;
 	private boolean Bold;
 	private boolean Italics;
 	private boolean Underline;
@@ -174,6 +176,18 @@ public class Item_TOT {
 	 */
 	public void setRGBAcolor(Color rGBAcolor) {
 		this.rGBAcolor = rGBAcolor;
+	}
+	/**
+	 * @return the rGBBulletColor
+	 */
+	public Color getRGBBulletColor() {
+		return RGBBulletColor;
+	}
+	/**
+	 * @param rGBBulletColor the rGBBulletColor to set
+	 */
+	public void setRGBBulletColor(Color rGBBulletColor) {
+		RGBBulletColor = rGBBulletColor;
 	}
 	/**
 	 * @return the bold

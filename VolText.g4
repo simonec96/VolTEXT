@@ -68,16 +68,21 @@ idval:		'id:' STRING ENDNLINE;
 
 listattr: 	'ordered:' TFVAL ENDNLINE
 	|		'bullet:' STRING ENDNLINE
+	|		idval
 	|		imganumber
 	|		txtval
 	|		positionv
 	|		color
+	|		colorBullet
 	|		fitAttr;
 
 txtval:		('font-family' 
 	|		 'font-family-ttf') ':' STRING ENDLINE
 	| 		'font-size' ':' NVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE;
+	
+colorBullet:'colorT-bullet:' STRING ENDNLINE
+	|		'color-bullet:' COLORVAL ENDNLINE;
 	
 color:		'colorT:' STRING ENDNLINE
 	|		'color:' COLORVAL ENDNLINE;
