@@ -11,6 +11,7 @@ public class LIST_Item extends Item {
 	private String ID;
 	private String FontFamily;
 	private String FontFamilyTTF;
+	private String FontFamilyOTF;
 	private Integer FontSize;
 	private Color rGBAcolor;
 	private Color RGBBulletColor;
@@ -54,7 +55,8 @@ public class LIST_Item extends Item {
 		setFitX(false);
 		setFitY(false);
 		setAlignment(null);
-		setFontFamilyTTF("");
+		setFontFamilyTTF(null);
+		setFontFamilyOTF(null);
 		setLayer(0);
 		setUnitX("mm");
 		setUnitY("mm");
@@ -130,6 +132,22 @@ public class LIST_Item extends Item {
 	 */
 	public void setFontFamilyTTF(String fontFamilyTTF) {
 		FontFamilyTTF = fontFamilyTTF;
+	}
+
+	
+
+	/**
+	 * @return the fontFamilyOTF
+	 */
+	public String getFontFamilyOTF() {
+		return FontFamilyOTF;
+	}
+
+	/**
+	 * @param fontFamilyOTF the fontFamilyOTF to set
+	 */
+	public void setFontFamilyOTF(String fontFamilyOTF) {
+		FontFamilyOTF = fontFamilyOTF;
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package antlr;
 
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -11,6 +10,8 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -18,7 +19,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -486,7 +486,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			{
 				try {
 					
-					Alignment al=null;		
+					Alignment al=Alignment.Left;		
 					if(item.getAlignment()!=null) {
 						if(item.getAlignment().toLowerCase()=="left"||
 								item.getAlignment().toLowerCase()=="center"||
@@ -495,16 +495,20 @@ public class VolTEXT_Listener implements VolTextListener {
 							al=Alignment.valueOf(item.getAlignment().toLowerCase());
 						else
 							al=Alignment.Left;
-					}else
-						al=Alignment.Left;
+					}
 					float textWidth=0f;
 					
 					Paragraph p = new Paragraph();
+					p.setAlignment(al);
 					if(item.getWidth()!=null) {
 						p.setMaxWidth(UnitConverter.convmmPoint(item.getWidth()));
 					}
 					// Create a new font object by loading a TrueType font into the document
 					BaseFont font=null;
+					PDFont rFont=null;
+					PDFont bFont=null;
+					PDFont iFont=null;
+					PDFont biFont=null;
 					for(String elem:item.getText()) {
 						int bNum=0;
 						int iNum=0;
@@ -550,7 +554,36 @@ public class VolTEXT_Listener implements VolTextListener {
 						}else {
 							if(item.getFontFamilyTTF()!="" && item.getFontFamilyTTF()!=null) {
 								//DUBBI SU QUESTA:
-								font = BaseFont.valueOf(PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())).getBaseFont());
+								if(item.getFontFamilyTTF().contains(".ttf")) {
+									font = null;
+									String parent=item.getFontFamilyTTF().substring(0,item.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
+									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+									try{
+										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+									}catch(IOException ex) {
+										bFont=rFont;
+									}
+									try{
+										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+									}catch(IOException ex) {
+										iFont=rFont;
+									}
+									try{
+										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+									}catch(IOException ex) {
+										biFont=rFont;
+									}
+								}else {
+									font=BaseFont.Helvetica;
+									if(item.isBold())
+										if(item.isItalics())
+											elem="*_"+elem+"_*";
+										else
+											elem="*"+elem+"*";
+									else if(item.isItalics())
+										elem="_"+elem+"_";
+									break;
+								}
 								if(item.isBold())
 									if(item.isItalics())
 										elem="*_"+elem+"_*";
@@ -561,6 +594,47 @@ public class VolTEXT_Listener implements VolTextListener {
 								//nel case applicare questa:
 								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 
+							}else if(item.getFontFamilyOTF()!="" && item.getFontFamilyOTF()!=null){
+								//DUBBI SU QUESTA:
+								if(item.getFontFamilyOTF().contains(".otf")) {
+									font = null;
+									String parent=item.getFontFamilyOTF().substring(0,item.getFontFamilyOTF().lastIndexOf("Regular.otf"));
+									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.otf"));
+									try{
+										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.otf"));
+									}catch(IOException ex) {
+										bFont=rFont;
+									}
+									try{
+										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.otf"));
+									}catch(IOException ex) {
+										iFont=rFont;
+									}
+									try{
+										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.otf"));
+									}catch(IOException ex) {
+										biFont=rFont;
+									}
+								}else {
+									font=BaseFont.Helvetica;
+									if(item.isBold())
+										if(item.isItalics())
+											elem="*_"+elem+"_*";
+										else
+											elem="*"+elem+"*";
+									else if(item.isItalics())
+										elem="_"+elem+"_";
+									break;
+								}
+								if(item.isBold())
+									if(item.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(item.isItalics())
+									elem="_"+elem+"_";
+								//nel case applicare questa:
+								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 							}else {
 								font=BaseFont.Helvetica;
 								if(item.isBold())
@@ -572,9 +646,15 @@ public class VolTEXT_Listener implements VolTextListener {
 									elem="_"+elem+"_";
 							}
 						}
-						if(textWidth<(font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize()){
-							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
-						};
+						if(font!=null) {
+							if(textWidth<(font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize()){
+								textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+							}
+						}else {
+							if(textWidth<(rFont.getStringWidth(elem)/1000)*item.getFontSize()){
+								textWidth = (rFont.getStringWidth(elem)/1000)*item.getFontSize();
+							}
+						}
 						if(item.isUnderline()) {
 
 							PDAnnotationLink txtUnderline = new PDAnnotationLink();
@@ -582,9 +662,13 @@ public class VolTEXT_Listener implements VolTextListener {
 							PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
 							underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
 							txtUnderline.setBorderStyle(underline);
-
+							if(font!=null) {
 							// set up the markup area
 							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+							}else {
+									// set up the markup area
+									textWidth = (rFont.getStringWidth(elem)/1000)*item.getFontSize();
+							}
 							PDRectangle position = new PDRectangle();
 							position.setLowerLeftX(0);
 							position.setLowerLeftY(p.getHeight() - 24f);
@@ -616,8 +700,14 @@ public class VolTEXT_Listener implements VolTextListener {
 						}
 						//p.addText(item.getText(), item.getFontSize(), font);
 
-						p.addMarkup(elem+"\n", item.getFontSize(), font);
-						p.addText("\n",item.getFontSize(), font.getPlainFont());
+						if(font!=null) {
+							p.addMarkup(elem+"\n", item.getFontSize(), font);
+							p.addText("\n",item.getFontSize(), font.getPlainFont());
+						}else{
+							p.addMarkup(elem+"\n", item.getFontSize(), rFont, bFont, iFont, biFont);
+							p.addText("\n",item.getFontSize(), rFont);
+						}
+						
 					}
 					if(item.getWidth()==null) {
 						item.setWidth(UnitConverter.convPointmm(textWidth>p.getWidth()?textWidth:p.getWidth()));
@@ -771,7 +861,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					float dimitemy=p.getHeight();
 					Position pt=new Position(-dimitemx/2,+dimitemy/2);
 					
-					float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
+					//float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
 					float h_mm=UnitConverter.convPointmm(container.getDiv().getHeight());
 					/*if(item.getPosX()<=w_mm)
 						if(item.getWidth()+item.getPosX()>w_mm) {
@@ -838,11 +928,16 @@ public class VolTEXT_Listener implements VolTextListener {
 					float textWidth=0f;
 					
 					Paragraph p = new Paragraph();
+					p.setAlignment(al);
 					if(item.getWidth()!=null) {
 						p.setMaxWidth(UnitConverter.convmmPoint(item.getWidth()));
 					}
 					// Create a new font object by loading a TrueType font into the document
 					BaseFont font=null;
+					PDFont rFont=null;
+					PDFont bFont=null;
+					PDFont iFont=null;
+					PDFont biFont=null;
 					for(String elem:item.getText()) {
 						int bNum=0;
 						int iNum=0;
@@ -888,7 +983,36 @@ public class VolTEXT_Listener implements VolTextListener {
 						}else {
 							if(item.getFontFamilyTTF()!="" && item.getFontFamilyTTF()!=null) {
 								//DUBBI SU QUESTA:
-								font = BaseFont.valueOf(PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())).getBaseFont());
+								if(item.getFontFamilyTTF().contains(".ttf")) {
+									font = null;
+									String parent=item.getFontFamilyTTF().substring(0,item.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
+									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+									try{
+										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+									}catch(IOException ex) {
+										bFont=rFont;
+									}
+									try{
+										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+									}catch(IOException ex) {
+										iFont=rFont;
+									}
+									try{
+										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+									}catch(IOException ex) {
+										biFont=rFont;
+									}
+								}else {
+									font=BaseFont.Helvetica;
+									if(item.isBold())
+										if(item.isItalics())
+											elem="*_"+elem+"_*";
+										else
+											elem="*"+elem+"*";
+									else if(item.isItalics())
+										elem="_"+elem+"_";
+									break;
+								}
 								if(item.isBold())
 									if(item.isItalics())
 										elem="*_"+elem+"_*";
@@ -899,6 +1023,47 @@ public class VolTEXT_Listener implements VolTextListener {
 								//nel case applicare questa:
 								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 
+							}else if(item.getFontFamilyOTF()!="" && item.getFontFamilyOTF()!=null){
+								//DUBBI SU QUESTA:
+								if(item.getFontFamilyOTF().contains(".otf")) {
+									font = null;
+									String parent=item.getFontFamilyOTF().substring(0,item.getFontFamilyOTF().lastIndexOf("Regular.otf"));
+									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.otf"));
+									try{
+										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.otf"));
+									}catch(IOException ex) {
+										bFont=rFont;
+									}
+									try{
+										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.otf"));
+									}catch(IOException ex) {
+										iFont=rFont;
+									}
+									try{
+										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.otf"));
+									}catch(IOException ex) {
+										biFont=rFont;
+									}
+								}else {
+									font=BaseFont.Helvetica;
+									if(item.isBold())
+										if(item.isItalics())
+											elem="*_"+elem+"_*";
+										else
+											elem="*"+elem+"*";
+									else if(item.isItalics())
+										elem="_"+elem+"_";
+									break;
+								}
+								if(item.isBold())
+									if(item.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(item.isItalics())
+									elem="_"+elem+"_";
+								//nel case applicare questa:
+								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 							}else {
 								font=BaseFont.Helvetica;
 								if(item.isBold())
@@ -910,9 +1075,15 @@ public class VolTEXT_Listener implements VolTextListener {
 									elem="_"+elem+"_";
 							}
 						}
-						if(textWidth<(font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize()){
-							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
-						};
+						if(font!=null) {
+							if(textWidth<(font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize()){
+								textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+							}
+						}else {
+							if(textWidth<(rFont.getStringWidth(elem)/1000)*item.getFontSize()){
+								textWidth = (rFont.getStringWidth(elem)/1000)*item.getFontSize();
+							}
+						}
 						if(item.isUnderline()) {
 
 							PDAnnotationLink txtUnderline = new PDAnnotationLink();
@@ -920,9 +1091,13 @@ public class VolTEXT_Listener implements VolTextListener {
 							PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
 							underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
 							txtUnderline.setBorderStyle(underline);
-
-							// set up the markup area
-							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+							if(font!=null) {
+								// set up the markup area
+								textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*item.getFontSize();
+							}else {
+								// set up the markup area
+								textWidth = (rFont.getStringWidth(elem)/1000)*item.getFontSize();
+							}
 							PDRectangle position = new PDRectangle();
 							position.setLowerLeftX(0);
 							position.setLowerLeftY(p.getHeight() - 24f);
@@ -975,7 +1150,12 @@ public class VolTEXT_Listener implements VolTextListener {
 						}else {
 							p.add(new Indent(bullet, 4, SpaceUnit.em, item.getFontSize(),font.getPlainFont(), Alignment.Right));
 						}
-						p.addMarkup(elem+"\n", item.getFontSize(), font);
+						
+						if(font==null) {
+							p.addMarkup(elem+"\n", item.getFontSize(), rFont, bFont, iFont, biFont);
+						}else {
+							p.addMarkup(elem+"\n", item.getFontSize(), font);
+						}
 					}
 					if(item.getWidth()==null) {
 						item.setWidth(UnitConverter.convPointmm(textWidth>p.getWidth()?textWidth:p.getWidth()));
@@ -1130,7 +1310,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					float dimitemy=p.getHeight();
 					Position pt=new Position(-dimitemx/2,+dimitemy/2);
 					
-					float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
+					//float w_mm=UnitConverter.convPointmm(container.getDiv().getWidth());
 					float h_mm=UnitConverter.convPointmm(container.getDiv().getHeight());
 					/*if(item.getPosX()<=w_mm)
 						if(item.getWidth()+item.getPosX()>w_mm) {
@@ -1390,7 +1570,8 @@ public class VolTEXT_Listener implements VolTextListener {
 						null,
 						img.getLayer(), 
 						null, 
-						"", 
+						"",
+						null,
 						img.getURL(), img.getUnitX(), img.getUnitY(), img.getUnitWidth(), img.getUnitHeight());
 				container.getList_tot().add(i);
 			}
@@ -1473,6 +1654,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						txt.getLayer(), 
 						txt.getText(), 
 						txt.getFontFamilyTTF(), 
+						txt.getFontFamilyOTF(),
 						"",
 						txt.getUnitX(), 
 						txt.getUnitY(), 
@@ -1500,6 +1682,11 @@ public class VolTEXT_Listener implements VolTextListener {
 				
 				// Create a new font object by loading a TrueType font into the document
 				BaseFont font=null;
+				PDFont rFont=null;
+				PDFont bFont=null;
+				PDFont iFont=null;
+				PDFont biFont=null;
+				
 				for(String elem:txt.getText()) {
 					int bNum=0;
 					int iNum=0;
@@ -1567,7 +1754,36 @@ public class VolTEXT_Listener implements VolTextListener {
 					}else {
 						if(txt.getFontFamilyTTF()!="" && txt.getFontFamilyTTF()!=null) {
 							//DUBBI SU QUESTA:
-							font = BaseFont.valueOf(PDType0Font.load(PDF_doc, new File(txt.getFontFamilyTTF())).getBaseFont());
+							if(txt.getFontFamilyTTF().contains(".ttf")) {
+								font = null;
+								if(txt.getFontFamilyTTF().contains("Regular.ttf")) {
+								String parent=txt.getFontFamilyTTF().substring(0,txt.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
+								rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+								try{
+									bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+								}catch(IOException ex) {
+									bFont=rFont;
+								}
+								try{
+									iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+								}catch(IOException ex) {
+									iFont=rFont;
+								}
+								try{
+									biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+								}catch(IOException ex) {
+									biFont=rFont;
+								}
+								}else {
+									String parent=txt.getFontFamilyTTF();
+									rFont = PDType0Font.load(PDF_doc,new File(parent));
+									bFont = PDType0Font.load(PDF_doc,new File(parent));
+									iFont = PDType0Font.load(PDF_doc,new File(parent));
+									biFont = PDType0Font.load(PDF_doc,new File(parent));
+								}
+							}else {
+								font=BaseFont.Helvetica;
+							}
 							if(txt.isBold())
 								if(txt.isItalics())
 									elem="*_"+elem+"_*";
@@ -1578,6 +1794,60 @@ public class VolTEXT_Listener implements VolTextListener {
 							//nel case applicare questa:
 							//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 
+						}else if(txt.getFontFamilyOTF()!="" && txt.getFontFamilyOTF()!=null){
+							//DUBBI SU QUESTA:
+							if(txt.getFontFamilyOTF().contains(".otf")) {
+								font = null;
+								if(txt.getFontFamilyTTF().contains("Regular.ttf")) {
+								String parent=txt.getFontFamilyOTF().substring(0,txt.getFontFamilyOTF().lastIndexOf("Regular.otf"));
+								OTFParser otfParser = new OTFParser();
+								OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.otf"));
+								rFont = PDType0Font.load(PDF_doc,otf,false);
+								try{
+									otf=otfParser.parse(new File(parent+"Bold.otf"));
+									bFont=PDType0Font.load(PDF_doc, otf,false);
+								}catch(IOException ex) {
+									bFont=rFont;
+								}
+								try{
+									otf=otfParser.parse(new File(parent+"Italic.otf"));
+									iFont=PDType0Font.load(PDF_doc, otf,false);
+								}catch(IOException ex) {
+									iFont=rFont;
+								}
+								try{
+									otf=otfParser.parse(new File(parent+"BoldItalic.otf"));
+									biFont=PDType0Font.load(PDF_doc, otf,false);
+								}catch(IOException ex) {
+									biFont=rFont;
+								}
+							}else {
+								String parent=txt.getFontFamilyTTF();
+								rFont = PDType0Font.load(PDF_doc,new File(parent));
+								bFont = PDType0Font.load(PDF_doc,new File(parent));
+								iFont = PDType0Font.load(PDF_doc,new File(parent));
+								biFont = PDType0Font.load(PDF_doc,new File(parent));
+							}
+							}else {
+								font=BaseFont.Helvetica;
+								if(txt.isBold())
+									if(txt.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(txt.isItalics())
+									elem="_"+elem+"_";
+								break;
+							}
+							if(txt.isBold())
+								if(txt.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(txt.isItalics())
+								elem="_"+elem+"_";
+							//nel case applicare questa:
+							//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 						}else {
 							font=BaseFont.Helvetica;
 							if(txt.isBold())
@@ -1589,6 +1859,7 @@ public class VolTEXT_Listener implements VolTextListener {
 								elem="_"+elem+"_";
 						}
 					}
+					
 					if(txt.isUnderline()) {
 
 						PDAnnotationLink txtUnderline = new PDAnnotationLink();
@@ -1596,9 +1867,14 @@ public class VolTEXT_Listener implements VolTextListener {
 						PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
 						underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
 						txtUnderline.setBorderStyle(underline);
-
-						// set up the markup area
-						float textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*txt.getFontSize();
+						Float textWidth;
+						if(font!=null) {
+							// set up the markup area
+							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*txt.getFontSize();
+						}else {
+							// set up the markup area
+							textWidth = (rFont.getStringWidth(elem)/1000)*txt.getFontSize();
+						}
 						PDRectangle position = new PDRectangle();
 						position.setLowerLeftX(0);
 						position.setLowerLeftY(p.getHeight() - 24f);
@@ -1629,9 +1905,14 @@ public class VolTEXT_Listener implements VolTextListener {
 						elem="{color:#"+hex+"}"+elem.substring(1, elem.length()-1)+"{color:#000000}";
 					}
 					//p.addText(item.getText(), item.getFontSize(), font);
-
-					p.addMarkup(elem+"\n", txt.getFontSize(), font);
-					p.addText("\n",txt.getFontSize(), font.getPlainFont());
+					if(font!=null) {
+						p.addMarkup(elem+"\n", txt.getFontSize(), font);
+						p.addText("\n",txt.getFontSize(), font.getPlainFont());
+					}else {
+						p.addMarkup(elem+"\n", txt.getFontSize(), rFont, bFont, iFont, biFont);
+						p.addText("\n",txt.getFontSize(), rFont);
+					}
+					
 				}
 				if(txt.isFitX())
 				{
@@ -1890,6 +2171,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						li.getLayer(), 
 						null, 
 						li.getFontFamilyTTF(), 
+						li.getFontFamilyOTF(),
 						"", li.getUnitX(), li.getUnitY(), li.getUnitWidth(), li.getUnitHeight());
 				container.getList_tot().add(i);
 			}
@@ -1915,6 +2197,10 @@ public class VolTEXT_Listener implements VolTextListener {
 				
 				// Create a new font object by loading a TrueType font into the document
 				BaseFont font=null;
+				PDFont rFont=null;
+				PDFont bFont=null;
+				PDFont iFont=null;
+				PDFont biFont=null;
 				for(String elem:li.getItems()) {
 					int bNum=0;
 					int iNum=0;
@@ -1982,7 +2268,36 @@ public class VolTEXT_Listener implements VolTextListener {
 					}else {
 						if(li.getFontFamilyTTF()!="" && li.getFontFamilyTTF()!=null) {
 							//DUBBI SU QUESTA:
-							font = BaseFont.valueOf(PDType0Font.load(PDF_doc, new File(li.getFontFamilyTTF())).getBaseFont());
+							if(li.getFontFamilyTTF().contains(".ttf")) {
+								font = null;
+								String parent=li.getFontFamilyTTF().substring(0,li.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
+								rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+								try{
+									bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+								}catch(IOException ex) {
+									bFont=rFont;
+								}
+								try{
+									iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+								}catch(IOException ex) {
+									iFont=rFont;
+								}
+								try{
+									biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+								}catch(IOException ex) {
+									biFont=rFont;
+								}
+							}else {
+								font=BaseFont.Helvetica;
+								if(li.isBold())
+									if(li.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(li.isItalics())
+									elem="_"+elem+"_";
+								break;
+							}
 							if(li.isBold())
 								if(li.isItalics())
 									elem="*_"+elem+"_*";
@@ -1993,6 +2308,47 @@ public class VolTEXT_Listener implements VolTextListener {
 							//nel case applicare questa:
 							//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 
+						}else if(li.getFontFamilyOTF()!="" && li.getFontFamilyOTF()!=null){
+							//DUBBI SU QUESTA:
+							if(li.getFontFamilyOTF().contains(".otf")) {
+								font = null;
+								String parent=li.getFontFamilyOTF().substring(0,li.getFontFamilyOTF().lastIndexOf("Regular.otf"));
+								rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.otf"));
+								try{
+									bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.otf"));
+								}catch(IOException ex) {
+									bFont=rFont;
+								}
+								try{
+									iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.otf"));
+								}catch(IOException ex) {
+									iFont=rFont;
+								}
+								try{
+									biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.otf"));
+								}catch(IOException ex) {
+									biFont=rFont;
+								}
+							}else {
+								font=BaseFont.Helvetica;
+								if(li.isBold())
+									if(li.isItalics())
+										elem="*_"+elem+"_*";
+									else
+										elem="*"+elem+"*";
+								else if(li.isItalics())
+									elem="_"+elem+"_";
+								break;
+							}
+							if(li.isBold())
+								if(li.isItalics())
+									elem="*_"+elem+"_*";
+								else
+									elem="*"+elem+"*";
+							else if(li.isItalics())
+								elem="_"+elem+"_";
+							//nel case applicare questa:
+							//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 						}else {
 							font=BaseFont.Helvetica;
 							if(li.isBold())
@@ -2004,6 +2360,7 @@ public class VolTEXT_Listener implements VolTextListener {
 								elem="_"+elem+"_";
 						}
 					}
+					
 					if(li.isUnderline()) {
 
 						PDAnnotationLink txtUnderline = new PDAnnotationLink();
@@ -2011,9 +2368,14 @@ public class VolTEXT_Listener implements VolTextListener {
 						PDBorderStyleDictionary underline = new PDBorderStyleDictionary();
 						underline.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
 						txtUnderline.setBorderStyle(underline);
-
-						// set up the markup area
-						float textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*li.getFontSize();
+						Float textWidth;
+						if(font!=null) {
+							// set up the markup area
+							textWidth = (font.getPlainFont().getStringWidth(elem)/1000)*li.getFontSize();
+						}else {
+							// set up the markup area
+							textWidth = (rFont.getStringWidth(elem)/1000)*li.getFontSize();
+						}
 						PDRectangle position = new PDRectangle();
 						position.setLowerLeftX(0);
 						position.setLowerLeftY(p.getHeight() - 24f);
@@ -2066,7 +2428,13 @@ public class VolTEXT_Listener implements VolTextListener {
 					}else {
 						p.add(new Indent(bullet, 4, SpaceUnit.em, li.getFontSize(),font.getPlainFont(), Alignment.Right,li.getRGBBulletColor()));
 					}
-					p.addMarkup(elem+"\n", li.getFontSize(), font);
+					if(font!=null) {
+						p.addMarkup(elem+"\n", li.getFontSize(), font);
+						p.addText("\n",li.getFontSize(), font.getPlainFont());
+					}else {
+						p.addMarkup(elem+"\n", li.getFontSize(), rFont, bFont, iFont, biFont);
+						p.addText("\n",li.getFontSize(), rFont);
+					}
 					
 				}
 				if(li.isFitX())
@@ -2724,6 +3092,9 @@ public class VolTEXT_Listener implements VolTextListener {
 			case "font-family-ttf:":
 				txt.setFontFamilyTTF(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 				break;
+			case "font-family-otf:":
+				txt.setFontFamilyOTF(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+				break;
 			case "font-size:":
 				txt.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
 				break;
@@ -2762,6 +3133,9 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			case "font-family-ttf:":
 				list.setFontFamilyTTF(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+				break;
+			case "font-family-otf:":
+				list.setFontFamilyOTF(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 				break;
 			case "font-size:":
 				list.setFontSize(Integer.parseInt(ctx.NVAL().toString()));

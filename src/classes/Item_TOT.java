@@ -32,7 +32,7 @@ public class Item_TOT {
 	public Item_TOT(String t, boolean ordered, String bullet, List<String> items, String iD, String fontFamily, Integer fontSize,
 			Color rGBAcolor, Color RGBBulletColor, boolean bold, boolean italics, boolean underline, String position, Float posX, Float posY,
 			Float angle_Rotation, Float width, Float height, boolean fitX, boolean fitY,String align, Integer layer, ArrayList<String> text,
-			String fontFamilyTTF, String uRL, String ux, String uy, String uw, String uh) {
+			String fontFamilyTTF,String fontFamilyOTF, String uRL, String ux, String uy, String uw, String uh) {
 		super();
 		this.type = t;
 		this.ordered = ordered;
@@ -58,6 +58,7 @@ public class Item_TOT {
 		Layer = layer;
 		Text = text;
 		FontFamilyTTF = fontFamilyTTF;
+		setFontFamilyOTF(fontFamilyOTF);
 		URL = uRL;
 		setUnitX(ux);
 		setUnitY(uy);
@@ -88,6 +89,7 @@ public class Item_TOT {
 	private Integer Layer;
 	private ArrayList<String> Text;
 	private String FontFamilyTTF;
+	private String FontFamilyOTF;
 	private String URL;
 	private String UnitX;
 	private String UnitY;
@@ -369,6 +371,19 @@ public class Item_TOT {
 	 */
 	public void setFontFamilyTTF(String fontFamilyTTF) {
 		FontFamilyTTF = fontFamilyTTF;
+	}
+
+	/**
+	 * @return the fontFamilyOTF
+	 */
+	public String getFontFamilyOTF() {
+		return FontFamilyOTF;
+	}
+	/**
+	 * @param fontFamilyOTF the fontFamilyOTF to set
+	 */
+	public void setFontFamilyOTF(String fontFamilyOTF) {
+		FontFamilyOTF = fontFamilyOTF;
 	}
 	/**
 	 * @return the uRL

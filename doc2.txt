@@ -3,6 +3,14 @@
 	path:"./PageDiv/";
 	page:{
 		format:A4;
+		text:{
+				id:"TESTO";
+				colorT:"blue";
+				position:lc;
+				font-family-ttf:"C:\Windows\Fonts\Bruss___.ttf";
+				string:"io non sono bello ma spaccio (solo fin quando posso)";
+				angle-rotation: 0;
+		}
 		list:{
 				id:"LISTA";
 				position:cc;

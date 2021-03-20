@@ -76,9 +76,10 @@ listattr: 	'ordered:' TFVAL ENDNLINE
 	|		colorBullet
 	|		fitAttr;
 
-txtval:		('font-family' 
-	|		 'font-family-ttf') ':' STRING ENDLINE
-	| 		'font-size' ':' NVAL ENDNLINE 
+txtval:		('font-family:' 
+	|		 'font-family-ttf:'
+	|		 'font-family-otf:') STRING ENDNLINE
+	| 		'font-size:' NVAL ENDNLINE 
 	| 		TXTATF ':' TFVAL ENDNLINE;
 	
 colorBullet:'colorT-bullet:' STRING ENDNLINE

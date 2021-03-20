@@ -15,6 +15,7 @@ public class TXT_Item extends Item {
 		setID("");
 		setFontFamily("");
 		setFontFamilyTTF(null);
+		setFontFamilyOTF(null);
 		setFontSize(12);
 		setRGBAcolor(new Color(0, 0, 0, 0));
 		setBold(false);
@@ -38,6 +39,7 @@ public class TXT_Item extends Item {
 	private String ID;
 	private String FontFamily;
 	private String FontFamilyTTF;
+	private String FontFamilyOTF;
 	private Integer FontSize;
 	private Color rGBAcolor;
 	private boolean Bold;
@@ -106,6 +108,19 @@ public class TXT_Item extends Item {
 	public void setFontFamilyTTF(String fontFamilyTTF) {
 		FontFamilyTTF = fontFamilyTTF;
 	}
+	/**
+	 * @return the fontFamilyOTF
+	 */
+	public String getFontFamilyOTF() {
+		return FontFamilyOTF;
+	}
+	/**
+	 * @param fontFamilyOTF the fontFamilyOTF to set
+	 */
+	public void setFontFamilyOTF(String fontFamilyOTF) {
+		FontFamilyOTF = fontFamilyOTF;
+	}
+	
 	/**
 	 * @return the fontSize
 	 */
