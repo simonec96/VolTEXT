@@ -554,35 +554,40 @@ public class VolTEXT_Listener implements VolTextListener {
 						}else {
 							if(item.getFontFamilyTTF()!="" && item.getFontFamilyTTF()!=null) {
 								//DUBBI SU QUESTA:
-								if(item.getFontFamilyTTF().contains(".ttf")) {
+								if(item.getFontFamilyOTF().contains(".ttf")) {
 									font = null;
-									String parent=item.getFontFamilyTTF().substring(0,item.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
-									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+									if(item.getFontFamilyTTF().contains("Regular.ttf")) {
+									String parent=item.getFontFamilyOTF().substring(0,item.getFontFamilyOTF().lastIndexOf("Regular.ttf"));
+									OTFParser otfParser = new OTFParser();
+									OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.ttf"));
+									rFont = PDType0Font.load(PDF_doc,otf,false);
 									try{
-										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+										otf=otfParser.parse(new File(parent+"Bold.ttf"));
+										bFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										bFont=rFont;
 									}
 									try{
-										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+										otf=otfParser.parse(new File(parent+"Italic.ttf"));
+										iFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										iFont=rFont;
 									}
 									try{
-										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+										otf=otfParser.parse(new File(parent+"BoldItalic.ttf"));
+										biFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										biFont=rFont;
 									}
 								}else {
+									String parent=item.getFontFamilyTTF();
+									rFont = PDType0Font.load(PDF_doc,new File(parent));
+									bFont = PDType0Font.load(PDF_doc,new File(parent));
+									iFont = PDType0Font.load(PDF_doc,new File(parent));
+									biFont = PDType0Font.load(PDF_doc,new File(parent));
+								}
+								}else {
 									font=BaseFont.Helvetica;
-									if(item.isBold())
-										if(item.isItalics())
-											elem="*_"+elem+"_*";
-										else
-											elem="*"+elem+"*";
-									else if(item.isItalics())
-										elem="_"+elem+"_";
-									break;
 								}
 								if(item.isBold())
 									if(item.isItalics())
@@ -591,40 +596,42 @@ public class VolTEXT_Listener implements VolTextListener {
 										elem="*"+elem+"*";
 								else if(item.isItalics())
 									elem="_"+elem+"_";
-								//nel case applicare questa:
-								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
-
 							}else if(item.getFontFamilyOTF()!="" && item.getFontFamilyOTF()!=null){
 								//DUBBI SU QUESTA:
 								if(item.getFontFamilyOTF().contains(".otf")) {
 									font = null;
+									if(item.getFontFamilyTTF().contains("Regular.otf")) {
 									String parent=item.getFontFamilyOTF().substring(0,item.getFontFamilyOTF().lastIndexOf("Regular.otf"));
-									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.otf"));
+									OTFParser otfParser = new OTFParser();
+									OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.otf"));
+									rFont = PDType0Font.load(PDF_doc,otf,false);
 									try{
-										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.otf"));
+										otf=otfParser.parse(new File(parent+"Bold.otf"));
+										bFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										bFont=rFont;
 									}
 									try{
-										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.otf"));
+										otf=otfParser.parse(new File(parent+"Italic.otf"));
+										iFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										iFont=rFont;
 									}
 									try{
-										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.otf"));
+										otf=otfParser.parse(new File(parent+"BoldItalic.otf"));
+										biFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										biFont=rFont;
 									}
 								}else {
+									String parent=item.getFontFamilyTTF();
+									rFont = PDType0Font.load(PDF_doc,new File(parent));
+									bFont = PDType0Font.load(PDF_doc,new File(parent));
+									iFont = PDType0Font.load(PDF_doc,new File(parent));
+									biFont = PDType0Font.load(PDF_doc,new File(parent));
+								}
+								}else {
 									font=BaseFont.Helvetica;
-									if(item.isBold())
-										if(item.isItalics())
-											elem="*_"+elem+"_*";
-										else
-											elem="*"+elem+"*";
-									else if(item.isItalics())
-										elem="_"+elem+"_";
-									break;
 								}
 								if(item.isBold())
 									if(item.isItalics())
@@ -983,35 +990,40 @@ public class VolTEXT_Listener implements VolTextListener {
 						}else {
 							if(item.getFontFamilyTTF()!="" && item.getFontFamilyTTF()!=null) {
 								//DUBBI SU QUESTA:
-								if(item.getFontFamilyTTF().contains(".ttf")) {
+								if(item.getFontFamilyOTF().contains(".ttf")) {
 									font = null;
-									String parent=item.getFontFamilyTTF().substring(0,item.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
-									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+									if(item.getFontFamilyTTF().contains("Regular.ttf")) {
+									String parent=item.getFontFamilyOTF().substring(0,item.getFontFamilyOTF().lastIndexOf("Regular.ttf"));
+									OTFParser otfParser = new OTFParser();
+									OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.ttf"));
+									rFont = PDType0Font.load(PDF_doc,otf,false);
 									try{
-										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+										otf=otfParser.parse(new File(parent+"Bold.ttf"));
+										bFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										bFont=rFont;
 									}
 									try{
-										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+										otf=otfParser.parse(new File(parent+"Italic.ttf"));
+										iFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										iFont=rFont;
 									}
 									try{
-										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+										otf=otfParser.parse(new File(parent+"BoldItalic.ttf"));
+										biFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										biFont=rFont;
 									}
 								}else {
+									String parent=item.getFontFamilyTTF();
+									rFont = PDType0Font.load(PDF_doc,new File(parent));
+									bFont = PDType0Font.load(PDF_doc,new File(parent));
+									iFont = PDType0Font.load(PDF_doc,new File(parent));
+									biFont = PDType0Font.load(PDF_doc,new File(parent));
+								}
+								}else {
 									font=BaseFont.Helvetica;
-									if(item.isBold())
-										if(item.isItalics())
-											elem="*_"+elem+"_*";
-										else
-											elem="*"+elem+"*";
-									else if(item.isItalics())
-										elem="_"+elem+"_";
-									break;
 								}
 								if(item.isBold())
 									if(item.isItalics())
@@ -1020,40 +1032,42 @@ public class VolTEXT_Listener implements VolTextListener {
 										elem="*"+elem+"*";
 								else if(item.isItalics())
 									elem="_"+elem+"_";
-								//nel case applicare questa:
-								//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
-
 							}else if(item.getFontFamilyOTF()!="" && item.getFontFamilyOTF()!=null){
 								//DUBBI SU QUESTA:
 								if(item.getFontFamilyOTF().contains(".otf")) {
 									font = null;
+									if(item.getFontFamilyTTF().contains("Regular.otf")) {
 									String parent=item.getFontFamilyOTF().substring(0,item.getFontFamilyOTF().lastIndexOf("Regular.otf"));
-									rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.otf"));
+									OTFParser otfParser = new OTFParser();
+									OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.otf"));
+									rFont = PDType0Font.load(PDF_doc,otf,false);
 									try{
-										bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.otf"));
+										otf=otfParser.parse(new File(parent+"Bold.otf"));
+										bFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										bFont=rFont;
 									}
 									try{
-										iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.otf"));
+										otf=otfParser.parse(new File(parent+"Italic.otf"));
+										iFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										iFont=rFont;
 									}
 									try{
-										biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.otf"));
+										otf=otfParser.parse(new File(parent+"BoldItalic.otf"));
+										biFont=PDType0Font.load(PDF_doc, otf,false);
 									}catch(IOException ex) {
 										biFont=rFont;
 									}
 								}else {
+									String parent=item.getFontFamilyTTF();
+									rFont = PDType0Font.load(PDF_doc,new File(parent));
+									bFont = PDType0Font.load(PDF_doc,new File(parent));
+									iFont = PDType0Font.load(PDF_doc,new File(parent));
+									biFont = PDType0Font.load(PDF_doc,new File(parent));
+								}
+								}else {
 									font=BaseFont.Helvetica;
-									if(item.isBold())
-										if(item.isItalics())
-											elem="*_"+elem+"_*";
-										else
-											elem="*"+elem+"*";
-									else if(item.isItalics())
-										elem="_"+elem+"_";
-									break;
 								}
 								if(item.isBold())
 									if(item.isItalics())
@@ -1753,46 +1767,41 @@ public class VolTEXT_Listener implements VolTextListener {
 						}
 					}else {
 						if(txt.getFontFamilyTTF()!="" && txt.getFontFamilyTTF()!=null) {
-							//DUBBI SU QUESTA:
-							if(txt.getFontFamilyTTF().contains(".ttf")) {
+							if(txt.getFontFamilyOTF().contains(".ttf")) {
 								font = null;
 								if(txt.getFontFamilyTTF().contains("Regular.ttf")) {
-								String parent=txt.getFontFamilyTTF().substring(0,txt.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
-								rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
+								String parent=txt.getFontFamilyOTF().substring(0,txt.getFontFamilyOTF().lastIndexOf("Regular.ttf"));
+								OTFParser otfParser = new OTFParser();
+								OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.ttf"));
+								rFont = PDType0Font.load(PDF_doc,otf,false);
 								try{
-									bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
+									otf=otfParser.parse(new File(parent+"Bold.ttf"));
+									bFont=PDType0Font.load(PDF_doc, otf,false);
 								}catch(IOException ex) {
 									bFont=rFont;
 								}
 								try{
-									iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
+									otf=otfParser.parse(new File(parent+"Italic.ttf"));
+									iFont=PDType0Font.load(PDF_doc, otf,false);
 								}catch(IOException ex) {
 									iFont=rFont;
 								}
 								try{
-									biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
+									otf=otfParser.parse(new File(parent+"BoldItalic.ttf"));
+									biFont=PDType0Font.load(PDF_doc, otf,false);
 								}catch(IOException ex) {
 									biFont=rFont;
 								}
-								}else {
-									String parent=txt.getFontFamilyTTF();
-									rFont = PDType0Font.load(PDF_doc,new File(parent));
-									bFont = PDType0Font.load(PDF_doc,new File(parent));
-									iFont = PDType0Font.load(PDF_doc,new File(parent));
-									biFont = PDType0Font.load(PDF_doc,new File(parent));
-								}
+							}else {
+								String parent=txt.getFontFamilyTTF();
+								rFont = PDType0Font.load(PDF_doc,new File(parent));
+								bFont = PDType0Font.load(PDF_doc,new File(parent));
+								iFont = PDType0Font.load(PDF_doc,new File(parent));
+								biFont = PDType0Font.load(PDF_doc,new File(parent));
+							}
 							}else {
 								font=BaseFont.Helvetica;
 							}
-							if(txt.isBold())
-								if(txt.isItalics())
-									elem="*_"+elem+"_*";
-								else
-									elem="*"+elem+"*";
-							else if(txt.isItalics())
-								elem="_"+elem+"_";
-							//nel case applicare questa:
-							//p.addText(elem, item.getFontSize(), PDType0Font.load(PDF_doc, new File(item.getFontFamilyTTF())));
 
 						}else if(txt.getFontFamilyOTF()!="" && txt.getFontFamilyOTF()!=null){
 							//DUBBI SU QUESTA:
@@ -1830,14 +1839,6 @@ public class VolTEXT_Listener implements VolTextListener {
 							}
 							}else {
 								font=BaseFont.Helvetica;
-								if(txt.isBold())
-									if(txt.isItalics())
-										elem="*_"+elem+"_*";
-									else
-										elem="*"+elem+"*";
-								else if(txt.isItalics())
-									elem="_"+elem+"_";
-								break;
 							}
 							if(txt.isBold())
 								if(txt.isItalics())
@@ -2269,35 +2270,40 @@ public class VolTEXT_Listener implements VolTextListener {
 						if(li.getFontFamilyTTF()!="" && li.getFontFamilyTTF()!=null) {
 							//DUBBI SU QUESTA:
 							if(li.getFontFamilyTTF().contains(".ttf")) {
-								font = null;
-								String parent=li.getFontFamilyTTF().substring(0,li.getFontFamilyTTF().lastIndexOf("Regular.ttf"));
-								rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.ttf"));
-								try{
-									bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.ttf"));
-								}catch(IOException ex) {
-									bFont=rFont;
+									font = null;
+									if(li.getFontFamilyTTF().contains("Regular.ttf")) {
+									String parent=li.getFontFamilyOTF().substring(0,li.getFontFamilyOTF().lastIndexOf("Regular.ttf"));
+									OTFParser otfParser = new OTFParser();
+									OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.ttf"));
+									rFont = PDType0Font.load(PDF_doc,otf,false);
+									try{
+										otf=otfParser.parse(new File(parent+"Bold.ttf"));
+										bFont=PDType0Font.load(PDF_doc, otf,false);
+									}catch(IOException ex) {
+										bFont=rFont;
+									}
+									try{
+										otf=otfParser.parse(new File(parent+"Italic.ttf"));
+										iFont=PDType0Font.load(PDF_doc, otf,false);
+									}catch(IOException ex) {
+										iFont=rFont;
+									}
+									try{
+										otf=otfParser.parse(new File(parent+"BoldItalic.ttf"));
+										biFont=PDType0Font.load(PDF_doc, otf,false);
+									}catch(IOException ex) {
+										biFont=rFont;
+									}
+								}else {
+									String parent=li.getFontFamilyTTF();
+									rFont = PDType0Font.load(PDF_doc,new File(parent));
+									bFont = PDType0Font.load(PDF_doc,new File(parent));
+									iFont = PDType0Font.load(PDF_doc,new File(parent));
+									biFont = PDType0Font.load(PDF_doc,new File(parent));
 								}
-								try{
-									iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.ttf"));
-								}catch(IOException ex) {
-									iFont=rFont;
+								}else {
+									font=BaseFont.Helvetica;
 								}
-								try{
-									biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.ttf"));
-								}catch(IOException ex) {
-									biFont=rFont;
-								}
-							}else {
-								font=BaseFont.Helvetica;
-								if(li.isBold())
-									if(li.isItalics())
-										elem="*_"+elem+"_*";
-									else
-										elem="*"+elem+"*";
-								else if(li.isItalics())
-									elem="_"+elem+"_";
-								break;
-							}
 							if(li.isBold())
 								if(li.isItalics())
 									elem="*_"+elem+"_*";
@@ -2312,33 +2318,38 @@ public class VolTEXT_Listener implements VolTextListener {
 							//DUBBI SU QUESTA:
 							if(li.getFontFamilyOTF().contains(".otf")) {
 								font = null;
+								if(li.getFontFamilyTTF().contains("Regular.otf")) {
 								String parent=li.getFontFamilyOTF().substring(0,li.getFontFamilyOTF().lastIndexOf("Regular.otf"));
-								rFont = PDType0Font.load(PDF_doc,new File(parent+"Regular.otf"));
+								OTFParser otfParser = new OTFParser();
+								OpenTypeFont otf = otfParser.parse(new File(parent+"Regular.otf"));
+								rFont = PDType0Font.load(PDF_doc,otf,false);
 								try{
-									bFont=PDType0Font.load(PDF_doc, new File(parent+"Bold.otf"));
+									otf=otfParser.parse(new File(parent+"Bold.otf"));
+									bFont=PDType0Font.load(PDF_doc, otf,false);
 								}catch(IOException ex) {
 									bFont=rFont;
 								}
 								try{
-									iFont=PDType0Font.load(PDF_doc, new File(parent+"Italic.otf"));
+									otf=otfParser.parse(new File(parent+"Italic.otf"));
+									iFont=PDType0Font.load(PDF_doc, otf,false);
 								}catch(IOException ex) {
 									iFont=rFont;
 								}
 								try{
-									biFont=PDType0Font.load(PDF_doc, new File(parent+"BoldItalic.otf"));
+									otf=otfParser.parse(new File(parent+"BoldItalic.otf"));
+									biFont=PDType0Font.load(PDF_doc, otf,false);
 								}catch(IOException ex) {
 									biFont=rFont;
 								}
 							}else {
+								String parent=li.getFontFamilyTTF();
+								rFont = PDType0Font.load(PDF_doc,new File(parent));
+								bFont = PDType0Font.load(PDF_doc,new File(parent));
+								iFont = PDType0Font.load(PDF_doc,new File(parent));
+								biFont = PDType0Font.load(PDF_doc,new File(parent));
+							}
+							}else {
 								font=BaseFont.Helvetica;
-								if(li.isBold())
-									if(li.isItalics())
-										elem="*_"+elem+"_*";
-									else
-										elem="*"+elem+"*";
-								else if(li.isItalics())
-									elem="_"+elem+"_";
-								break;
 							}
 							if(li.isBold())
 								if(li.isItalics())
