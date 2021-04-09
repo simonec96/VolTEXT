@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
+import enums.Figure;
+
 public class DIV_Item extends Item {
 	
 	/**
@@ -27,6 +29,8 @@ public class DIV_Item extends Item {
 		setUnitY("mm");
 		setUnitHeight("mm");
 		setUnitWidth("mm");
+		setFigura(Figure.RETTANGOLO);
+		setCross_Percentage(0f);
 	}
 	private Float PosX;
 	private Float PosY;
@@ -44,6 +48,8 @@ public class DIV_Item extends Item {
 	private String UnitWidth;
 	private String UnitHeight;
 	private List<? extends Item> list;
+	private Figure Figura;
+	private Float Cross_Percentage;
 	
 	/**
 	 * @return the iD
@@ -236,6 +242,34 @@ public class DIV_Item extends Item {
 	 */
 	public void setUnitHeight(String unitHeight) {
 		UnitHeight = unitHeight;
+	}
+	/**
+	 * @return the figura
+	 */
+	public Figure getFigura() {
+		return Figura;
+	}
+	/**
+	 * @param figura the figura to set
+	 */
+	public void setFigura(Figure figura) {
+		Figura = figura;
+	}
+	/**
+	 * @return the cross_Percentage
+	 */
+	public Float getCross_Percentage() {
+		return Cross_Percentage;
+	}
+	/**
+	 * @param cross_Percentage the cross_Percentage to set
+	 */
+	public void setCross_Percentage(Float cross_Percentage) {
+		if(cross_Percentage > 100)
+			cross_Percentage = 100f;
+		if(cross_Percentage < 0)
+			cross_Percentage = 0f;
+		Cross_Percentage = cross_Percentage;
 	}
 
 	

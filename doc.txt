@@ -1,11 +1,12 @@
 {
-	title:"TestA6_text";
+	title:"TestA8_circle";
 	path:"./PageDiv/";
 	page:{
 		width:1200;
 		height:1200;
 		div:{
 			id:"A";
+			shape:"CIRCLE";
 			color:#482A4822;
 			width:50mm;
 			height:50mm;
@@ -27,9 +28,10 @@
 		}
 		div:{
 			id:"C";
+			shape:"CIRCLE";
 			color:#900C3F66;
-			width:50mm;
-			height:50mm;
+			width:200mm;
+			height:200mm;
 			pos-x:300pt;
 			position:rb;
 			pos-y:400pt;
@@ -45,9 +47,11 @@
 		}
 		div:{
 			id:"-B";
+			shape:"TRIANGLE";
+			cross-point:50;
 			color:#FF5733FF;
-			width:50mm;
-			height:50mm;
+			width:200mm;
+			height:200mm;
 			pos-x:-60%;
 			pos-y:-60%;
 		}

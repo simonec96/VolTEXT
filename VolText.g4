@@ -9,6 +9,7 @@ grammar VolText;
 
 // match keyword hello followed by an identifier
 pdf : 		A pdfattr* (stylesheet)? (page)+ C;
+
 pdfattr: 	'title:' STRING ENDNLINE
 	|		'author:' STRING ENDNLINE
 	|		'path:' STRING ENDNLINE;
@@ -25,7 +26,11 @@ page: 		'page' O pageattr* pae* C;
 
 pae: 		elemd | div;
 
-div:		'div' O (color | idval | imganumber | elemd | positionv | fitAttr)* C;
+div:		'div' O (color | idval | imganumber | elemd | positionv | fitAttr | figure | tvalue)* C;
+
+tvalue:		'cross-point:' NVAL ENDNLINE;
+
+figure:		'shape:"' ('RECTANGLE' | 'CIRCLE' | 'TRIANGLE') ENDLINE;
 	
 elemd: 		text 
 	| 		list 

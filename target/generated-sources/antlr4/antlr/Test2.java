@@ -7,7 +7,7 @@ public class Test2 {
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		CharStream codePointCharStream = CharStreams.fromFileName("doc2.txt");
+		CharStream codePointCharStream = CharStreams.fromFileName("doc.txt");
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("doc.txt") );
 	    
 		VolTextLexer lexer = new VolTextLexer(codePointCharStream);

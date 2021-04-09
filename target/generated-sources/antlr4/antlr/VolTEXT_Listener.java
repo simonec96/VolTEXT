@@ -22,10 +22,13 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.Matrix;
 
 import antlr.VolTextParser.ColorBulletContext;
+import antlr.VolTextParser.FigureContext;
+import antlr.VolTextParser.TvalueContext;
 import classes.DIV_Item;
 import classes.IMG_Item;
 import classes.Item_Container;
@@ -35,6 +38,7 @@ import classes.PAGE_Item;
 import classes.PDF_Item;
 import classes.TXT_Item;
 import classes.UnitConverter;
+import enums.Figure;
 import rst.pdfbox.layout.elements.Paragraph;
 import rst.pdfbox.layout.text.Alignment;
 import rst.pdfbox.layout.text.BaseFont;
@@ -276,10 +280,15 @@ public class VolTEXT_Listener implements VolTextListener {
 
 			container.setDiv(div);
 
+			
+			
 			float dimx = UnitConverter.convmmPoint(div.getWidth());
 			float dimy = UnitConverter.convmmPoint(div.getHeight());
 			/* transform */
 
+			
+			if(container.getDiv().getFigura().equals(Figure.RETTANGOLO))
+			{
 			cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(div.getPosX()) + dimx/2, h_p - dimy/2 - UnitConverter.convmmPoint(div.getPosY())));
 			cont.addRect(-dimx/2, -dimy/2 , dimx, dimy);
 			cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
@@ -288,7 +297,6 @@ public class VolTEXT_Listener implements VolTextListener {
 			cont.fill();
 			cont.transform(Matrix.getRotateInstance(Math.toRadians(-div.getAngle_Rotation()), 0, 0));
 			cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(div.getPosX()) - dimx/2, -h_p + dimy/2 + UnitConverter.convmmPoint(div.getPosY())));
-			
 			cont.close();
 
 			//la riga seguente serve per la gestione dell'uscita da un div, che implica anche che gli
@@ -296,6 +304,49 @@ public class VolTEXT_Listener implements VolTextListener {
 			//che le dimensioni e le posizioni non siano maggiori del div. inoltre se il div è ruotato, anche l'immagine o l'elemento interno deve essere ruotato
 			addItemToDiv(container.getList_tot(), div.getWidth(), div.getHeight());
 			container.setDiv(null);
+			}
+			else if(container.getDiv().getFigura().equals(Figure.CERCHIO))
+			{
+				float k = 0.552284749831f;
+				float rx = UnitConverter.convmmPoint(div.getWidth()/2);
+				float ry = UnitConverter.convmmPoint(div.getHeight()/2);
+				float cx = 0f;
+				float cy = 0f;
+				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(div.getPosX()) + dimx/2, h_p - dimy/2 - UnitConverter.convmmPoint(div.getPosY())));
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
+			    cont.moveTo(-rx, 0);
+			    cont.curveTo(- rx, k * ry, -k * rx, ry, 0, ry);
+			    cont.curveTo(k * rx, cy + ry, cx + rx, cy + k * ry, cx + rx, cy);
+			    cont.curveTo(cx + rx, cy - k * ry, cx + k * rx, cy - ry, cx, cy - ry);
+			    cont.curveTo(cx - k * rx, cy - ry, cx - rx, cy - k * ry, cx - rx, cy);
+				cont.setGraphicsStateParameters(graph);
+				cont.saveGraphicsState();
+				cont.fill();
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(-div.getAngle_Rotation()), 0, 0));
+				cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(div.getPosX()) - dimx/2, -h_p + dimy/2 + UnitConverter.convmmPoint(div.getPosY())));
+				cont.close();
+				container.setDiv(null);
+			}
+			else if(container.getDiv().getFigura().equals(Figure.TRIANGOLO))
+			{
+				cont.setStrokingColor(container.getDiv().getRGBAcolor());
+				float rx = UnitConverter.convmmPoint(div.getWidth()/2);
+				float ry = UnitConverter.convmmPoint(div.getHeight()/2);
+				float cross = div.getCross_Percentage();
+				cont.transform(Matrix.getTranslateInstance(UnitConverter.convmmPoint(div.getPosX()) + dimx/2, h_p - dimy/2 - UnitConverter.convmmPoint(div.getPosY())));
+				cont.addPolygon(new float[] {-rx,  rx, rx - (100 - cross)*2*rx/100}, new float[] {-ry, -ry, ry});
+				
+
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(div.getAngle_Rotation()), 0, 0));
+				cont.setGraphicsStateParameters(graph);
+				cont.saveGraphicsState();
+				cont.fill();
+				cont.transform(Matrix.getRotateInstance(Math.toRadians(-div.getAngle_Rotation()), 0, 0));
+				cont.transform(Matrix.getTranslateInstance(-UnitConverter.convmmPoint(div.getPosX()) - dimx/2, -h_p + dimy/2 + UnitConverter.convmmPoint(div.getPosY())));
+				cont.close();
+			}
+			
+			
 			
 		}
 		catch(IOException ioex)
@@ -3422,4 +3473,31 @@ public class VolTEXT_Listener implements VolTextListener {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void enterFigure(FigureContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void exitFigure(FigureContext ctx) {
+		// TODO Auto-generated method stub
+		String f = ctx.getChild(1).toString().toLowerCase();
+		if(f.equals("rectangle"))
+			container.getDiv().setFigura(Figure.RETTANGOLO);
+		else if(f.equals("circle"))
+			container.getDiv().setFigura(Figure.CERCHIO);
+		else
+			container.getDiv().setFigura(Figure.TRIANGOLO);
+	}
+	@Override
+	public void enterTvalue(TvalueContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void exitTvalue(TvalueContext ctx) {
+		// TODO Auto-generated method stub
+		container.getDiv().setCross_Percentage(Float.parseFloat(ctx.NVAL().toString()));
+	}
+
 }
