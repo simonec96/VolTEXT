@@ -8,6 +8,7 @@ import java.util.List;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.fontbox.ttf.OTFParser;
@@ -85,10 +86,16 @@ public class VolTEXT_Listener implements VolTextListener {
 	@Override public void exitPdf(VolTextParser.PdfContext ctx) { 
 		try {
 			PDF_doc.save(container.getDoc().getPath() + container.getDoc().getTitle() + ".pdf");
-			PDF_doc.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			user_gui.listErrori.add(e.getMessage());
+		} finally {
+			try {
+				PDF_doc.close();
+			} catch (IOException e) {
+				user_gui.listErrori.add("non riesco a chiudere il pdf");
+			}
 		}
 	}
 	/**
@@ -530,6 +537,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					//cont.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					user_gui.listErrori.add(item.getID()+" "+item.getURL()+": "+e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -905,13 +913,16 @@ public class VolTEXT_Listener implements VolTextListener {
 					
 					if(item.getWidth()>container.getDiv().getWidth() || item.getHeight()>container.getDiv().getHeight()) {
 						System.out.println("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troncato");
+						user_gui.listErrori.add("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troncato");
 						if(item.getHeight()>container.getDiv().getHeight()) {
 							//item.setHeight(container.getDiv().getHeight());
 							System.out.println("Altezza testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troppo grande. Riscrivere il testo");
+							user_gui.listErrori.add("Altezza testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troppo grande. Riscrivere il testo");
 						}
 						if(p.getHeight()>container.getDiv().getHeight()) {
 							System.out.println("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
 							//item.setHeight(container.getDiv().getHeight());
+							user_gui.listErrori.add("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
 						}
 					}
 					
@@ -931,11 +942,13 @@ public class VolTEXT_Listener implements VolTextListener {
 						System.out.println("Testo " + item.getID() + " in posizione esterna al div "+container.getDiv().getID() + " .");
 					*/if(-container.getDiv().getPosY()+item.getPosY()+item.getHeight()>h_mm) {
 						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+						user_gui.listErrori.add("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 					}	
 					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 										
 					if(pt.getY()<0) {
-						System.out.println("Il testo " + item.getID() +" eccede i limiti del del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+						user_gui.listErrori.add("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 					}
 					
 					float dimx=UnitConverter.convmmPoint(container.getDiv().getWidth());
@@ -965,6 +978,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					cont.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					user_gui.listErrori.add(item.getID()+": "+e.getMessage());
 					e.printStackTrace();
 				} 
 			}
@@ -996,7 +1010,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					PDFont bFont=null;
 					PDFont iFont=null;
 					PDFont biFont=null;
-					for(String elem:item.getText()) {
+					for(String elem:item.getItems()) {
 						int bNum=0;
 						int iNum=0;
 						for(String parola : elem.split(" ")) {
@@ -1360,14 +1374,17 @@ public class VolTEXT_Listener implements VolTextListener {
 					
 					
 					if(item.getWidth()>container.getDiv().getWidth() || item.getHeight()>container.getDiv().getHeight()) {
-						System.out.println("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troncato");
+						System.out.println("Lista " + item.getID() +" nel div "+ container.getDiv().getID()+" troncata");
+						user_gui.listErrori.add("Lista " + item.getID() +" nel div "+ container.getDiv().getID()+" troncata");
 						if(item.getHeight()>container.getDiv().getHeight()) {
 							//item.setHeight(container.getDiv().getHeight());
-							System.out.println("Altezza testo " + item.getID() +" nel div "+ container.getDiv().getID()+" troppo grande. Riscrivere il testo");
+							System.out.println("Altezza lista " + item.getID() +" nel div "+ container.getDiv().getID()+" troppo grande. Riscrivere la lista");
+							user_gui.listErrori.add("Altezza lista " + item.getID() +" nel div "+ container.getDiv().getID()+" troppo grande. Riscrivere la lista");
 						}
 						if(p.getHeight()>container.getDiv().getHeight()) {
-							System.out.println("Testo " + item.getID() +" nel div "+ container.getDiv().getID()+" con troppe righe. Riscrivere il testo");
+							System.out.println("Lista " + item.getID() +" nel div "+ container.getDiv().getID()+" con troppe righe. Riscrivere la lista");
 							//item.setHeight(container.getDiv().getHeight());
+							user_gui.listErrori.add("Lista " + item.getID() +" nel div "+ container.getDiv().getID()+" con troppe righe. Riscrivere la lista");
 						}
 					}
 					
@@ -1386,12 +1403,14 @@ public class VolTEXT_Listener implements VolTextListener {
 					else
 						System.out.println("Testo " + item.getID() + " in posizione esterna al div "+container.getDiv().getID() + " .");
 					*/if(-container.getDiv().getPosY()+item.getPosY()+item.getHeight()>h_mm) {
-						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+						System.out.println("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
+						user_gui.listErrori.add("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
 					}	
 					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
 										
 					if(pt.getY()<0) {
-						System.out.println("Il testo " + item.getID() +" eccede i limiti del del div" + container.getDiv().getID() + ". Riscrivere il testo.");
+						System.out.println("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
+						user_gui.listErrori.add("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
 					}
 					
 					float dimx=UnitConverter.convmmPoint(container.getDiv().getWidth());
@@ -1421,12 +1440,14 @@ public class VolTEXT_Listener implements VolTextListener {
 					cont.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					user_gui.listErrori.add(item.getID()+": "+e.getMessage());
 					e.printStackTrace();
 				} 
 			}
 			else
 			{
 				System.out.println("Elemento non riconosciuto.");
+				user_gui.listErrori.add("Elemento non riconosciuto.");
 			}
 		}
 	}
@@ -1658,6 +1679,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			cont.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
+			user_gui.listErrori.add(container.getImg().getID()+" "+container.getImg().getURL()+": "+e1.getMessage());
 			e1.printStackTrace();
 		}
 	}
@@ -2124,20 +2146,23 @@ public class VolTEXT_Listener implements VolTextListener {
 				}
 				else
 					System.out.println("Testo " + txt.getID() + " in posizione esterna alla pagina.");
+					user_gui.listErrori.add("Testo " + txt.getID() + " in posizione esterna alla pagina.");
 				if(txt.getPosY()+txt.getHeight()>h_mm) {
 					System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					user_gui.listErrori.add("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
 				}	
 				float dimx=p.getWidth();
 				System.out.println("dimx:"+dimx);
 				float dimy=p.getHeight();
 				//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
-				System.out.println("txt_posX "+txt.getPosX());
-				System.out.println("txt_posY "+txt.getPosY());
+				System.out.println("txt_posX: "+txt.getPosX());
+				System.out.println("txt_posY: "+txt.getPosY());
 				Position pt=new Position(-dimx/2,+dimy/2);
 
 
 				if(txt.getPosY()<0) {
 					System.out.println("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					user_gui.listErrori.add("Il testo " + txt.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
 				}
 
 
@@ -2156,6 +2181,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			user_gui.listErrori.add(container.getTxt().getID()+": "+e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -2644,21 +2670,24 @@ public class VolTEXT_Listener implements VolTextListener {
 					}
 				}
 				else
-					System.out.println("Testo " + li.getID() + " in posizione esterna alla pagina.");
+					System.out.println("Lista " + li.getID() + " in posizione esterna alla pagina.");
+					user_gui.listErrori.add("Lista " + li.getID() + " in posizione esterna alla pagina.");
 				if(li.getPosY()+li.getHeight()>h_mm) {
-					System.out.println("Il testo " + li.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					System.out.println("La lista " + li.getID() +" eccede i limiti del foglio. Riscrivere la lista.");
+					user_gui.listErrori.add("La lista " + li.getID() +" eccede i limiti del foglio. Riscrivere la lista.");
 				}	
 				float dimx=p.getWidth();
 				System.out.println("dimx:"+dimx);
 				float dimy=p.getHeight();
 				//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
-				System.out.println("txt_posX "+li.getPosX());
-				System.out.println("txt_posY "+li.getPosY());
+				System.out.println("li_posX: "+li.getPosX());
+				System.out.println("li_posY: "+li.getPosY());
 				Position pt=new Position(-dimx/2,+dimy/2);
 
 
 				if(li.getPosY()<0) {
-					System.out.println("Il testo " + li.getID() +" eccede i limiti del foglio. Riscrivere il testo.");
+					System.out.println("La lista " + li.getID() +" eccede i limiti del foglio. Riscrivere la lista.");
+					user_gui.listErrori.add("La lista " + li.getID() +" eccede i limiti del foglio. Riscrivere la lista.");
 				}
 
 
@@ -2679,6 +2708,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 		}catch(IOException ex) {
 			// TODO Auto-generated catch block
+			user_gui.listErrori.add(container.getList().getID()+": "+ex.getMessage());
 			ex.printStackTrace();
 		}
 
@@ -2730,6 +2760,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		if(p.getFormat() != "")
 		{
 			System.out.println("Inserito formato pagina e almeno una dimensione personalizzata. Verrà preso in considerazione il formato della pagina.");
+			user_gui.listErrori.add("Inserito formato pagina e almeno una dimensione personalizzata. Verrà preso in considerazione il formato della pagina.");
 			switch(p.getFormat()) {
 			case "A0":
 				pdrect = PDRectangle.A0;
@@ -2790,7 +2821,8 @@ public class VolTEXT_Listener implements VolTextListener {
 				list.setBullet(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 				break;
 			default:
-				System.out.println("Valore non riconosciuto");
+				//System.out.println("Valore non riconosciuto");
+				//user_gui.listErrori.add("listattrcontext "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setList(list);
 		
@@ -2854,7 +2886,9 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void visitErrorNode(ErrorNode node) { }
+	@Override public void visitErrorNode(ErrorNode node) { 
+		
+	}
 	@Override
 	public void enterPdfattr(VolTextParser.PdfattrContext ctx) {
 		// TODO Auto-generated method stub
@@ -2954,6 +2988,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			default:
 				System.out.println("Valore non riconosciuto");
+				user_gui.listErrori.add("imganumber div "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setDiv(div);
 		}
@@ -2998,6 +3033,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			default:
 				System.out.println("Valore non riconosciuto");
+				user_gui.listErrori.add("imganumber img "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setImg(img);
 		}
@@ -3042,6 +3078,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			default:
 				System.out.println("Valore non riconosciuto");
+				user_gui.listErrori.add("imganumber txt "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setTxt(txt);
 		}
@@ -3086,12 +3123,14 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			default:
 				System.out.println("Valore non riconosciuto");
+				user_gui.listErrori.add("imganumber list "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setList(list);
 		}
 		else
 		{
 			System.out.println("ALTRO");
+			user_gui.listErrori.add("ALTRO");
 		}
 
 
@@ -3131,6 +3170,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else
 		{
 			System.out.println("ALTRO");
+			user_gui.listErrori.add("ALTRO");
 		}
 	}
 	@Override
@@ -3180,6 +3220,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			default:
 				System.out.println("Valore non riconosciuto");
+				user_gui.listErrori.add("txtattrcontext "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setTxt(txt);
 		}
@@ -3222,6 +3263,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				break;
 			default:
 				System.out.println("Valore non riconosciuto");
+				user_gui.listErrori.add("listattrcontext "+ctx.getChild(0).toString().toLowerCase()+" Valore non riconosciuto");
 			}
 			container.setList(list);
 		}
@@ -3263,6 +3305,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else
 		{
 			System.out.println("ALTRO");
+			user_gui.listErrori.add("ALTRO");
 		}
 	}
 	@Override
@@ -3322,6 +3365,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else
 		{
 			System.out.println("ALTRO");
+			user_gui.listErrori.add("color ALTRO elemento");
 		}
 	}
 	@Override
@@ -3362,7 +3406,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			}
 			else
 			{
-				System.out.println("ALTRO");
+				System.out.println("ALTRO fitx elemento");
 			}
 		}else {
 			if(ctx.getParent() instanceof VolTextParser.DivContext)
@@ -3392,6 +3436,7 @@ public class VolTEXT_Listener implements VolTextListener {
 			else
 			{
 				System.out.println("ALTRO");
+				user_gui.listErrori.add("ALTRO fity elemento");
 			}
 		}
 
@@ -3421,6 +3466,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		else
 		{
 			System.out.println("ALTRO");
+			user_gui.listErrori.add("ALTRO alignment elemento");
 		}
 		
 	}
@@ -3465,6 +3511,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				else
 				{
 					System.out.println("il colore del bullet non può essere insierito nell'elemento");
+					user_gui.listErrori.add("il colore del bullet non può essere insierito nell'elemento");
 				}
 		
 	}
@@ -3499,5 +3546,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		// TODO Auto-generated method stub
 		container.getDiv().setCross_Percentage(Float.parseFloat(ctx.NVAL().toString()));
 	}
+	
+	
 
 }
