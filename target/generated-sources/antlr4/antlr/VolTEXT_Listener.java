@@ -308,7 +308,7 @@ public class VolTEXT_Listener implements VolTextListener {
 
 			//la riga seguente serve per la gestione dell'uscita da un div, che implica anche che gli
 			//elementi interni a esso devono avere dimensione e posizione interne a esso, quindi vanno controllate
-			//che le dimensioni e le posizioni non siano maggiori del div. inoltre se il div è ruotato, anche l'immagine o l'elemento interno deve essere ruotato
+			//che le dimensioni e le posizioni non siano maggiori del div. inoltre se il div Ã¨ ruotato, anche l'immagine o l'elemento interno deve essere ruotato
 			addItemToDiv(container.getList_tot(), div.getWidth(), div.getHeight());
 			container.setDiv(null);
 			}
@@ -944,7 +944,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 						user_gui.listErrori.add("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
 					}	
-					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+					//DOMANDA: la posizione di un elemento interno Ã¨ relativa al div di cui fa parte?
 										
 					if(pt.getY()<0) {
 						System.out.println("Il testo " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere il testo.");
@@ -1406,7 +1406,7 @@ public class VolTEXT_Listener implements VolTextListener {
 						System.out.println("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
 						user_gui.listErrori.add("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
 					}	
-					//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+					//DOMANDA: la posizione di un elemento interno Ã¨ relativa al div di cui fa parte?
 										
 					if(pt.getY()<0) {
 						System.out.println("La lista " + item.getID() +" eccede i limiti del div" + container.getDiv().getID() + ". Riscrivere la lista.");
@@ -1486,6 +1486,13 @@ public class VolTEXT_Listener implements VolTextListener {
 			float heigthPage = PDF_page.getMediaBox().getHeight();
 
 			String Path = ctx.imgElem().STRING().toString().substring(1, ctx.imgElem().STRING().toString().length() - 1);
+			
+			if(Path.startsWith("."))
+			{
+				Path = user_gui.global_path + Path;
+			}
+			
+			
 			PDImageXObject pdImage =  PDImageXObject.createFromFile(Path, PDF_doc);
 
 			PDPageContentStream cont = new PDPageContentStream(PDF_doc, PDF_page, AppendMode.APPEND, true); 
@@ -1498,7 +1505,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				img.setHeight(UnitConverter.convPointmm((float)pdImage.getHeight()));
 			}
 
-			//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+			//DOMANDA: la posizione di un elemento interno Ã¨ relativa al div di cui fa parte?
 
 			if(container.getDiv() == null)
 			{
@@ -2154,7 +2161,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				float dimx=p.getWidth();
 				System.out.println("dimx:"+dimx);
 				float dimy=p.getHeight();
-				//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+				//DOMANDA: la posizione di un elemento interno Ã¨ relativa al div di cui fa parte?
 				System.out.println("txt_posX: "+txt.getPosX());
 				System.out.println("txt_posY: "+txt.getPosY());
 				Position pt=new Position(-dimx/2,+dimy/2);
@@ -2679,7 +2686,7 @@ public class VolTEXT_Listener implements VolTextListener {
 				float dimx=p.getWidth();
 				System.out.println("dimx:"+dimx);
 				float dimy=p.getHeight();
-				//DOMANDA: la posizione di un elemento interno è relativa al div di cui fa parte?
+				//DOMANDA: la posizione di un elemento interno Ã¨ relativa al div di cui fa parte?
 				System.out.println("li_posX: "+li.getPosX());
 				System.out.println("li_posY: "+li.getPosY());
 				Position pt=new Position(-dimx/2,+dimy/2);
@@ -2759,8 +2766,8 @@ public class VolTEXT_Listener implements VolTextListener {
 		PDRectangle pdrect = new PDRectangle(p.getWidth(), p.getHeight());
 		if(p.getFormat() != "")
 		{
-			System.out.println("Inserito formato pagina e almeno una dimensione personalizzata. Verrà preso in considerazione il formato della pagina.");
-			user_gui.listErrori.add("Inserito formato pagina e almeno una dimensione personalizzata. Verrà preso in considerazione il formato della pagina.");
+			System.out.println("Inserito formato pagina e almeno una dimensione personalizzata. VerrÃ  preso in considerazione il formato della pagina.");
+			user_gui.listErrori.add("Inserito formato pagina e almeno una dimensione personalizzata. VerrÃ  preso in considerazione il formato della pagina.");
 			switch(p.getFormat()) {
 			case "A0":
 				pdrect = PDRectangle.A0;
@@ -2902,7 +2909,12 @@ public class VolTEXT_Listener implements VolTextListener {
 			pdf.setAuthor(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
 			break;
 		case "path:":
-			pdf.setPath(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+			String p = ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1);
+			if (p.startsWith("."))
+			{
+				p = user_gui.global_path  + p;
+			}
+			pdf.setPath(p);
 			break;
 		}
 		container.setDoc(pdf);
@@ -3510,8 +3522,8 @@ public class VolTEXT_Listener implements VolTextListener {
 				}
 				else
 				{
-					System.out.println("il colore del bullet non può essere insierito nell'elemento");
-					user_gui.listErrori.add("il colore del bullet non può essere insierito nell'elemento");
+					System.out.println("il colore del bullet non puÃ² essere insierito nell'elemento");
+					user_gui.listErrori.add("il colore del bullet non puÃ² essere insierito nell'elemento");
 				}
 		
 	}
