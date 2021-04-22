@@ -151,7 +151,10 @@ public class user_gui {
 	}*/
 	
 	public static List<String> listErrori=new ArrayList<String>();
-	public static List<String> generaPDF(String grammar) throws IOException {
+	public static String global_path;
+
+	public static List<String> generaPDF(String grammar, String p) throws IOException {
+		global_path = p;
 		// TODO Auto-generated method stub
 		CharStream codePointCharStream = CharStreams.fromString(grammar);
 		//ANTLRInputStream input = new ANTLRInputStream(new FileInputStream("doc.txt") );
