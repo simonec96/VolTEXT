@@ -18,9 +18,27 @@ stylesheet: 'stylesheet' O element* C;
 		
 element: 	'@' STRING O attrStyle* C;
 	
-attrStyle: 	imganumber
-	|		positionv
-	|		txtval;
+attrStyle: 	'cross-point:' NVAL ENDNLINE
+	|		'shape:"' ('RECTANGLE' | 'CIRCLE' | 'TRIANGLE') ENDLINE
+	|		('fit-x' | 'fit-y') ':' TFVAL ENDNLINE
+	|		('pos-x' | 'pos-y') ':' NOTVAL? NVAL (UNIT)? ENDNLINE
+	|		'angle-rotation' ':' NOTVAL? NVAL ENDNLINE
+	|		('height' | 'width') ':' NVAL (UNIT)? ENDNLINE
+	|		('p_height' | 'p_width') ':' NVAL ENDNLINE
+	|		'ordered:' TFVAL ENDNLINE
+	|		'bullet:' STRING ENDNLINE
+	|		('font-family:' | 'font-family-ttf:' | 'font-family-otf:') STRING ENDNLINE
+	| 		'font-size:' NVAL ENDNLINE 
+	| 		TXTATF ':' TFVAL ENDNLINE
+	|		'colorT-bullet:' STRING ENDNLINE
+	|		'color-bullet:' COLORVAL ENDNLINE
+	|		'colorT:' STRING ENDNLINE
+	|		'color:' COLORVAL ENDNLINE
+	|		'position:' POSVAL ENDNLINE
+	|		'alignment:' ALIGNVAL ENDLINE
+	|		'orientation:' ORIENTATION ENDNLINE
+	|		'oob:' TFVAL ENDNLINE
+	|		'format:' FORMATVAL ENDNLINE;
 	
 page: 		'page' O pageattr* pae* C;
 
@@ -99,9 +117,10 @@ alignment:  'alignment:' ALIGNVAL ENDLINE;
 
 pageattr:	'orientation:' ORIENTATION ENDNLINE
 	|		'oob:' TFVAL ENDNLINE
-	|		'width' ':' NVAL ENDNLINE
-	|		'height' ':' NVAL ENDNLINE
-	|		'format:' FORMATVAL ENDNLINE;
+	|		'p_width' ':' NVAL ENDNLINE
+	|		'p_height' ':' NVAL ENDNLINE
+	|		'format:' FORMATVAL ENDNLINE
+	|		idval;
 	
 FORMATVAL:	'A0'
 	|		'A1' 
@@ -113,8 +132,6 @@ FORMATVAL:	'A0'
 
 ORIENTATION:('hor' | 'ver');
 	
-
-
 //TERMINALI
 
 TXTATF: 	'bold'

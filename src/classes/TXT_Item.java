@@ -2,7 +2,6 @@ package classes;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TXT_Item extends Item {
 	/**

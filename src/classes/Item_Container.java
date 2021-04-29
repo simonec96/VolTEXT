@@ -1,7 +1,9 @@
 package classes;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Item_Container {
 	private DIV_Item div;
@@ -11,6 +13,7 @@ public class Item_Container {
 	private PDF_Item doc;
 	private TXT_Item txt;
 	private List<Item_TOT> list_tot;
+	private Map<String, Item_Stylesheet> dictionary_style;
 	
 	
 	
@@ -20,6 +23,7 @@ public class Item_Container {
 	public Item_Container() {
 		super();
 		setList_tot(new LinkedList<Item_TOT>());
+		setDictionary_style(new HashMap<String, Item_Stylesheet>());
 	}
 	/**
 	 * @return the div
@@ -105,4 +109,17 @@ public class Item_Container {
 	public void setList_tot(List<Item_TOT> list_tot) {
 		this.list_tot = list_tot;
 	}
+	/**
+	 * @return the dictionary_style
+	 */
+	public Map<String, Item_Stylesheet> getDictionary_style() {
+		return dictionary_style;
+	}
+	/**
+	 * @param dictionary_style the dictionary_style to set
+	 */
+	public void setDictionary_style(Map<String, Item_Stylesheet> dictionary_style) {
+		this.dictionary_style = dictionary_style;
+	}
+
 }

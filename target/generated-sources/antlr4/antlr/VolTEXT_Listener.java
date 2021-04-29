@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -33,6 +35,7 @@ import antlr.VolTextParser.TvalueContext;
 import classes.DIV_Item;
 import classes.IMG_Item;
 import classes.Item_Container;
+import classes.Item_Stylesheet;
 import classes.Item_TOT;
 import classes.LIST_Item;
 import classes.PAGE_Item;
@@ -53,6 +56,8 @@ public class VolTEXT_Listener implements VolTextListener {
 	public Item_Container container;
 	public PDDocument PDF_doc;
 	public PDPage PDF_page;
+	public String ID;
+	public Item_Stylesheet styleObject;
 	public int n_page;
 	public float prev_angle;
 
@@ -103,7 +108,9 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStylesheet(VolTextParser.StylesheetContext ctx) { }
+	@Override public void enterStylesheet(VolTextParser.StylesheetContext ctx) {
+		container.setDictionary_style(new HashMap<String, Item_Stylesheet>());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -115,19 +122,246 @@ public class VolTEXT_Listener implements VolTextListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElement(VolTextParser.ElementContext ctx) { }
+	@Override public void enterElement(VolTextParser.ElementContext ctx) {
+		
+		ID = ctx.STRING().toString();
+		ID = ID.substring(1, ID.length() - 1);
+		styleObject = new Item_Stylesheet(ID);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElement(VolTextParser.ElementContext ctx) { }
+	@Override public void exitElement(VolTextParser.ElementContext ctx) {
+		container.getDictionary_style().put(ID, styleObject);
+		ID = "";
+		styleObject = null;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAttrStyle(VolTextParser.AttrStyleContext ctx) { }
+	@Override public void enterAttrStyle(VolTextParser.AttrStyleContext ctx) {
+		//set the attributes of styleObject with a check of ctx's children
+		String classe = ctx.getChild(0).toString().replaceAll("\\s+", "").toLowerCase();
+		classe = classe.substring(0, classe.length() - 1);
+		if(classe.equals("cross-point"))
+		{
+			styleObject.setCross_Percentage(Float.parseFloat(ctx.NVAL().toString()));
+		}
+		else if(classe.equals("shape:"))
+		{
+			String f = ctx.getChild(1).toString().toLowerCase();
+			if(f.equals("rectangle"))
+				styleObject.setFigura(Figure.RETTANGOLO);
+			else if(f.equals("circle"))
+				styleObject.setFigura(Figure.CERCHIO);
+			else
+				styleObject.setFigura(Figure.TRIANGOLO);
+		}
+		else if(classe.equals("fit-x"))
+		{
+			styleObject.setFitX(Boolean.parseBoolean(ctx.TFVAL().toString()));
+		}
+		else if(classe.equals("fit-y"))
+		{
+			styleObject.setFitX(Boolean.parseBoolean(ctx.TFVAL().toString()));
+		}
+		else if(classe.equals("pos-x"))
+		{
+			String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+			styleObject.setUnitX(unit);
+			if(ctx.NOTVAL() == null)
+				styleObject.setPosX(Float.parseFloat((ctx.NVAL().toString())));
+			else
+				styleObject.setPosX(0 - Float.parseFloat((ctx.NVAL().toString())));
+		}
+		else if(classe.equals("pos-y"))
+		{
+			String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+			styleObject.setUnitY(unit);
+			if(ctx.NOTVAL() == null)
+				styleObject.setPosY(Float.parseFloat((ctx.NVAL().toString())));
+			else
+				styleObject.setPosY(0 - Float.parseFloat((ctx.NVAL().toString())));
+		}
+		else if(classe.equals("angle-rotation"))
+		{
+			if(ctx.NOTVAL() == null)
+				styleObject.setAngle_Rotation(Float.parseFloat((ctx.NVAL().toString())));
+			else
+				styleObject.setAngle_Rotation(0 - Float.parseFloat((ctx.NVAL().toString())));
+		}
+		else if(classe.equals("height"))
+		{
+			String unit = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+			switch(unit)
+			{
+			case "mm":
+				styleObject.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			case "%":
+				float perc = Float.parseFloat(ctx.NVAL().toString());
+				float heightPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getHeight());
+				styleObject.setHeight(heightPage * perc / 100);
+				break;
+			case "pt":
+				float point = Float.parseFloat(ctx.NVAL().toString());
+				styleObject.setHeight(UnitConverter.convPointmm(  point));
+				break;
+			default:
+				styleObject.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			}
+		}
+		else if(classe.equals("width"))
+		{
+			String unit_w = (ctx.UNIT() != null) ? ctx.UNIT().toString() : "mm";
+			switch(unit_w)
+			{
+			case "mm":
+				styleObject.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			case "%":
+				float perc = Float.parseFloat(ctx.NVAL().toString());
+				float widthPage = UnitConverter.convPointmm( PDF_page.getMediaBox().getWidth());
+				styleObject.setWidth(widthPage * perc / 100);
+				break;
+			case "pt":
+				float point = Float.parseFloat(ctx.NVAL().toString());
+				styleObject.setWidth(UnitConverter.convPointmm(  point));
+				break;
+			default:
+				styleObject.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
+				break;
+			}
+		}
+		else if(classe.equals("p_width"))
+		{
+			styleObject.setWidth(Float.parseFloat(ctx.NVAL().toString()));
+		}
+		else if(classe.equals("p_height"))
+		{
+			styleObject.setHeight(Float.parseFloat(ctx.NVAL().toString()));
+		}
+		else if(classe.equals("ordered:"))
+		{
+			if(ctx.TFVAL().toString().toLowerCase()=="true")
+				styleObject.setOrdered(true);
+			else
+				styleObject.setOrdered(false);
+		}
+		else if(classe.equals("bullet:"))
+		{
+			styleObject.setBullet(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+		}
+		else if(classe.equals("font-family:"))
+		{
+			styleObject.setFontFamily(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+		}
+		else if(classe.equals("font-family-ttf:"))
+		{
+			styleObject.setFontFamilyTTF(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+		}
+		else if(classe.equals("font-family-otf:"))
+		{
+			styleObject.setFontFamilyOTF(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+		}
+		else if(classe.equals("font-size:"))
+		{
+			styleObject.setFontSize(Integer.parseInt(ctx.NVAL().toString()));
+		}
+		else if(classe.equals("bold"))
+		{
+			if(ctx.TFVAL().toString() == "true")
+				styleObject.setBold(true);
+			else
+				styleObject.setBold(false);
+		}
+		else if(classe.equals("italics"))
+		{
+			if(ctx.TFVAL().toString() == "true")
+				styleObject.setItalics(true);
+			else
+				styleObject.setItalics(false);
+		}
+		else if(classe.equals("underline"))
+		{
+			if(ctx.TFVAL().toString() == "true")
+				styleObject.setUnderline(true);
+			else
+				styleObject.setUnderline(false);
+		}
+		else if(classe.equals("colort-bullet:"))
+		{
+			Color c = null;
+			try {
+				Field f = Class.forName("java.awt.Color").getField(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+				c=(Color)f.get(null);
+			} catch (Exception e) {
+				c=Color.BLACK;
+			}
+			styleObject.setRGBBulletColor(c);
+		}
+		else if(classe.equals("color-bullet:"))
+		{
+			Color c = null;
+			String colore= ctx.COLORVAL().toString();
+			int r = Integer.parseInt(colore.substring(1, 3), 16);
+			int g = Integer.parseInt(colore.substring(3, 5), 16);
+			int b = Integer.parseInt(colore.substring(5, 7), 16);
+			int a = Integer.parseInt(colore.substring(7, 9), 16);
+			c = new Color(r, g, b ,a);
+			styleObject.setRGBBulletColor(c);
+		}
+		else if(classe.equals("colort:"))
+		{
+			Color c = null;
+			try {
+				Field f = Class.forName("java.awt.Color").getField(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+				c=(Color)f.get(null);
+			} catch (Exception e) {
+				c=Color.BLACK;
+			}
+			styleObject.setrGBAcolor(c);
+		}
+		else if(classe.equals("color:"))
+		{
+			Color c = null;
+			String colore= ctx.COLORVAL().toString();
+			int r = Integer.parseInt(colore.substring(1, 3), 16);
+			int g = Integer.parseInt(colore.substring(3, 5), 16);
+			int b = Integer.parseInt(colore.substring(5, 7), 16);
+			int a = Integer.parseInt(colore.substring(7, 9), 16);
+			c = new Color(r, g, b ,a);
+			styleObject.setrGBAcolor(c);
+		}
+		else if(classe.equals("position:"))
+		{
+			String position = ctx.POSVAL().toString();
+			styleObject.setPosition(position);
+		}
+		else if(classe.equals("alignment:"))
+		{
+			String align = ctx.ALIGNVAL().toString();
+			styleObject.setAlignment(align);
+		}
+		else if(classe.equals("orientation:"))
+		{
+			Float orientation = ctx.ORIENTATION().toString() == "hor" ? 90f : 0f;
+			styleObject.setAngle_Rotation(orientation);
+		}
+		else if(classe.equals("oob:"))
+		{
+			styleObject.setOob(Boolean.parseBoolean(ctx.TFVAL().toString()));
+		}
+		else if(classe.equals("format:"))
+		{
+			styleObject.setFormat(ctx.FORMATVAL().toString());
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -2760,7 +2994,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		}
 		else
 		{
-			if(ctx.getChild(0).toString().replaceAll("\\s+", "").equals("width"))
+			if(ctx.getChild(0).toString().replaceAll("\\s+", "").equals("p_width"))
 				p.setWidth(Float.parseFloat(ctx.NVAL().toString()));
 			else
 				p.setHeight(Float.parseFloat(ctx.NVAL().toString()));
@@ -2993,7 +3227,7 @@ public class VolTEXT_Listener implements VolTextListener {
 					div.setWidth(UnitConverter.convPointmm(  point));
 					break;
 				default:
-					div.setHeight((Float.parseFloat((ctx.NVAL().toString()))));
+					div.setWidth((Float.parseFloat((ctx.NVAL().toString()))));
 					break;
 				}
 				break;
@@ -3154,6 +3388,7 @@ public class VolTEXT_Listener implements VolTextListener {
 		// TODO Auto-generated method stub
 
 	}
+
 	@Override
 	public void enterIdval(VolTextParser.IdvalContext ctx) {
 		// TODO Auto-generated method stub
@@ -3161,25 +3396,204 @@ public class VolTEXT_Listener implements VolTextListener {
 		{
 			DIV_Item div = container.getDiv();
 			div.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+			if(container.getDictionary_style().containsKey(div.getID()))
+			{
+				Item_Stylesheet is = container.getDictionary_style().get(div.getID());
+				if(!div.getAngle_Rotation().equals(is.getAngle_Rotation()) && div.getAngle_Rotation().equals(0f))
+					div.setAngle_Rotation(is.getAngle_Rotation());
+				if(!div.getPosX().equals(is.getPosX()) && div.getPosX().equals(0f))
+					div.setPosX(is.getPosX());
+				if(!div.getPosY().equals(is.getPosY()) && div.getPosY().equals(0f))
+					div.setPosY(is.getPosY());
+				if(!div.getWidth().equals(is.getWidth()) && div.getWidth().equals(0f))
+					div.setWidth(is.getWidth());
+				if(!div.getHeight().equals(is.getHeight()) && div.getHeight().equals(0f))
+					div.setHeight(is.getHeight());
+				if(!div.getPosition().equals(is.getPosition()) && div.getPosition().equals(""))
+					div.setPosition(is.getPosition());
+				if(div.isFitX() != is.isFitX() && !div.isFitX())
+					div.setFitX(is.isFitX());
+				if(div.isFitY() != is.isFitY() && !div.isFitY())
+					div.setFitY(is.isFitY());
+				if(!div.getRGBAcolor().equals(is.getrGBAcolor()) && div.getRGBAcolor().getRed() == 0 && div.getRGBAcolor().getGreen() == 0 && div.getRGBAcolor().getBlue() == 0 && div.getRGBAcolor().getAlpha() == 0)
+					div.setRGBAcolor(is.getrGBAcolor());
+				if(!div.getFigura().equals(is.getFigura()) && div.getFigura().equals(Figure.RETTANGOLO))
+					div.setFigura(is.getFigura());
+				if(!div.getCross_Percentage().equals(is.getCross_Percentage()) && div.getCross_Percentage().equals(0f))
+					div.setCross_Percentage(is.getCross_Percentage());
+				if(!div.getUnitX().equals(is.getUnitX()) && div.getUnitX().equals("mm"))
+					div.setUnitX(is.getUnitX());
+				if(!div.getUnitY().equals(is.getUnitY()) && div.getUnitY().equals("mm"))
+					div.setUnitY(is.getUnitY());
+				if(!div.getUnitWidth().equals(is.getUnitWidth()) && div.getUnitWidth().equals("mm"))
+					div.setUnitWidth(is.getUnitWidth());
+				if(!div.getUnitHeight().equals(is.getUnitHeight()) && div.getUnitHeight().equals("mm"))
+					div.setUnitHeight(is.getUnitHeight());
+			}
 			container.setDiv(div);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.ImgattrContext)
 		{
 			IMG_Item img = container.getImg();
 			img.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+			if(container.getDictionary_style().containsKey(img.getID()))
+			{
+				Item_Stylesheet is = container.getDictionary_style().get(img.getID());
+				if(!img.getAngle_Rotation().equals(is.getAngle_Rotation()) && img.getAngle_Rotation().equals(0f))
+					img.setAngle_Rotation(is.getAngle_Rotation());
+				if(!img.getPosX().equals(is.getPosX()) && img.getPosX().equals(0f))
+					img.setPosX(is.getPosX());
+				if(!img.getPosY().equals(is.getPosY()) && img.getPosY().equals(0f))
+					img.setPosY(is.getPosY());
+				if(!img.getWidth().equals(is.getWidth()) && img.getWidth().equals(0f))
+					img.setWidth(is.getWidth());
+				if(!img.getHeight().equals(is.getHeight()) && img.getHeight().equals(0f))
+					img.setHeight(is.getHeight());
+				if(!img.getPosition().equals(is.getPosition()) && img.getPosition().equals(""))
+					img.setPosition(is.getPosition());
+				if(img.isFitX() != is.isFitX() && !img.isFitX())
+					img.setFitX(is.isFitX());
+				if(img.isFitY() != is.isFitY() && !img.isFitY())
+					img.setFitY(is.isFitY());
+				if(!img.getUnitX().equals(is.getUnitX()) && img.getUnitX().equals("mm"))
+					img.setUnitX(is.getUnitX());
+				if(!img.getUnitY().equals(is.getUnitY()) && img.getUnitY().equals("mm"))
+					img.setUnitY(is.getUnitY());
+				if(!img.getUnitWidth().equals(is.getUnitWidth()) && img.getUnitWidth().equals("mm"))
+					img.setUnitWidth(is.getUnitWidth());
+				if(!img.getUnitHeight().equals(is.getUnitHeight()) && img.getUnitHeight().equals("mm"))
+					img.setUnitHeight(is.getUnitHeight());
+			}
 			container.setImg(img);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.TxtattrContext)
 		{
 			TXT_Item txt = container.getTxt();
 			txt.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+			if(container.getDictionary_style().containsKey(txt.getID()))
+			{
+				Item_Stylesheet is = container.getDictionary_style().get(txt.getID());
+				if(!txt.getRGBAcolor().equals(is.getrGBAcolor()) && txt.getRGBAcolor().getRed() == 0 && txt.getRGBAcolor().getGreen() == 0 && txt.getRGBAcolor().getBlue() == 0 && txt.getRGBAcolor().getAlpha() == 0)
+					txt.setRGBAcolor(is.getrGBAcolor());
+				if(!txt.getAngle_Rotation().equals(is.getAngle_Rotation()) && txt.getAngle_Rotation().equals(0f))
+					txt.setAngle_Rotation(is.getAngle_Rotation());
+				if(!txt.getPosX().equals(is.getPosX()) && txt.getPosX().equals(0f))
+					txt.setPosX(is.getPosX());
+				if(!txt.getPosY().equals(is.getPosY()) && txt.getPosY().equals(0f))
+					txt.setPosY(is.getPosY());
+				if(!txt.getWidth().equals(is.getWidth()) && txt.getWidth().equals(0f))
+					txt.setWidth(is.getWidth());
+				if(!txt.getHeight().equals(is.getHeight()) && txt.getHeight().equals(0f))
+					txt.setHeight(is.getHeight());
+				if(!txt.getPosition().equals(is.getPosition()) && txt.getPosition().equals(""))
+					txt.setPosition(is.getPosition());
+				if(txt.isFitX() != is.isFitX() && !txt.isFitX())
+					txt.setFitX(is.isFitX());
+				if(txt.isFitY() != is.isFitY() && !txt.isFitY())
+					txt.setFitY(is.isFitY());
+				if(!txt.getUnitX().equals(is.getUnitX()) && txt.getUnitX().equals("mm"))
+					txt.setUnitX(is.getUnitX());
+				if(!txt.getUnitY().equals(is.getUnitY()) && txt.getUnitY().equals("mm"))
+					txt.setUnitY(is.getUnitY());
+				if(!txt.getUnitWidth().equals(is.getUnitWidth()) && txt.getUnitWidth().equals("mm"))
+					txt.setUnitWidth(is.getUnitWidth());
+				if(!txt.getUnitHeight().equals(is.getUnitHeight()) && txt.getUnitHeight().equals("mm"))
+					txt.setUnitHeight(is.getUnitHeight());
+				if(!txt.getFontFamily().equals(is.getFontFamily()) && txt.getFontFamily().equals(""))
+					txt.setFontFamily(is.getFontFamily());
+				if(!txt.getFontFamilyTTF().equals(is.getFontFamilyTTF()) && txt.getFontFamilyTTF().equals(null))
+					txt.setFontFamilyTTF(is.getFontFamilyTTF());
+				if(!txt.getFontFamilyOTF().equals(is.getFontFamilyOTF()) && txt.getFontFamilyOTF().equals(null))
+					txt.setFontFamilyOTF(is.getFontFamilyOTF());
+				if(txt.isBold() != is.isBold() && !txt.isBold())
+					txt.setBold(is.isBold());
+				if(txt.isItalics() != is.isItalics() && !txt.isItalics())
+					txt.setItalics(is.isItalics());
+				if(txt.isUnderline() != is.isUnderline() && !txt.isUnderline())
+					txt.setUnderline(is.isUnderline());
+				if(!txt.getAlignment().equals(is.getAlignment()) && txt.getAlignment().equals(""))
+					txt.setAlignment(is.getAlignment());
+				if(!txt.getFontSize().equals(is.getFontSize()) && txt.getFontSize().equals(12))
+					txt.setFontSize(is.getFontSize());
+			}
 			container.setTxt(txt);
 		}
 		else if(ctx.getParent() instanceof VolTextParser.ListattrContext)
 		{
 			LIST_Item list = container.getList();
 			list.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+			if(container.getDictionary_style().containsKey(list.getID()))
+			{
+				Item_Stylesheet is = container.getDictionary_style().get(list.getID());
+				if(!list.getRGBAcolor().equals(is.getrGBAcolor()) && list.getRGBAcolor().getRed() == 0 && list.getRGBAcolor().getGreen() == 0 && list.getRGBAcolor().getBlue() == 0 && list.getRGBAcolor().getAlpha() == 0)
+					list.setRGBAcolor(is.getrGBAcolor());
+				if(!list.getAngle_Rotation().equals(is.getAngle_Rotation()) && list.getAngle_Rotation().equals(0f))
+					list.setAngle_Rotation(is.getAngle_Rotation());
+				if(!list.getPosX().equals(is.getPosX()) && list.getPosX().equals(0f))
+					list.setPosX(is.getPosX());
+				if(!list.getPosY().equals(is.getPosY()) && list.getPosY().equals(0f))
+					list.setPosY(is.getPosY());
+				if(!list.getWidth().equals(is.getWidth()) && list.getWidth().equals(0f))
+					list.setWidth(is.getWidth());
+				if(!list.getHeight().equals(is.getHeight()) && list.getHeight().equals(0f))
+					list.setHeight(is.getHeight());
+				if(!list.getPosition().equals(is.getPosition()) && list.getPosition().equals(""))
+					list.setPosition(is.getPosition());
+				if(list.isFitX() != is.isFitX() && !list.isFitX())
+					list.setFitX(is.isFitX());
+				if(list.isFitY() != is.isFitY() && !list.isFitY())
+					list.setFitY(is.isFitY());
+				if(!list.getUnitX().equals(is.getUnitX()) && list.getUnitX().equals("mm"))
+					list.setUnitX(is.getUnitX());
+				if(!list.getUnitY().equals(is.getUnitY()) && list.getUnitY().equals("mm"))
+					list.setUnitY(is.getUnitY());
+				if(!list.getUnitWidth().equals(is.getUnitWidth()) && list.getUnitWidth().equals("mm"))
+					list.setUnitWidth(is.getUnitWidth());
+				if(!list.getUnitHeight().equals(is.getUnitHeight()) && list.getUnitHeight().equals("mm"))
+					list.setUnitHeight(is.getUnitHeight());
+				if(!list.getFontFamily().equals(is.getFontFamily()) && list.getFontFamily().equals(""))
+					list.setFontFamily(is.getFontFamily());
+				if(!list.getFontFamilyTTF().equals(is.getFontFamilyTTF()) && list.getFontFamilyTTF().equals(null))
+					list.setFontFamilyTTF(is.getFontFamilyTTF());
+				if(!list.getFontFamilyOTF().equals(is.getFontFamilyOTF()) && list.getFontFamilyOTF().equals(null))
+					list.setFontFamilyOTF(is.getFontFamilyOTF());
+				if(list.isBold() != is.isBold() && !list.isBold())
+					list.setBold(is.isBold());
+				if(list.isItalics() != is.isItalics() && !list.isItalics())
+					list.setItalics(is.isItalics());
+				if(list.isUnderline() != is.isUnderline() && !list.isUnderline())
+					list.setUnderline(is.isUnderline());
+				if(!list.getAlignment().equals(is.getAlignment()) && list.getAlignment().equals(""))
+					list.setAlignment(is.getAlignment());
+				if(!list.getFontSize().equals(is.getFontSize()) && list.getFontSize().equals(12))
+					list.setFontSize(is.getFontSize());
+				if(!list.getBullet().equals(is.getBullet()) && list.getBullet().equals("odd"))
+					list.setBullet(is.getBullet());
+				if(!list.getRGBBulletColor().equals(is.getRGBBulletColor()) && list.getRGBBulletColor().equals(null))
+					list.setRGBBulletColor(is.getRGBBulletColor());
+			}
 			container.setList(list);
+		}
+		else if(ctx.getParent() instanceof VolTextParser.PageattrContext)
+		{
+			PAGE_Item page = container.getPage();
+			page.setID(ctx.STRING().toString().substring(1, ctx.STRING().toString().length() - 1));
+			if(container.getDictionary_style().containsKey(page.getID()))
+			{
+				Item_Stylesheet is = container.getDictionary_style().get(page.getID());
+				if(!page.getAngleRotation().equals(is.getAngle_Rotation()) && page.getAngleRotation().equals(0f))
+					page.setAngleRotation(is.getAngle_Rotation());
+				if(page.isOob() != is.isOob() && !page.isOob())
+					page.setOob(is.isOob());
+				if(!page.getFormat().equals(is.getFormat()) && is.getFormat().equals(""))
+					page.setFormat(is.getFormat());
+				if(!page.getWidth().equals(is.getWidth()) && page.getWidth().equals(0f))
+					page.setWidth(is.getWidth());
+				if(!page.getHeight().equals(is.getHeight()) && page.getHeight().equals(0f))
+					page.setHeight(is.getHeight());
+				
+			}
+			container.setPage(page);
 		}
 		else
 		{

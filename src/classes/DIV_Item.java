@@ -23,7 +23,7 @@ public class DIV_Item extends Item {
 		setPosition("");
 		setFitX(false);
 		setFitY(false);
-		setRGBAcolor(null);
+		setRGBAcolor(new Color(0,0,0,0));
 		setList(new LinkedList<Item>());
 		setUnitX("mm");
 		setUnitY("mm");

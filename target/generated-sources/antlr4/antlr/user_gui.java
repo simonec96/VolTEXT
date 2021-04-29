@@ -151,7 +151,7 @@ public class user_gui {
 	}*/
 	
 	public static List<String> listErrori=new ArrayList<String>();
-	public static String global_path;
+	public static String global_path = "";
 
 	public static List<String> generaPDF(String grammar, String p) throws IOException {
 		global_path = p;

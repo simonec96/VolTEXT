@@ -1,13 +1,18 @@
 {
-	title:"TestA8_circle";
+	title:"TestA9_stylesheet";
 	path:"./PageDiv/";
+	stylesheet:{
+	@"A":{
+	shape:"CIRCLE";
+	color:#482A4822;
+	}
+	}
 	page:{
-		width:1200;
-		height:1200;
+		p_width:1200;
+		p_height:1200;
 		div:{
 			id:"A";
-			shape:"CIRCLE";
-			color:#482A4822;
+			shape:"RECTANGLE";
 			width:50mm;
 			height:50mm;
 			pos-x:100;

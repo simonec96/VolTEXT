@@ -18,8 +18,8 @@ public class PAGE_Item extends Item {
 	private Float AngleRotation;
 	private boolean oob;
 	private String format;
-	private float width;
-	private float height;
+	private Float width;
+	private Float height;
 	/**
 	 * @return the iD
 	 */
@@ -79,7 +79,7 @@ public class PAGE_Item extends Item {
 	/**
 	 * @return the width
 	 */
-	public float getWidth() {
+	public Float getWidth() {
 		return width;
 	}
 
@@ -93,7 +93,7 @@ public class PAGE_Item extends Item {
 	/**
 	 * @return the height
 	 */
-	public float getHeight() {
+	public Float getHeight() {
 		return height;
 	}
 
